@@ -2,6 +2,7 @@ import { SCENES } from "./story.config.js";
 
 // Scroll-scrubbed keyframe engine. Each scene is a tall section with a sticky stage; progress p (0..1)
 // is how far the section has scrolled, and every actor's pose is interpolated from its keyframes.
+// An actor with a `skin` range crossfades its first child into its second across that range.
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (p, a, b) => { const t = clamp((p - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -34,7 +35,6 @@ function mount(cfg) {
   if (!sec) return;
   const stage = sec.querySelector(".stage");
   const actors = cfg.actors.map((a) => ({ ...a, el: stage.querySelector(`.act[data-a="${a.id}"]`) }));
-  const caps = Array.from(sec.querySelectorAll(".cap"));
   let ticking = false;
 
   function render(p) {
@@ -43,8 +43,6 @@ function mount(cfg) {
       apply(a.el, poseAt(a.kf, p));
       if (a.skin) { const k = smooth(p, a.skin[0], a.skin[1]); a.el.children[0].style.opacity = 1 - k; a.el.children[1].style.opacity = k; }
     }
-    let c = 0; cfg.capAt.forEach((th, i) => { if (p >= th) c = i + 1; });
-    caps.forEach((el, i) => el.classList.toggle("on", i === c));
   }
   function measure() {
     ticking = false;
