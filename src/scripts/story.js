@@ -2,16 +2,21 @@ import { SCENES } from "./story.config.js";
 
 // Scroll-scrubbed keyframe engine. Each scene is a tall section with a sticky stage; progress p (0..1)
 // is how far the section has scrolled, and every actor's pose is interpolated from its keyframes.
+// Pose keys: x y w h (%), r (deg), s (scale), o (opacity), d (draw 0..1 -> --draw), v (value -> [data-count] text).
 // An actor with a `skin` range crossfades its first child into its second across that range.
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (p, a, b) => { const t = clamp((p - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const UNITS = { x: "left", y: "top", w: "width", h: "height" };
+const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const fmt = (v, kind) => kind === "pct" ? Math.round(v) + "%" : kind === "money" ? money.format(v) : Math.round(v).toLocaleString("en-US");
 
 function apply(el, pose) {
   for (const k in UNITS) if (pose[k] != null) el.style[UNITS[k]] = pose[k] + "%";
   if (pose.o != null) el.style.opacity = pose.o;
+  if (pose.d != null) el.style.setProperty("--draw", pose.d);
+  if (pose.v != null) { el.style.setProperty("--v", pose.v); el.querySelectorAll("[data-count]").forEach((t) => { t.textContent = fmt(pose.v, t.dataset.count); }); }
   if (pose.r != null || pose.s != null)
     el.style.transform = (pose.r != null ? `rotate(${pose.r}deg) ` : "") + (pose.s != null ? `scale(${pose.s})` : "");
 }
@@ -36,7 +41,6 @@ function mount(cfg) {
   const stage = sec.querySelector(".stage");
   const actors = cfg.actors.map((a) => ({ ...a, el: stage.querySelector(`.act[data-a="${a.id}"]`) }));
   let ticking = false;
-
   function render(p) {
     for (const a of actors) {
       if (!a.el) continue;
