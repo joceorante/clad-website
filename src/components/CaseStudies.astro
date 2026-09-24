@@ -1,0 +1,33 @@
+---
+const studies = [
+  { title: "Lorem ipsum company dolor sit amet consecteur", link: "Lorem ipsum dolor sit amet", href: "#case-1" },
+  { title: "Lorem ipsum company dolor sit amet consecteur", link: "Lorem ipsum dolor sit amet", href: "#case-2" },
+];
+---
+<div class="container block" id="case-studies">
+  <div class="head">
+    <h2 class="h2">Case Studies</h2>
+    <a class="btn btn--ghost-light" href="#cases-all">See all <span aria-hidden="true">→</span></a>
+  </div>
+  <ul class="grid"-group="120">
+    {studies.map((s) => (
+      <li class="card">
+        <h3>{s.title}</h3>
+        <a href={s.href}>{s.link} <span aria-hidden="true">→</span></a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 23px 0 0; padding: 0; list-style: none; }
+  .card {
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; min-height: 247px;
+    padding: 48px 30px 37px; background: var(--color-tar-deep); border-radius: var(--radius-md);
+  }
+  .card h3 { font-size: var(--text-card); line-height: 1.3; font-weight: 600; letter-spacing: -0.31px; }
+  .card a { font-size: var(--text-sm); line-height: 1.3; letter-spacing: -0.14px; text-decoration: none; }
+  .card a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .card { min-height: 200px; padding: 32px 24px 28px; } .card h3 { font-size: 24px; } }
+</style>

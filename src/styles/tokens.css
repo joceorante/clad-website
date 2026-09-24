@@ -1,0 +1,57 @@
+/* Clad design tokens. Source of truth: Figma variables in "Clad Web Design -> Claude"
+   (Clad/Paper, Clad/Tar, Clad/Cobalt, Clad/Lilac, Clad/International Orange, Clad/Stoplight).
+   Change values in Figma first, then here. */
+:root {
+  /* brand palette (Figma variables) */
+  --color-paper: #ffffff;
+  --color-tar: #25220c;
+  --color-cobalt: #4750ff;
+  --color-lilac: #b8acfe;
+  --color-orange: #ff5900;
+  --color-stoplight: #ffcc00;
+
+  /* surfaces used in the page (literal fills in the file) */
+  --color-paper-warm: #fdfbf8;   /* textured bands */
+  --color-paper-dim: #f3f2ed;    /* badge fill */
+  --color-tar-deep: #1a1704;     /* cards on tar */
+  --color-tar-soft: #595644;     /* illustration slab */
+  --color-grid: #3b3720;         /* grid lines on tar */
+  --color-placeholder: #d1d1d1;
+  --color-placeholder-ink: #626262;
+  --color-rule-light: #d9d7cf;
+
+  /* semantic aliases */
+  --color-bg: var(--color-paper);
+  --color-ink: var(--color-tar);
+  --color-line: var(--color-tar);
+  --hairline: 0.5px;
+
+  /* type: Geist for text and display, Geist Mono for labels and buttons */
+  --font-display: "Geist", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display: clamp(40px, 5vw, 72px);   /* hero h1: 72 / 1 / -1.5px */
+  --text-h2: clamp(30px, 3.1vw, 44px);       /* section headers: 44 / 1.2 / -0.5px */
+  --text-h2-footer: clamp(32px, 3.4vw, 48px);
+  --text-q: clamp(22px, 2.4vw, 34px);        /* FAQ question: 34 / 1.2 */
+  --text-card: 31px;
+  --text-lg: 24px;
+  --text-body: 20px;                          /* Body: 20 / 1.3 */
+  --text-ui: 16px;
+  --text-sm: 14px;                            /* Body Small: 14 / 1.5 */
+  --text-xs: 12px;
+
+  /* radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+  --radius-pill: 28.5px;
+
+  /* layout: content column is 1040 (x 200..1240 at 1440); wide column is 1204 (x 118..1322) */
+  --container: 1040px;
+  --container-wide: 1204px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --header-h: 118px;
+}

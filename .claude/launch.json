@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "clad-dev", "runtimeExecutable": "/opt/homebrew/bin/npm", "runtimeArgs": ["run", "dev", "--", "--port", "4321", "--host", "127.0.0.1"], "port": 4321 }
+  ]
+}

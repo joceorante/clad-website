@@ -1,0 +1,194 @@
+<title>Clad Orbit</title>
+<meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#2A2823; --muted:#5E5B54; --line:#E8E7E3;
+  --accent:#6D6AF0; --accent-ink:#FFFFFF;
+  --card:#F2F2F0; --shape:#DCDCDA; --shape-2:#CFCFCC; --ph-text:#6E6B64;
+  --shadow:0 40px 70px -30px rgba(30,28,20,.35),0 0 0 1px rgba(30,28,20,.05);
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+    --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+    --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+  --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+  --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;font-weight:500}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
+.logo i{width:18px;height:18px;background:var(--accent);display:inline-block;border-radius:4px 4px 4px 10px}
+.nav-links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:15px}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (max-width:700px){.nav-links{display:none}}
+.hero{padding-block:clamp(40px,7vw,96px) clamp(32px,5vw,64px);text-align:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);margin:14px auto 0;max-width:18ch}
+.hero p{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:52ch;margin:20px auto 0}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+.ph{position:relative;background:var(--card);border-radius:22px;box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden}
+.ph .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:var(--ph-text);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;position:relative;z-index:1}
+/* steps + sticky stage */
+.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);gap:clamp(24px,5vw,72px);padding-block:clamp(16px,3vw,40px) clamp(24px,4vw,48px)}
+.steps{display:flex;flex-direction:column}
+.step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding-block:8vh;opacity:.28;transition:opacity .4s}
+.step.is-current{opacity:1}
+.step .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.step.is-current .k{color:var(--accent)}
+.step h3{font-size:clamp(26px,2.6vw,36px);margin-top:12px;letter-spacing:-.02em}
+.step p{font-size:16px;color:var(--muted);max-width:40ch;margin:14px 0 0}
+.stage-wrap{position:sticky;top:calc(6vh + env(safe-area-inset-top,0px));height:88vh;align-self:start}
+.stage{position:relative;height:100%}
+.sec-head{text-align:center;max-width:760px;margin:0 auto;padding-top:clamp(40px,7vw,96px)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);margin-top:12px}
+.sec-head p{color:var(--muted);font-size:17px;margin:14px auto 0;max-width:52ch}
+.close{border-top:1px solid var(--line);margin-top:clamp(56px,9vw,120px);padding-block:clamp(48px,8vw,96px);text-align:center}
+.close h2{font-size:clamp(30px,4vw,48px);max-width:20ch;margin:0 auto}
+.close p{color:var(--muted);max-width:48ch;margin:14px auto 0}
+.close .btn{margin-top:24px}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:900px){
+  .story{grid-template-columns:1fr;gap:0}
+  .stage-wrap{order:-1;position:sticky;top:calc(8px + env(safe-area-inset-top,0px));height:48vh;z-index:2;background:var(--bg);padding-bottom:10px}
+  .step{min-height:62vh;padding-block:6vh}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation:none!important}}
+
+:root{--c1:#6D6AF0;--c2:#1FA48C;--c3:#E08A1E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c1:#8A88FF;--c2:#3DC4AB;--c3:#F2A544}}
+:root[data-theme="dark"]{--c1:#8A88FF;--c2:#3DC4AB;--c3:#F2A544}
+.orbit{position:relative;height:520vh}
+.pin{position:sticky;top:calc(env(safe-area-inset-top,0px));height:100vh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr);gap:clamp(20px,4vw,64px);align-items:center;padding-block:16px}
+.wheel{position:relative;width:100%;max-width:640px;aspect-ratio:1;margin:0 auto;container-type:inline-size;font-size:clamp(9px,1.9cqw,13px)}
+.wheel svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ring{fill:none;stroke:var(--line);stroke-width:.35}
+.tick{stroke:var(--line);stroke-width:.35}
+.day{font-family:var(--mono);font-size:2.4px;letter-spacing:.3px;fill:var(--muted);text-anchor:middle;text-transform:uppercase}
+.rlab{font-family:var(--mono);font-size:2px;dominant-baseline:middle;letter-spacing:.35px;fill:var(--muted);text-transform:uppercase;stroke:var(--bg);stroke-width:1.4;paint-order:stroke;stroke-linejoin:round}
+.rlab.c1{fill:var(--c1)}.rlab.c2{fill:var(--c2)}.rlab.c3{fill:var(--c3)}
+.sweep{stroke:var(--ink);stroke-width:.35;stroke-linecap:round;opacity:.55}
+.sweep-dot{fill:var(--ink)}
+.edge{fill:none;stroke:var(--ink);stroke-width:.4;stroke-linecap:round;opacity:0;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1),opacity .3s}
+.edge.on{opacity:.35;stroke-dashoffset:0}
+.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:34%}
+.hub .k{font-family:var(--mono);font-size:.8em;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hub b{display:block;font-weight:700;font-size:1.35em;letter-spacing:-.02em;line-height:1.1;margin-top:.2em}
+.hub .wk{font-family:var(--mono);font-size:.85em;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin-top:.5em;font-variant-numeric:tabular-nums}
+.node{position:absolute;width:0;height:0;z-index:1}.node.lit{z-index:2}.node.now{z-index:3}
+.node i{position:absolute;left:-.45em;top:-.45em;width:.9em;height:.9em;border-radius:50%;background:var(--shape-2);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line);transition:transform .35s cubic-bezier(.2,.8,.2,1.2),background .3s}
+.node span{position:absolute;top:-.85em;white-space:nowrap;font-size:.95em;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.25em .7em;opacity:0;transform:translateY(.4em);transition:opacity .35s,transform .35s;line-height:1.2}
+.node.L span{right:1em}.node.R span{left:1em}
+.node.T span,.node.B span{left:50%;transform:translate(-50%,.4em)}.node.T span{top:auto;bottom:.9em}.node.B span{top:.9em}
+.node.T.lit span,.node.B.lit span{transform:translate(-50%,0)}
+.node.lit i{background:var(--nc);transform:scale(1.25)}
+.node.lit span{opacity:1;transform:none}
+.node.past span{opacity:.55;color:var(--muted)}
+.node.now i{transform:scale(1.7);box-shadow:0 0 0 .45em color-mix(in srgb,var(--nc) 22%,transparent)}
+.node.now span{border-color:var(--nc);font-weight:600}
+.node.c1{--nc:var(--c1)}.node.c2{--nc:var(--c2)}.node.c3{--nc:var(--c3)}
+/* caption column */
+.side{position:relative;display:grid;grid-template-rows:auto auto;padding-bottom:28px}
+.cap{grid-area:1/1;opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s}
+.cap.on{opacity:1;transform:none}
+.cap .eb{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cap .eb b{font-weight:500;color:var(--cc)}
+.cap h3{font-size:clamp(24px,2.4vw,34px);margin-top:10px;letter-spacing:-.02em}
+.cap p{color:var(--muted);font-size:16px;margin:12px 0 0;max-width:38ch}
+.legend{grid-row:2;display:flex;gap:16px;flex-wrap:wrap;margin-top:22px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:8px;height:8px;border-radius:50%}
+.hint{position:absolute;bottom:0;left:0;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:900px){
+  .pin{grid-template-columns:1fr;align-content:start;gap:12px;padding-top:12px}
+  .wheel{max-width:min(92vw,52vh)}
+  .side{min-height:11em}.cap h3{font-size:22px}.cap p{font-size:15px}.legend{display:none}
+  .node span{font-size:.9em}
+}
+@media (prefers-reduced-motion:reduce){.edge{transition:none}}
+</style>
+<header class="wrap nav">
+  <div class="logo"><i></i>Clad</div>
+  <nav class="nav-links"><a href="#story">How it works</a><a href="#">Pricing</a><a href="#">Log in</a></nav>
+  <button class="btn accent" type="button">Book a demo</button>
+</header>
+<section class="wrap hero">
+  <div class="eyebrow">Field software for telecom, utility, and infrastructure contractors</div>
+  <h1>Capture, manage, bill. Not in that order.</h1>
+  <p>The field logs every day. Approvals and check-ins happen through the week. Billing comes around every two weeks. One record keeps all three cycles in sync. Scroll to turn two weeks on one project.</p>
+  <div class="row"><button class="btn accent" type="button">Book a demo</button><button class="btn ghost" type="button">Turn the wheel</button></div>
+</section>
+<section class="wrap orbit" id="orbit">
+  <div class="pin">
+    <div class="wheel" id="wheel">
+      <svg viewBox="-4 -4 108 108" aria-hidden="true">
+        <circle class="ring" cx="50" cy="50" r="22"/><circle class="ring" cx="50" cy="50" r="33"/><circle class="ring" cx="50" cy="50" r="44"/><line class="tick" x1="50.00" y1="3.50" x2="50.00" y2="2.00"/><text class="day" x="50.00" y="0.20">Mon</text><line class="tick" x1="94.22" y1="35.63" x2="95.65" y2="35.17"/><text class="day" x="98.12" y="35.16">Tue</text><line class="tick" x1="77.33" y1="87.62" x2="78.21" y2="88.83"/><text class="day" x="79.74" y="91.74">Wed</text><line class="tick" x1="22.67" y1="87.62" x2="21.79" y2="88.83"/><text class="day" x="20.26" y="91.74">Thu</text><line class="tick" x1="5.78" y1="35.63" x2="4.35" y2="35.17"/><text class="day" x="1.88" y="35.16">Fri</text><defs><path id="rp-c" d="M29.70 50 A20.30 20.30 0 1 1 70.30 50 A20.30 20.30 0 1 1 29.70 50"/><path id="rp-m" d="M18.70 50 A31.30 31.30 0 1 1 81.30 50 A31.30 31.30 0 1 1 18.70 50"/><path id="rp-b" d="M7.70 50 A42.30 42.30 0 1 1 92.30 50 A42.30 42.30 0 1 1 7.70 50"/></defs><text class="rlab c1"><textPath href="#rp-c" startOffset="37.5%" text-anchor="middle">Capture · daily</textPath></text><text class="rlab c2"><textPath href="#rp-m" startOffset="37.5%" text-anchor="middle">Manage · weekly</textPath></text><text class="rlab c3"><textPath href="#rp-b" startOffset="37.5%" text-anchor="middle">Bill · every 2 weeks</textPath></text>
+        <g id="edges"><path class="edge" data-a="n1" data-b="n2" pathLength="1" d="M50.00 28.00 Q58.63 41.15 81.38 39.80"/><path class="edge" data-a="n2" data-b="n3" pathLength="1" d="M81.38 39.80 Q63.96 54.54 69.40 76.70"/><path class="edge" data-a="n3" data-b="n4" pathLength="1" d="M69.40 76.70 Q55.90 66.40 52.07 82.93"/><path class="edge" data-a="n4" data-b="n9" pathLength="1" d="M52.07 82.93 Q57.16 56.92 73.97 42.21"/><path class="edge" data-a="n1" data-b="n7" pathLength="1" d="M50.00 28.00 Q50.00 30.97 50.00 2.80"/><path class="edge" data-a="n5" data-b="n7" pathLength="1" d="M37.07 67.80 Q46.44 41.91 50.00 2.80"/><path class="edge" data-a="n6" data-b="n7" pathLength="1" d="M29.08 43.20 Q44.25 35.15 50.00 2.80"/><path class="edge" data-a="n7" data-b="n8" pathLength="1" d="M50.00 2.80 Q56.25 25.65 72.74 8.64"/><path class="edge" data-a="n9" data-b="n10" pathLength="1" d="M73.97 42.21 Q60.83 56.87 65.41 82.75"/><path class="edge" data-a="n3" data-b="n10" pathLength="1" d="M69.40 76.70 Q59.57 66.35 65.41 82.75"/><path class="edge" data-a="n10" data-b="n12" pathLength="1" d="M65.41 82.75 Q46.18 53.16 20.71 28.72"/><path class="edge" data-a="n11" data-b="n12" pathLength="1" d="M35.19 70.39 Q37.87 49.76 20.71 28.72"/><path class="edge" data-a="n8" data-b="n12" pathLength="1" d="M72.74 8.64 Q48.20 32.77 20.71 28.72"/></g>
+        <g id="sweep"><line class="sweep" x1="50" y1="50" x2="50" y2="3.5"/><circle class="sweep-dot" cx="50" cy="3.5" r=".9"/></g>
+      </svg>
+      <div class="node c1 L" data-t="0.0" style="left:50.00%;top:29.63%"><i></i><span>Logged · 1,000 FT · 2 HH</span></div><div class="node c2 R" data-t="1.0" style="left:79.06%;top:40.56%"><i></i><span>Approved</span></div><div class="node c2 R" data-t="2.0" style="left:67.96%;top:74.72%"><i></i><span>AT&T check-in · 108 / 500 HH</span></div><div class="node c2 L" data-t="2.45" style="left:51.92%;top:80.50%"><i></i><span>Forecast · +1 crew</span></div><div class="node c1 R" data-t="3.0" style="left:38.03%;top:66.48%"><i></i><span>Logged · 1,400 FT</span></div><div class="node c1 L" data-t="4.0" style="left:30.63%;top:43.71%"><i></i><span>Logged · 3 HH · 800 FT</span></div><div class="node c3 R" data-t="5.0" style="left:50.00%;top:6.30%"><i></i><span>Invoice #14 → QuickBooks</span></div><div class="node c3 R" data-t="5.4" style="left:71.05%;top:11.70%"><i></i><span>3 sub bills matched</span></div><div class="node c1 B" data-t="6.0" style="left:72.19%;top:42.79%"><i></i><span>Crew 4 starts · 900 FT</span></div><div class="node c2 B" data-t="7.15" style="left:64.27%;top:80.33%"><i></i><span>AT&T check-in · 131 / 500 HH</span></div><div class="node c1 L" data-t="8.0" style="left:36.29%;top:68.88%"><i></i><span>Logged · 4 HH · 1,200 FT</span></div><div class="node c2 R" data-t="9.25" style="left:22.88%;top:30.30%"><i></i><span>5-project report</span></div>
+      <div class="hub"><div class="k">Maple Run</div><b>Fiber build · 500 HH</b><div class="wk" id="wk">Week 1 · Mon</div></div>
+    </div>
+    <div class="side">
+      <div class="cap on" style="--cc:var(--c1)"><div class="eb">Week 1 · Monday · <b>Capture</b></div><h3>1,000 feet of fiber and two hand holes go in.</h3><p>The crew logs quantities, photos, and the redline from the truck. The inner ring turns every day. This is the one record everything else reads from.</p></div><div class="cap" style="--cc:var(--c2)"><div class="eb">Week 1 · Tuesday · <b>Manage</b></div><h3>Someone checks it.</h3><p>You open Monday's update, look at the photos and quantities, and approve. Nothing gets re-typed.</p></div><div class="cap" style="--cc:var(--c2)"><div class="eb">Week 1 · Wednesday · <b>Manage</b></div><h3>AT&T asks how far along you are.</h3><p>Of 500 planned hand holes, 108 are in. Percent complete comes straight from approved production.</p></div><div class="cap" style="--cc:var(--c2)"><div class="eb">Week 1 · Wednesday · <b>Manage</b></div><h3>You're behind.</h3><p>Clad's forecast shows the gap to the target date and what closes it: one more crew. Meanwhile the crew keeps logging Thursday and Friday.</p></div><div class="cap" style="--cc:var(--c3)"><div class="eb">Week 2 · Monday · <b>Bill</b></div><h3>Time to bill last week.</h3><p>Select the week's approved updates. Clad builds the invoice and syncs it to QuickBooks. The outer ring turns every two weeks; this is its first stop.</p></div><div class="cap" style="--cc:var(--c3)"><div class="eb">Week 2 · Monday · <b>Bill</b></div><h3>Sub bills land in your inbox.</h3><p>Clad ties each bill to the update it covers, so you pay for what was built.</p></div><div class="cap" style="--cc:var(--c1)"><div class="eb">Week 2 · Tuesday · <b>Capture</b></div><h3>The fix from last Wednesday shows up in the field.</h3><p>Crew 4 starts. Their first update lands on the same inner ring, and the loop keeps going.</p></div><div class="cap" style="--cc:var(--c2)"><div class="eb">Week 2 · Wednesday · <b>Manage</b></div><h3>AT&T asks again. 131 of 500.</h3><p>Back on pace. Same check-in, same view, one week of production later.</p></div><div class="cap" style="--cc:var(--c2)"><div class="eb">Week 2 · Friday · <b>Manage</b></div><h3>Your boss wants all five projects.</h3><p>One production report across every job you manage. Every node on this wheel feeds it.</p></div>
+      <div class="legend"><span><i style="background:var(--c1)"></i>Capture · daily</span><span><i style="background:var(--c2)"></i>Manage · weekly</span><span><i style="background:var(--c3)"></i>Bill · every 2 weeks</span></div>
+      <div class="hint" id="hint">Scroll to advance the week</div>
+    </div>
+  </div>
+</section>
+<section class="wrap close">
+  <h2>From the field to the invoice, on one record.</h2>
+  <p>See Clad on one of your live projects.</p>
+  <button class="btn accent" type="button">Book a demo</button>
+</section>
+<footer class="wrap"><span>Clad · Prototype</span><span>Telecom · Utility · Infrastructure</span></footer>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sec=document.getElementById('orbit'), sweep=document.getElementById('sweep'), wk=document.getElementById('wk'), hint=document.getElementById('hint');
+  var nodes=[].slice.call(document.querySelectorAll('.node')), edges=[].slice.call(document.querySelectorAll('.edge')), caps=[].slice.call(document.querySelectorAll('.cap'));
+  var NT={"n1": 0.0, "n2": 1.0, "n3": 2.0, "n4": 2.45, "n5": 3.0, "n6": 4.0, "n7": 5.0, "n8": 5.4, "n9": 6.0, "n10": 7.15, "n11": 8.0, "n12": 9.25}, CT=[0.0, 1.0, 2.0, 2.45, 5.0, 5.45, 6.0, 7.0, 9.0], DAYS=["Mon", "Tue", "Wed", "Thu", "Fri"];
+  var TOTAL=10;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function render(p){
+    var t=p*TOTAL, lit={}, last=null, lastT=-1;
+    nodes.forEach(function(n){
+      var nt=+n.dataset.t, on=t>=nt;
+      n.classList.toggle('lit',on);
+      if(on && nt>lastT){lastT=nt;last=n;}
+    });
+    nodes.forEach(function(n){ n.classList.toggle('now',n===last); n.classList.toggle('past',n.classList.contains('lit')&&n!==last&&(t-(+n.dataset.t))>2.5); });
+    edges.forEach(function(e){ e.classList.toggle('on', t>=NT[e.dataset.a] && t>=NT[e.dataset.b]); });
+    var ang=-90+72*Math.min(t,TOTAL)+90; sweep.setAttribute('transform','rotate('+ang+' 50 50)');
+    var w=Math.min(2,Math.floor(t/5)+1), d=DAYS[clamp(Math.floor(t%5),0,4)];
+    wk.textContent='Week '+w+' · '+(t>=TOTAL?'Fri':d);
+    var c=0; CT.forEach(function(th,i){ if(t>=th) c=i; });
+    caps.forEach(function(el,i){ el.classList.toggle('on',i===c); });
+    hint.style.opacity=p<.02?1:0;
+  }
+  var ticking=false;
+  function measure(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(), total=sec.offsetHeight-window.innerHeight;
+    var p=clamp(-r.top/total,0,1);
+    render(reduce?(p<.5?0:1):p);
+  }
+  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(measure);}},{passive:true});
+  window.addEventListener('resize',measure); measure();
+})();
+</script>

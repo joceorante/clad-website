@@ -1,0 +1,41 @@
+---
+const faqs = [
+  { q: "What is Clad?", a: "Construction management software, purpose-built for building infrastructure. We help contractors and asset owners track their work and automate their back office - from locates, to billing, to reporting, and everything in between.", open: true },
+  { q: "Who is Clad for?", a: "" },
+  { q: "How does Clad help improve our billing workflows?", a: "" },
+  { q: "I only want to use one part of Clad. Do I need to buy everything?", a: "" },
+  { q: "How fast can we get started?", a: "" },
+];
+---
+<section class="paper" id="faq">
+  <div class="container inner">
+    <h2 class="h2">FAQs</h2>
+    <div class="list"-group="70">
+      {faqs.map((f) => (
+        <details class="item" open={f.open}>
+          <summary>
+            <span class="q">{f.q}</span>
+            <span class="icon" aria-hidden="true">
+              <img class="plus" src="/assets/icons/add.svg" alt="" width="34" height="34" />
+              <img class="minus" src="/assets/icons/remove.svg" alt="" width="34" height="34" />
+            </span>
+          </summary>
+          <p class="a">{f.a || "Answer coming soon."}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .inner { padding: 50px 0; }
+  .list { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+  .item { border-bottom: var(--hairline) solid var(--color-tar); padding: 20px 0; }
+  summary { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .q { font-size: var(--text-q); line-height: 1.2; letter-spacing: -0.5px; }
+  .icon { flex: none; width: 34px; height: 34px; position: relative; }
+  .icon img { position: absolute; inset: 0; }
+  .item[open] .plus, .item:not([open]) .minus { display: none; }
+  .a { margin-top: 24px; max-width: 864px; font-size: var(--text-sm); line-height: 1.5; letter-spacing: -0.14px; white-space: pre-wrap; }
+</style>

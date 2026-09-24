@@ -1,0 +1,38 @@
+---
+const entries = [
+  { title: "You can now submit No Response, Update, or Update & Remark tickets from Clad", body: "Our goal with Clad Locates is to speed up every aspect of handling 811 tickets so excavators never miss a down day...", date: "July 25, 2026" },
+  { title: "Clad Locates is now available in Texas & Tennessee.", body: "Now, contractors who are calling in 811 tickets in Texas or Tennessee can use Clad’s AI Locates tool to automate submitting and tracking 811 tickets in these states.", date: "June 25, 2026" },
+  { title: "You can now build schedule forecasts in Clad.", body: "This lets you track how your actual schedule compares to an initial plan. Comparing a forecast schedule to actual dates is a great way to identify bottlenecks in a project.", date: "January 21, 2026" },
+];
+---
+<div class="container block" id="changelog">
+  <div class="head">
+    <h2 class="h2">Changelog</h2>
+    <a class="btn btn--ghost-light" href="#changelog-all">See all <span aria-hidden="true">→</span></a>
+  </div>
+  <ol class="timeline"-group="110">
+    {entries.map((e) => (
+      <li class="entry">
+        <h3>{e.title}</h3>
+        <p>{e.body}</p>
+        <time class="mono">{e.date}</time>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .block { margin-top: 122px; }
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+  .timeline {
+    position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 69px;
+    margin: 33px 0 0; padding: 44px 0 0; list-style: none;
+  }
+  .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 1px; background: rgb(255 255 255 / 0.6); }
+  .entry { position: relative; display: flex; flex-direction: column; gap: 16px; }
+  .entry::before { content: ""; position: absolute; left: 0; top: -44px; width: 11px; height: 11px; border-radius: 50%; background: var(--color-rule-light); }
+  .entry h3 { font-size: var(--text-body); line-height: 1.3; font-weight: 700; letter-spacing: -0.2px; }
+  .entry p { font-size: var(--text-sm); line-height: 1.5; letter-spacing: -0.14px; }
+  .entry time { opacity: 0.5; letter-spacing: 0.02em; }
+  @media (max-width: 900px) { .block { margin-top: 80px; } .timeline { grid-template-columns: 1fr; gap: 40px; padding-top: 0; } .timeline::before { display: none; } .entry::before { display: none; } }
+</style>

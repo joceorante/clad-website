@@ -1,0 +1,313 @@
+<title>Clad Zoom Story</title>
+<meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#2A2823; --muted:#5E5B54; --line:#E8E7E3;
+  --accent:#6D6AF0; --accent-ink:#FFFFFF;
+  --card:#F2F2F0; --shape:#DCDCDA; --shape-2:#CFCFCC; --ph-text:#6E6B64;
+  --shadow:0 40px 70px -30px rgba(30,28,20,.35),0 0 0 1px rgba(30,28,20,.05);
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+    --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+    --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+  --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+  --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;font-weight:500}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
+.logo i{width:18px;height:18px;background:var(--accent);display:inline-block;border-radius:4px 4px 4px 10px}
+.nav-links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:15px}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (max-width:700px){.nav-links{display:none}}
+.hero{padding-block:clamp(40px,7vw,96px) clamp(32px,5vw,64px);text-align:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);margin:14px auto 0;max-width:18ch}
+.hero p{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:52ch;margin:20px auto 0}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+.ph{position:relative;background:var(--card);border-radius:22px;box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden}
+.ph .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:var(--ph-text);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;position:relative;z-index:1}
+/* steps + sticky stage */
+.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);gap:clamp(24px,5vw,72px);padding-block:clamp(16px,3vw,40px) clamp(24px,4vw,48px)}
+.steps{display:flex;flex-direction:column}
+.step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding-block:8vh;opacity:.28;transition:opacity .4s}
+.step.is-current{opacity:1}
+.step .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.step.is-current .k{color:var(--accent)}
+.step h3{font-size:clamp(26px,2.6vw,36px);margin-top:12px;letter-spacing:-.02em}
+.step p{font-size:16px;color:var(--muted);max-width:40ch;margin:14px 0 0}
+.stage-wrap{position:sticky;top:calc(6vh + env(safe-area-inset-top,0px));height:88vh;align-self:start}
+.stage{position:relative;height:100%}
+.sec-head{text-align:center;max-width:760px;margin:0 auto;padding-top:clamp(40px,7vw,96px)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);margin-top:12px}
+.sec-head p{color:var(--muted);font-size:17px;margin:14px auto 0;max-width:52ch}
+.close{border-top:1px solid var(--line);margin-top:clamp(56px,9vw,120px);padding-block:clamp(48px,8vw,96px);text-align:center}
+.close h2{font-size:clamp(30px,4vw,48px);max-width:20ch;margin:0 auto}
+.close p{color:var(--muted);max-width:48ch;margin:14px auto 0}
+.close .btn{margin-top:24px}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:900px){
+  .story{grid-template-columns:1fr;gap:0}
+  .stage-wrap{order:-1;position:sticky;top:calc(8px + env(safe-area-inset-top,0px));height:48vh;z-index:2;background:var(--bg);padding-bottom:10px}
+  .step{min-height:62vh;padding-block:6vh}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation:none!important}}
+
+.board{position:relative;height:620vh}
+.pin{position:sticky;top:calc(env(safe-area-inset-top,0px));height:100vh}
+.stage{position:absolute;inset:0;overflow:hidden;container-type:size;font-size:clamp(9px,1.05cqw,12.5px)}
+.world{position:absolute;left:0;top:0;width:200%;height:140%;transform-origin:0 0;will-change:transform}
+.world svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.edge{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:round;opacity:0;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1),opacity .4s}
+.edge.on{opacity:.22;stroke-dashoffset:0}
+.mock{position:absolute;transform:translate(-50%,-50%) scale(.9);opacity:0;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.7,.2,1.1)}
+.mock.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.mock .cap{margin:1.1em .4em 0;font-size:1.15em;line-height:1.45;color:var(--muted);max-width:34em}
+.mock .cap .day{display:block;font-family:var(--mono);font-size:.78em;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.35em}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:1.3em;box-shadow:var(--shadow);padding:1.2em 1.4em;font-size:1em}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline;gap:1em;padding-bottom:.9em;border-bottom:1px solid var(--line);margin-bottom:1em}
+.card .hd b{font-weight:600;font-size:1.15em;letter-spacing:-.01em}
+.k{font-family:var(--mono);font-size:.78em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tagpill{font-family:var(--mono);font-size:.78em;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:.3em .8em;white-space:nowrap;display:inline-block}
+/* update card */
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:.6em}
+.thumbs i{aspect-ratio:4/3;border-radius:.6em;background:linear-gradient(160deg,var(--shape),var(--shape-2))}
+.thumbs i.pdf{background:var(--card);border:1px solid var(--line);position:relative}
+.thumbs i.pdf::after{content:"";position:absolute;left:18%;top:38%;width:64%;height:24%;border:2px solid var(--accent);border-radius:50% 45% 55% 40%}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:.6em;margin-top:1em}
+.fields div{border:1px solid var(--line);border-radius:.6em;padding:.55em .8em}
+.fields small{display:block;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fields b{font-weight:600;font-size:1.15em;font-variant-numeric:tabular-nums}
+.note{border:1px solid var(--line);border-radius:.6em;padding:.55em .8em;margin-top:.6em;display:flex;gap:.7em;align-items:center}
+.note em{font-style:normal;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* approvals */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:.8em}
+.col{background:var(--card);border-radius:.9em;padding:.8em}
+.col h4{margin:0 0 .7em;font-family:var(--mono);font-size:.75em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.ghost{height:3.6em;border-radius:.6em;background:var(--shape);margin-bottom:.6em;opacity:.75}
+.mini{background:var(--bg);border:1px solid var(--line);border-radius:.8em;padding:.8em .9em;box-shadow:0 14px 30px -18px rgba(0,0,0,.5);position:relative}
+.mini .d{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mini .t{font-weight:600;margin-top:.2em}
+.mini .row{display:flex;justify-content:space-between;margin-top:.5em;font-size:.95em;font-variant-numeric:tabular-nums}
+.mini .row span:last-child{color:var(--muted)}
+.mini .tag{position:absolute;right:.7em;top:.7em}
+.mini .total{border-top:1px solid var(--line);margin-top:.7em;padding-top:.5em;display:flex;justify-content:space-between;font-weight:600;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;background:var(--ink);color:var(--bg);border-radius:999px;padding:.25em .65em;font-family:var(--mono);font-size:.72em;white-space:nowrap}
+.priced .row{align-items:center}
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.9em}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:1.1em;padding:1em 1.2em;box-shadow:var(--shadow)}
+.tile h5{margin:0;font-family:var(--mono);font-size:.75em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tile .big{font-weight:700;font-size:1.9em;letter-spacing:-.02em;margin-top:.25em;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .big small{font-size:.5em;color:var(--muted);font-weight:500}
+.tile .bar{height:.55em;background:var(--card);border-radius:.3em;margin-top:.9em;position:relative;overflow:hidden}
+.tile .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:.3em;width:var(--w)}
+/* chart */
+.chart .bars{display:flex;align-items:flex-end;gap:.7em;height:9em;border-bottom:1px solid var(--line);margin-top:1em}
+.chart .bars i{flex:1;background:var(--shape);border-radius:.3em .3em 0 0;height:var(--h)}
+.chart .bars i.now{background:var(--accent)}
+.chart .fc{display:flex;justify-content:space-between;gap:1em;font-size:.9em;color:var(--muted);margin-top:.9em}
+.chart .fc b{color:var(--accent);font-weight:600}
+/* invoice */
+.iline{display:flex;justify-content:space-between;padding:.55em 0;border-bottom:1px solid var(--line);font-size:.95em;font-variant-numeric:tabular-nums}
+.iline b{font-weight:600}
+.sum{display:flex;justify-content:space-between;padding:.45em 0;font-size:.95em;font-variant-numeric:tabular-nums}
+.sum.due{border-top:2px solid var(--ink);font-weight:700;font-size:1.1em;margin-top:.3em}
+.inv .foot{display:flex;justify-content:flex-end;margin-top:.8em}
+/* sub bill */
+.match{display:flex;justify-content:space-between;align-items:center;gap:.8em;background:var(--card);border-radius:.7em;padding:.7em .9em;font-size:.92em;margin-top:.6em}
+.match b{font-weight:600;font-variant-numeric:tabular-nums}
+/* report */
+.rep .r{display:grid;grid-template-columns:7em 1fr 3.5em;align-items:center;gap:.8em;padding:.45em 0;font-size:.92em}
+.rep .r .bar{height:.5em;background:var(--card);border-radius:.25em;position:relative;overflow:hidden}
+.rep .r .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);width:var(--w);border-radius:.25em}
+.rep .r .bar i.dim{background:var(--shape-2)}
+.rep .r span:last-child{font-family:var(--mono);font-size:.85em;text-align:right;color:var(--muted)}
+.rep .r.me span:first-child{font-weight:600}
+.hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:opacity .3s}
+
+.zoom{position:relative;height:900vh}
+.zpin{position:sticky;top:calc(env(safe-area-inset-top,0px));height:100vh}
+.zstage{position:absolute;inset:0;overflow:hidden;container-type:size}
+.zworld{position:absolute;left:0;top:0;width:320%;height:220%;transform-origin:0 0;font-size:clamp(9px,1.05cqw,12.5px)}
+.zworld svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.act{position:absolute;transform-origin:top left}
+/* raw inputs (neutral) */
+.raw,.ui{position:absolute;inset:0;border-radius:.7em;overflow:hidden}
+.ui{opacity:0}
+.raw.photo{background:linear-gradient(160deg,var(--shape),var(--shape-2));box-shadow:0 14px 30px -18px rgba(0,0,0,.55)}
+.raw .lab{position:absolute;left:.6em;bottom:.5em;font-family:var(--mono);font-size:.72em;letter-spacing:.06em;color:var(--bg);background:rgba(0,0,0,.45);border-radius:.4em;padding:.15em .5em}
+.raw.page{background:var(--card);border:1px solid var(--line)}
+.raw.page::after{content:"";position:absolute;left:22%;top:34%;width:56%;height:26%;border:2px solid var(--accent);border-radius:50% 45% 55% 40%}
+.raw.page .lab{color:var(--muted);background:transparent;padding-left:0}
+.raw.memo{background:var(--bg);border:1px solid var(--line);padding:.7em .9em .9em;font-size:1em;line-height:1.35}
+.raw.memo .lab{position:static;display:block;color:var(--muted);background:transparent;padding:0;margin-bottom:.3em}
+.raw.msg{background:var(--card);border-radius:1.2em 1.2em 1.2em .3em;padding:.6em .9em .9em;font-size:.98em;line-height:1.35}
+.raw.msg .lab{position:static;display:block;color:var(--muted);background:transparent;padding:0;margin-bottom:.25em}
+.ui.thumb{background:linear-gradient(160deg,var(--shape),var(--shape-2));border-radius:.6em}
+.ui.thumb.pdf{background:var(--card);border:1px solid var(--line)}
+.ui.thumb.pdf::after{content:"";position:absolute;left:18%;top:38%;width:64%;height:24%;border:2px solid var(--accent);border-radius:50% 45% 55% 40%}
+.ui.fields{display:grid;grid-template-columns:1fr 1fr;gap:.6em;border-radius:0;overflow:visible}
+.ui.fields div{border:1px solid var(--line);border-radius:.6em;padding:.5em .8em;background:var(--bg)}
+.ui.fields small{display:block;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ui.fields b{font-weight:600;font-size:1.1em;font-variant-numeric:tabular-nums}
+.ui.note{border:1px solid var(--line);border-radius:.6em;padding:.5em .8em;background:var(--bg);display:flex;align-items:center;gap:.6em;font-size:.95em}
+.ui.note em{font-style:normal;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* hero update card */
+.hero-card{overflow:hidden}
+.hero-card .body{opacity:0}
+.hero-card .stamp{position:absolute;right:1.2em;bottom:1.1em}
+/* small cards */
+.sc{background:var(--bg);border:1px solid var(--line);border-radius:.8em;padding:.6em .8em;box-shadow:0 10px 24px -16px rgba(0,0,0,.5);font-size:1.15em;line-height:1.25;white-space:nowrap;overflow:hidden}
+.sc b{display:block;font-family:var(--mono);font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sc span{display:block;font-weight:600;font-size:.98em;margin-top:.15em}
+.sc i{position:absolute;right:.7em;top:.7em;width:.7em;height:.7em;border-radius:50%;background:var(--ok,#2FA36B);opacity:0;transform:scale(.4);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1.3)}
+.sc.ap i{opacity:1;transform:scale(1)}
+.sc.loc{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}.sc.loc b{color:var(--accent)}
+.sc.mat b{color:#B7791F}.sc.ven b{color:#1FA48C}
+/* manage panel */
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:1.4em;box-shadow:var(--shadow);padding:1.4em 1.6em}
+.panel .hd{display:flex;justify-content:space-between;align-items:baseline;gap:1em;padding-bottom:.9em;border-bottom:1px solid var(--line);margin-bottom:1.1em}
+.panel .hd b{font-weight:600;font-size:1.25em}
+.panel .tiles{grid-template-columns:1fr 1fr;gap:1em}
+.panel .tile{box-shadow:none;background:var(--card);border:0}
+.panel .tile .bar i{width:0}
+.panel .chart .bars{height:8em}
+.panel .chart .bars i{height:0}
+.panel .fc{opacity:0}
+/* stacks */
+.stk-lab{font-family:var(--mono);font-size:1.1em;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.stamp2{font-family:var(--mono);font-size:1.5em;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--accent);border:.14em solid var(--accent);border-radius:.4em;padding:.25em .6em;white-space:nowrap;background:color-mix(in srgb,var(--bg) 85%,transparent)}
+.stamp2.paid{color:#2FA36B;border-color:#2FA36B}
+.stamp2.soft{color:var(--muted);border-color:var(--line);font-weight:500}
+.qb{font-family:var(--mono);font-size:1.05em;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+/* fixed caption bar */
+.bar-fixed{position:absolute;left:0;right:0;bottom:0;padding:clamp(40px,7vh,80px) clamp(16px,4vw,40px) clamp(16px,2.5vh,24px);background:linear-gradient(to top,var(--bg) 55%,transparent);pointer-events:none}
+.bar-fixed .in{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,4vw,64px);align-items:end}
+.capset{grid-area:1/1/2/3;display:grid;grid-template-columns:subgrid;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s}
+.capset.on{opacity:1;transform:none}
+.capset .eb{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.capset h3{font-size:clamp(20px,2vw,28px);margin-top:8px;letter-spacing:-.02em}
+.capset p{color:var(--muted);font-size:15px;margin:8px 0 0;max-width:46ch}
+.feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.feat div{border-top:1px solid var(--line);padding-top:10px}
+.feat b{display:block;font-size:13px;font-weight:600}
+.feat span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.zhint{position:absolute;left:50%;top:14px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:opacity .3s}
+.crew{margin-top:clamp(28px,4vw,48px);aspect-ratio:16/7;background:var(--card);border-radius:22px;display:grid;place-items:center;color:var(--ph-text)}
+.crew span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--bg)}
+@media (max-width:900px){.bar-fixed .in{grid-template-columns:1fr}.capset{grid-area:auto;grid-template-columns:1fr}.feat{display:none}.capset p{font-size:14px}}
+</style>
+<header class="wrap nav">
+  <div class="logo"><i></i>Clad</div>
+  <nav class="nav-links"><a href="#story">How it works</a><a href="#">Pricing</a><a href="#">Log in</a></nav>
+  <button class="btn accent" type="button">Book a demo</button>
+</header>
+<section class="wrap hero">
+  <div class="eyebrow">Field software for telecom, utility, and infrastructure contractors</div>
+  <h1>Someone does the work. Clad keeps the record.</h1>
+  <p>One field update becomes the approval, the forecast, the invoice, and the sub bill match. Scroll to follow a Monday from the trench to QuickBooks.</p>
+  <div class="row"><button class="btn accent" type="button">Book a demo</button><button class="btn ghost" type="button">Follow one update</button></div>
+  <div class="crew"><span>Photo · crew placing fiber</span></div>
+</section>
+<section class="zoom" id="zoom">
+  <div class="zpin"><div class="zstage">
+    <div class="zworld"><svg aria-hidden="true"></svg><div class="act" data-a="p1"><div class="raw photo"><span class="lab">Photo · 2:14 PM</span></div><div class="ui thumb"></div></div><div class="act" data-a="p2"><div class="raw photo" style="background:linear-gradient(200deg,var(--shape-2),var(--shape))"><span class="lab">Photo · 3:05 PM</span></div><div class="ui thumb"></div></div><div class="act" data-a="p3"><div class="raw photo" style="background:linear-gradient(20deg,var(--shape),var(--shape-2))"><span class="lab">Photo · 4:40 PM</span></div><div class="ui thumb"></div></div><div class="act" data-a="pdf"><div class="raw page"><span class="lab">Redline · PDF</span></div><div class="ui thumb pdf"></div></div><div class="act" data-a="qty"><div class="raw memo"><span class="lab">Note · Crew 3</span>1,000 ft fiber placed<br>2 HH set at 4th &amp; Main</div><div class="ui fields"><div><small>Fiber placed</small><b>1,000 FT</b></div><div><small>Hand holes</small><b>2 HH</b></div></div></div><div class="act" data-a="txt"><div class="raw msg"><span class="lab">Text · 4:55 PM</span>Both HH set, pics attached</div><div class="ui note"><em>Note</em>Both hand holes set at 4th &amp; Main. Photos attached.</div></div><div class="act card hero-card" data-a="hero">
+  <div class="hd"><b>Field update · Mon, Sep 14</b><span class="k">Crew 3</span></div>
+  <div class="body act" data-a="herobody">
+    <div class="thumbs"><i></i><i></i><i></i><i class="pdf"></i></div>
+    <div class="fields"><div><small>Fiber placed</small><b>1,000 FT</b></div><div><small>Hand holes</small><b>2 HH</b></div></div>
+    <div class="note"><em>Note</em>Both hand holes set at 4th &amp; Main. Photos attached.</div>
+  </div>
+  <span class="stamp tagpill act" data-a="stamp">Ready for approval</span>
+</div><div class="act sc " data-a="s0" data-ap="0.500"><b>Mon · Crew 1</b><span>620 FT fiber</span><i></i></div><div class="act sc " data-a="s1" data-ap="0.512"><b>Mon · Crew 2</b><span>1 HH · 300 FT</span><i></i></div><div class="act sc loc" data-a="s2" data-ap="0.524"><b>Locate · 5th St</b><span>Cleared Thu</span><i></i></div><div class="act sc " data-a="s3" data-ap="0.536"><b>Tue · Crew 3</b><span>1,400 FT fiber</span><i></i></div><div class="act sc " data-a="s4" data-ap="0.548"><b>Tue · Crew 1</b><span>2 HH</span><i></i></div><div class="act sc mat" data-a="s5" data-ap="0.560"><b>Material</b><span>2 HH pulled · yard</span><i></i></div><div class="act sc " data-a="s6" data-ap="0.572"><b>Tue · Crew 2</b><span>900 FT fiber</span><i></i></div><div class="act sc " data-a="s7" data-ap="0.584"><b>Wed · Crew 3</b><span>3 HH</span><i></i></div><div class="act sc " data-a="s8" data-ap="0.596"><b>Wed · Crew 1</b><span>1,100 FT fiber</span><i></i></div><div class="act sc " data-a="s9" data-ap="0.608"><b>Wed · Crew 2</b><span>Splice · 48 ct</span><i></i></div><div class="act sc loc" data-a="s10" data-ap="0.520"><b>Locate · Maple Run</b><span>Requested</span><i></i></div><div class="act sc " data-a="s11" data-ap="0.532"><b>Thu · Crew 3</b><span>800 FT fiber</span><i></i></div><div class="act sc " data-a="s12" data-ap="0.544"><b>Thu · Crew 1</b><span>2 HH · 400 FT</span><i></i></div><div class="act sc ven" data-a="s13" data-ap="0.556"><b>Vendor</b><span>Ortiz Underground</span><i></i></div><div class="act sc " data-a="s14" data-ap="0.568"><b>Thu · Crew 2</b><span>1,300 FT fiber</span><i></i></div><div class="act sc " data-a="s15" data-ap="0.580"><b>Fri · Crew 3</b><span>3 HH · 800 FT</span><i></i></div><div class="act sc " data-a="s16" data-ap="0.592"><b>Fri · Crew 1</b><span>700 FT fiber</span><i></i></div><div class="act sc " data-a="s17" data-ap="0.604"><b>Fri · Crew 2</b><span>Restoration</span><i></i></div><div class="act sc mat" data-a="s18" data-ap="0.616"><b>Material</b><span>Fiber reel · 6,000 FT</span><i></i></div><div class="act sc loc" data-a="s19" data-ap="0.628"><b>Locate · Hwy 9</b><span>Cleared Mon</span><i></i></div><div class="act panel" data-a="panel">
+  <div class="hd"><b>Maple Run · production</b><span class="k">Week of Sep 14</span></div>
+  <div class="tiles"><div class="tile"><h5>Hand holes</h5><div class="big">108 <small>/ 500</small></div><div class="bar"><i class="act" data-a="b1"></i></div></div>
+  <div class="tile"><h5>Fiber placed</h5><div class="big">41,200 <small>/ 180k FT</small></div><div class="bar"><i class="act" data-a="b2"></i></div></div></div>
+  <div class="chart" style="margin-top:1em"><span class="k">Weekly production · HH</span>
+    <div class="bars"><i class="act" data-a="k0"></i><i class="act" data-a="k1"></i><i class="act" data-a="k2"></i><i class="act" data-a="k3"></i><i class="act" data-a="k4"></i><i class="act now" data-a="k5"></i></div>
+    <div class="fc act" data-a="fc"><span>At this pace: <b>Dec 2</b> · Target: Nov 14</span><span>Close the gap: <b>+1 crew</b></span></div></div>
+</div><div class="act stk-lab" data-a="w0">Week of Sep 14</div><div class="act stamp2 " data-a="st0">Invoiced · #14</div><div class="act stk-lab" data-a="w1">Week of Sep 21</div><div class="act stamp2 " data-a="st1">Invoiced · #15</div><div class="act stk-lab" data-a="w2">Week of Sep 28</div><div class="act stamp2 " data-a="st2">Sent</div><div class="act stk-lab" data-a="w3">Week of Oct 5</div><div class="act stamp2 soft" data-a="st3">Draft</div><div class="act stamp2 paid" data-a="pd0">Paid</div><div class="act qb" data-a="qb0">Synced · QuickBooks</div><div class="act stamp2 paid" data-a="pd1">Paid</div><div class="act qb" data-a="qb1">Synced · QuickBooks</div><div class="act card inv" data-a="invoice">
+  <div class="hd"><b>Invoice #14 · AT&amp;T</b><span class="k">Sep 14–18</span></div>
+  <div class="iline"><span>Mon · 1,000 FT fiber, 2 HH</span><b>$5,900</b></div><div class="iline"><span>Tue · 1,400 FT fiber</span><b>$5,880</b></div><div class="iline"><span>Wed · 3 HH</span><b>$2,550</b></div><div class="iline"><span>Thu · 800 FT fiber</span><b>$3,360</b></div>
+  <div class="sum"><span class="k">Subtotal</span><span>$17,690</span></div><div class="sum"><span class="k">Retainage · 10%</span><span>−$1,769</span></div><div class="sum due"><span>Due</span><span>$15,921</span></div>
+  <div class="foot" style="display:flex;justify-content:space-between;align-items:center;margin-top:.8em"><span class="k">3 sub bills matched</span><span class="tagpill">Synced to QuickBooks</span></div>
+</div></div>
+    <div class="zhint">Scroll</div>
+    <div class="bar-fixed"><div class="in"><div class="capset on"><div><div class="eb">01 · Capture</div><h3>The crew does the work. Clad keeps the record.</h3><p>Photos, the redline, quantities, and a note leave the field the way they always have. Clad turns them into one field update, ready for approval.</p></div><div class="feat"><div><b>Digital as-builts</b><span>PDF or GIS redlines tied to the production they document.</span></div><div><b>Production tracking</b><span>Quantities logged against the project budget, offline first.</span></div><div><b>Custom forms</b><span>Photos, bore logs, damages, whatever the job needs.</span></div></div></div><div class="capset"><div><div class="eb">02 · Manage</div><h3>Every update feeds the same picture.</h3><p>Zoom out and Monday is one of dozens: every crew, every day, plus locates and material pulls. Approve them, and progress, forecast, and schedule update themselves.</p></div><div class="feat"><div><b>Insights</b><span>Production, spend, and revenue across all your projects.</span></div><div><b>Forecasting</b><span>The production you need to finish on time, and what closes the gap.</span></div><div><b>Schedules</b><span>Milestones and locates against the plan.</span></div></div></div><div class="capset"><div><div class="eb">03 · Bill</div><h3>The week's updates become the invoice.</h3><p>Approved updates gather by week. Each stack becomes an invoice, syncs to QuickBooks, and sub bills match against the updates they cover.</p></div><div class="feat"><div><b>Production to invoice</b><span>Invoices built from approved work. Sub bills tied to production.</span></div><div><b>Retainage</b><span>Tracked and released without a side spreadsheet.</span></div><div><b>QuickBooks sync</b><span>Nothing re-keyed. More ERPs coming.</span></div></div></div></div></div>
+  </div></div>
+</section>
+<section class="wrap close">
+  <h2>From the field to the invoice, on one record.</h2>
+  <p>See Clad on one of your live projects.</p>
+  <button class="btn accent" type="button">Book a demo</button>
+</section>
+<footer class="wrap"><span>Clad · Prototype</span><span>Telecom · Utility · Infrastructure</span></footer>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function smooth(p,a,b){var t=clamp((p-a)/(b-a),0,1);return t*t*(3-2*t);}
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+  var UNITS={x:'left',y:'top',w:'width',h:'height'};
+  function apply(el,pose){
+    for(var k in UNITS){ if(pose[k]!=null) el.style[UNITS[k]]=pose[k]+'%'; }
+    if(pose.o!=null) el.style.opacity=pose.o;
+    if(pose.r!=null||pose.s!=null) el.style.transform=(pose.r!=null?'rotate('+pose.r+'deg) ':'')+(pose.s!=null?'scale('+pose.s+')':'');
+  }
+  function poseAt(kf,p){
+    if(p<=kf[0].at) return kf[0];
+    if(p>=kf[kf.length-1].at) return kf[kf.length-1];
+    for(var i=0;i<kf.length-1;i++){ var a=kf[i],b=kf[i+1];
+      if(p>=a.at&&p<=b.at){ var t=ease((p-a.at)/(b.at-a.at)), out={};
+        for(var k in a){ if(k==='at')continue; out[k]=(typeof a[k]==='number'&&typeof b[k]==='number')?a[k]+(b[k]-a[k])*t:a[k]; }
+        return out; } }
+    return kf[kf.length-1];
+  }
+  window.__zoom=function(cfg){
+    var sec=document.getElementById('zoom'), stage=sec.querySelector('.zstage'), world=sec.querySelector('.zworld'), svg=sec.querySelector('svg'), hint=sec.querySelector('.zhint');
+    var actors=cfg.actors; actors.forEach(function(a){ a.el=world.querySelector('.act[data-a="'+a.id+'"]'); });
+    var smalls=[].slice.call(world.querySelectorAll('.sc'));
+    var caps=[].slice.call(sec.querySelectorAll('.capset'));
+    var edges=[]; cfg.edges.forEach(function(e){ var el=document.createElementNS('http://www.w3.org/2000/svg','path'); el.setAttribute('class','edge'); el.setAttribute('pathLength','1'); el._e=e; svg.appendChild(el); edges.push(el); });
+    function layoutEdges(){ var sw=stage.clientWidth, sh=stage.clientHeight; svg.setAttribute('viewBox','0 0 '+(cfg.WW/100*sw)+' '+(cfg.WH/100*sh));
+      edges.forEach(function(el){ var e=el._e, x1=e[0]/100*sw,y1=e[1]/100*sh,x2=e[2]/100*sw,y2=e[3]/100*sh, dx=x2-x1, dy=y2-y1;
+        el.setAttribute('d','M'+x1+' '+y1+' Q'+((x1+x2)/2-dy*.15)+' '+((y1+y2)/2+dx*.15)+' '+x2+' '+y2); }); }
+    function camera(p){ var C=cfg.camera; if(p<=C[0][0]) return C[0]; for(var i=0;i<C.length-1;i++){ var a=C[i],b=C[i+1]; if(p>=a[0]&&p<=b[0]){ var t=smooth(p,a[0],b[0]); return [p,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]; } } return C[C.length-1]; }
+    function render(p){
+      var c=camera(p), sw=stage.clientWidth, sh=stage.clientHeight, s=c[3];
+      world.style.transform='translate('+(sw/2-c[1]/100*sw*s)+'px,'+(sh/2-c[2]/100*sh*s)+'px) scale('+s+')';
+      actors.forEach(function(a){ if(!a.el) return; apply(a.el,poseAt(a.kf,p));
+        if(a.skin){ var k=smooth(p,a.skin[0],a.skin[1]); a.el.children[0].style.opacity=1-k; a.el.children[1].style.opacity=k; } });
+      smalls.forEach(function(el){ el.classList.toggle('ap', p>=+el.dataset.ap); });
+      edges.forEach(function(el){ el.classList.toggle('on', p>=el._e[4]); });
+      var ci=0; cfg.capAt.forEach(function(th,i){ if(p>=th) ci=i; }); caps.forEach(function(el,i){ el.classList.toggle('on',i===ci); });
+      hint.style.opacity=p<.02?1:0;
+    }
+    var ticking=false;
+    function measure(){ ticking=false; var r=sec.getBoundingClientRect(), total=sec.offsetHeight-window.innerHeight; var p=clamp(-r.top/total,0,1); render(reduce?(p<.5?0:1):p); }
+    window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(measure);}},{passive:true});
+    window.addEventListener('resize',function(){layoutEdges();measure();}); layoutEdges(); measure();
+  };
+})();
+
+__zoom({"WW": 320, "WH": 220, "actors": [{"id": "p1", "kf": [{"x": 2.812, "y": 8.182, "w": 4.062, "h": 4.409, "at": 0.04, "r": -7, "o": 1}, {"x": 11.0, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.28, "r": 0, "o": 1}, {"x": 11.0, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.33, "r": 0, "o": 1}, {"x": 11.0, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.37, "r": 0, "o": 0}], "skin": [0.17200000000000004, 0.268]}, {"id": "p2", "kf": [{"x": 22.5, "y": 6.364, "w": 3.75, "h": 4.091, "at": 0.07, "r": 5, "o": 1}, {"x": 13.312, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.28, "r": 0, "o": 1}, {"x": 13.312, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.33, "r": 0, "o": 1}, {"x": 13.312, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.37, "r": 0, "o": 0}], "skin": [0.18550000000000003, 0.2695]}, {"id": "p3", "kf": [{"x": 24.062, "y": 21.818, "w": 3.75, "h": 4.091, "at": 0.1, "r": -4, "o": 1}, {"x": 15.625, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.28, "r": 0, "o": 1}, {"x": 15.625, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.33, "r": 0, "o": 1}, {"x": 15.625, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.37, "r": 0, "o": 0}], "skin": [0.199, 0.271]}, {"id": "pdf", "kf": [{"x": 8.438, "y": 4.091, "w": 3.125, "h": 3.455, "at": 0.12, "r": 3, "o": 1}, {"x": 17.938, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.28, "r": 0, "o": 1}, {"x": 17.938, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.33, "r": 0, "o": 1}, {"x": 17.938, "y": 19.318, "w": 2.125, "h": 2.318, "at": 0.37, "r": 0, "o": 0}], "skin": [0.20800000000000002, 0.272]}, {"id": "qty", "kf": [{"x": 3.125, "y": 22.727, "w": 5.0, "h": 3.727, "at": 0.15, "r": 4, "o": 1}, {"x": 11.0, "y": 22.455, "w": 9.125, "h": 2.545, "at": 0.28, "r": 0, "o": 1}, {"x": 11.0, "y": 22.455, "w": 9.125, "h": 2.545, "at": 0.33, "r": 0, "o": 1}, {"x": 11.0, "y": 22.455, "w": 9.125, "h": 2.545, "at": 0.37, "r": 0, "o": 0}], "skin": [0.22150000000000003, 0.2735]}, {"id": "txt", "kf": [{"x": 16.25, "y": 28.182, "w": 5.625, "h": 3.0, "at": 0.18, "r": -3, "o": 1}, {"x": 11.0, "y": 25.727, "w": 9.125, "h": 1.773, "at": 0.28, "r": 0, "o": 1}, {"x": 11.0, "y": 25.727, "w": 9.125, "h": 1.773, "at": 0.33, "r": 0, "o": 1}, {"x": 11.0, "y": 25.727, "w": 9.125, "h": 1.773, "at": 0.37, "r": 0, "o": 0}], "skin": [0.23500000000000001, 0.275]}, {"id": "hero", "kf": [{"x": 10.312, "y": 15.455, "w": 10.625, "at": 0.2, "o": 0, "s": 1}, {"x": 10.312, "y": 15.455, "w": 10.625, "at": 0.3, "o": 1, "s": 1}, {"x": 10.312, "y": 15.455, "w": 10.625, "at": 0.72, "o": 1, "s": 1}, {"x": 23.906, "y": 25.773, "w": 10.625, "at": 0.84, "o": 1, "s": 0.441}]}, {"id": "herobody", "kf": [{"at": 0.33, "o": 0}, {"at": 0.37, "o": 1}]}, {"id": "stamp", "kf": [{"at": 0.3, "o": 0}, {"at": 0.34, "o": 1}, {"at": 0.5, "o": 1}, {"at": 0.56, "o": 0}]}, {"id": "s0", "kf": [{"x": 2.5, "y": 6.364, "w": 4.688, "h": 3.0, "at": 0.36, "o": 0, "s": 0.85}, {"x": 2.5, "y": 6.364, "w": 4.688, "h": 3.0, "at": 0.41, "o": 1, "s": 1}, {"x": 2.5, "y": 6.364, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 23.906, "y": 26.227, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s1", "kf": [{"x": 2.5, "y": 10.909, "w": 4.688, "h": 3.0, "at": 0.372, "o": 0, "s": 0.85}, {"x": 2.5, "y": 10.909, "w": 4.688, "h": 3.0, "at": 0.422, "o": 1, "s": 1}, {"x": 2.5, "y": 10.909, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 33.281, "y": 26.227, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s2", "kf": [{"x": 2.5, "y": 15.455, "w": 4.688, "h": 3.0, "at": 0.384, "o": 0, "s": 0.85}, {"x": 2.5, "y": 15.455, "w": 4.688, "h": 3.0, "at": 0.434, "o": 1, "s": 1}, {"x": 2.5, "y": 15.455, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 42.656, "y": 26.227, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s3", "kf": [{"x": 2.5, "y": 29.091, "w": 4.688, "h": 3.0, "at": 0.396, "o": 0, "s": 0.85}, {"x": 2.5, "y": 29.091, "w": 4.688, "h": 3.0, "at": 0.446, "o": 1, "s": 1}, {"x": 2.5, "y": 29.091, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 52.031, "y": 26.227, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s4", "kf": [{"x": 2.5, "y": 33.636, "w": 4.688, "h": 3.0, "at": 0.408, "o": 0, "s": 0.85}, {"x": 2.5, "y": 33.636, "w": 4.688, "h": 3.0, "at": 0.45799999999999996, "o": 1, "s": 1}, {"x": 2.5, "y": 33.636, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 24.125, "y": 26.636, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s5", "kf": [{"x": 2.5, "y": 38.182, "w": 4.688, "h": 3.0, "at": 0.42, "o": 0, "s": 0.85}, {"x": 2.5, "y": 38.182, "w": 4.688, "h": 3.0, "at": 0.47, "o": 1, "s": 1}, {"x": 2.5, "y": 38.182, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 33.5, "y": 26.636, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s6", "kf": [{"x": 7.812, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.432, "o": 0, "s": 0.85}, {"x": 7.812, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.482, "o": 1, "s": 1}, {"x": 7.812, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 42.875, "y": 26.636, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s7", "kf": [{"x": 13.438, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.444, "o": 0, "s": 0.85}, {"x": 13.438, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.494, "o": 1, "s": 1}, {"x": 13.438, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 52.25, "y": 26.636, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s8", "kf": [{"x": 19.062, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.45599999999999996, "o": 0, "s": 0.85}, {"x": 19.062, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.506, "o": 1, "s": 1}, {"x": 19.062, "y": 4.545, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 24.344, "y": 27.045, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s9", "kf": [{"x": 23.125, "y": 9.091, "w": 4.688, "h": 3.0, "at": 0.46799999999999997, "o": 0, "s": 0.85}, {"x": 23.125, "y": 9.091, "w": 4.688, "h": 3.0, "at": 0.518, "o": 1, "s": 1}, {"x": 23.125, "y": 9.091, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 33.719, "y": 27.045, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s10", "kf": [{"x": 23.125, "y": 13.636, "w": 4.688, "h": 3.0, "at": 0.38, "o": 0, "s": 0.85}, {"x": 23.125, "y": 13.636, "w": 4.688, "h": 3.0, "at": 0.43, "o": 1, "s": 1}, {"x": 23.125, "y": 13.636, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 43.094, "y": 27.045, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s11", "kf": [{"x": 23.125, "y": 30.0, "w": 4.688, "h": 3.0, "at": 0.392, "o": 0, "s": 0.85}, {"x": 23.125, "y": 30.0, "w": 4.688, "h": 3.0, "at": 0.442, "o": 1, "s": 1}, {"x": 23.125, "y": 30.0, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 52.469, "y": 27.045, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s12", "kf": [{"x": 23.125, "y": 34.545, "w": 4.688, "h": 3.0, "at": 0.404, "o": 0, "s": 0.85}, {"x": 23.125, "y": 34.545, "w": 4.688, "h": 3.0, "at": 0.454, "o": 1, "s": 1}, {"x": 23.125, "y": 34.545, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 24.562, "y": 27.455, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s13", "kf": [{"x": 23.125, "y": 39.091, "w": 4.688, "h": 3.0, "at": 0.41600000000000004, "o": 0, "s": 0.85}, {"x": 23.125, "y": 39.091, "w": 4.688, "h": 3.0, "at": 0.466, "o": 1, "s": 1}, {"x": 23.125, "y": 39.091, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 33.938, "y": 27.455, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s14", "kf": [{"x": 7.812, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.428, "o": 0, "s": 0.85}, {"x": 7.812, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.478, "o": 1, "s": 1}, {"x": 7.812, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 43.312, "y": 27.455, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s15", "kf": [{"x": 13.438, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.44, "o": 0, "s": 0.85}, {"x": 13.438, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.49, "o": 1, "s": 1}, {"x": 13.438, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 52.688, "y": 27.455, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s16", "kf": [{"x": 19.062, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.452, "o": 0, "s": 0.85}, {"x": 19.062, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.502, "o": 1, "s": 1}, {"x": 19.062, "y": 40.909, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 24.781, "y": 27.864, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s17", "kf": [{"x": 28.75, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.464, "o": 0, "s": 0.85}, {"x": 28.75, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.514, "o": 1, "s": 1}, {"x": 28.75, "y": 3.636, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 34.156, "y": 27.864, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s18", "kf": [{"x": 28.75, "y": 22.727, "w": 4.688, "h": 3.0, "at": 0.476, "o": 0, "s": 0.85}, {"x": 28.75, "y": 22.727, "w": 4.688, "h": 3.0, "at": 0.526, "o": 1, "s": 1}, {"x": 28.75, "y": 22.727, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 43.531, "y": 27.864, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "s19", "kf": [{"x": 28.75, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.488, "o": 0, "s": 0.85}, {"x": 28.75, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.538, "o": 1, "s": 1}, {"x": 28.75, "y": 41.818, "w": 4.688, "h": 3.0, "at": 0.72, "o": 1, "s": 1}, {"x": 52.906, "y": 27.864, "w": 4.688, "h": 3.0, "at": 0.84, "o": 1, "s": 1}]}, {"id": "panel", "kf": [{"x": 36.875, "y": 7.273, "w": 21.875, "at": 0.42, "o": 0}, {"x": 36.875, "y": 4.545, "w": 21.875, "at": 0.5, "o": 1}]}, {"id": "b1", "kf": [{"at": 0.52, "w": 0}, {"at": 0.64, "w": 21.6}]}, {"id": "b2", "kf": [{"at": 0.55, "w": 0}, {"at": 0.66, "w": 22.9}]}, {"id": "k0", "kf": [{"at": 0.54, "h": 0}, {"at": 0.64, "h": 38}]}, {"id": "k1", "kf": [{"at": 0.555, "h": 0}, {"at": 0.655, "h": 52}]}, {"id": "k2", "kf": [{"at": 0.5700000000000001, "h": 0}, {"at": 0.67, "h": 45}]}, {"id": "k3", "kf": [{"at": 0.5850000000000001, "h": 0}, {"at": 0.685, "h": 60}]}, {"id": "k4", "kf": [{"at": 0.6000000000000001, "h": 0}, {"at": 0.7, "h": 70}]}, {"id": "k5", "kf": [{"at": 0.615, "h": 0}, {"at": 0.715, "h": 64}]}, {"id": "fc", "kf": [{"at": 0.64, "o": 0}, {"at": 0.68, "o": 1}]}, {"id": "w0", "kf": [{"x": 23.906, "y": 23.045, "at": 0.82, "o": 0}, {"x": 23.906, "y": 23.5, "at": 0.86, "o": 1}]}, {"id": "st0", "kf": [{"x": 23.75, "y": 27.727, "at": 0.86, "o": 0, "r": -8, "s": 1.3}, {"x": 23.75, "y": 27.727, "at": 0.9, "o": 1, "r": -8, "s": 1}]}, {"id": "w1", "kf": [{"x": 33.281, "y": 23.045, "at": 0.82, "o": 0}, {"x": 33.281, "y": 23.5, "at": 0.86, "o": 1}]}, {"id": "st1", "kf": [{"x": 33.125, "y": 27.727, "at": 0.88, "o": 0, "r": -8, "s": 1.3}, {"x": 33.125, "y": 27.727, "at": 0.92, "o": 1, "r": -8, "s": 1}]}, {"id": "w2", "kf": [{"x": 42.656, "y": 23.045, "at": 0.82, "o": 0}, {"x": 42.656, "y": 23.5, "at": 0.86, "o": 1}]}, {"id": "st2", "kf": [{"x": 42.5, "y": 27.727, "at": 0.9, "o": 0, "r": -8, "s": 1.3}, {"x": 42.5, "y": 27.727, "at": 0.9400000000000001, "o": 1, "r": -8, "s": 1}]}, {"id": "w3", "kf": [{"x": 52.031, "y": 23.045, "at": 0.82, "o": 0}, {"x": 52.031, "y": 23.5, "at": 0.86, "o": 1}]}, {"id": "st3", "kf": [{"x": 51.875, "y": 27.727, "at": 0.9199999999999999, "o": 0, "r": -8, "s": 1.3}, {"x": 51.875, "y": 27.727, "at": 0.96, "o": 1, "r": -8, "s": 1}]}, {"id": "pd0", "kf": [{"x": 25.0, "y": 30.455, "at": 0.94, "o": 0, "r": 6, "s": 1.3}, {"x": 25.0, "y": 30.455, "at": 0.97, "o": 1, "r": 6, "s": 1}]}, {"id": "qb0", "kf": [{"x": 23.906, "y": 33.182, "at": 0.92, "o": 0}, {"x": 23.906, "y": 32.727, "at": 0.95, "o": 1}]}, {"id": "pd1", "kf": [{"x": 34.375, "y": 30.455, "at": 0.96, "o": 0, "r": 6, "s": 1.3}, {"x": 34.375, "y": 30.455, "at": 0.99, "o": 1, "r": 6, "s": 1}]}, {"id": "qb1", "kf": [{"x": 33.281, "y": 33.182, "at": 0.9400000000000001, "o": 0}, {"x": 33.281, "y": 32.727, "at": 0.97, "o": 1}]}, {"id": "invoice", "kf": [{"x": 64.062, "y": 11.818, "w": 26.25, "at": 0.8, "o": 0}, {"x": 64.062, "y": 9.091, "w": 26.25, "at": 0.88, "o": 1}]}], "edges": [[58, 11.3, 118, 32, 0.515], [76, 13.3, 118, 34, 0.53], [89, 23.3, 118, 36, 0.545], [89, 33.3, 118, 38, 0.56], [107, 11.3, 118, 52, 0.575], [107, 53.3, 118, 54, 0.5], [91.5, 60, 205, 40, 0.88], [121.5, 60, 205, 44, 0.9]], "camera": [[0.0, 50, 54, 1.0], [0.34, 50, 54, 1.0], [0.44, 96, 74, 0.5], [0.68, 96, 74, 0.5], [0.8, 182, 70, 0.44], [1.0, 182, 70, 0.44]], "capAt": [0.0, 0.36, 0.72]});
+</script>

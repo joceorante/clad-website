@@ -1,17 +1,38 @@
 ---
-
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import LogoBand from "../components/LogoBand.astro";
+import CtaBanner from "../components/CtaBanner.astro";
+import ProductStory from "../components/ProductStory.astro";
+import Testimonial from "../components/Testimonial.astro";
+import AdditionalTools from "../components/AdditionalTools.astro";
+import UseCases from "../components/UseCases.astro";
+import CaseStudies from "../components/CaseStudies.astro";
+import Changelog from "../components/Changelog.astro";
+import Faq from "../components/Faq.astro";
+import Footer from "../components/Footer.astro";
 ---
+<Base title="Clad" description="Project management and billing software for building infrastructure.">
+  <Header />
+  <main>
+    <Hero />
+    <LogoBand />
+    <CtaBanner />
+    <ProductStory />
+    <Testimonial />
+    <AdditionalTools />
+    <UseCases />
+    <section class="dark">
+      <CaseStudies />
+      <Changelog />
+    </section>
+    <Faq />
+  </main>
+  <Footer />
+</Base>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<style>
+  .dark { margin-top: 98px; padding: 104px 0; background: var(--color-tar); color: var(--color-paper); }
+  @media (max-width: 900px) { .dark { margin-top: 64px; padding: 64px 0; } }
+</style>

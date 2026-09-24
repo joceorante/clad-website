@@ -1,0 +1,157 @@
+<title>Clad One Update</title>
+<meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#2A2823; --muted:#5E5B54; --line:#E8E7E3;
+  --accent:#6D6AF0; --accent-ink:#FFFFFF;
+  --card:#F2F2F0; --shape:#DCDCDA; --shape-2:#CFCFCC; --ph-text:#6E6B64;
+  --shadow:0 40px 70px -30px rgba(30,28,20,.35),0 0 0 1px rgba(30,28,20,.05);
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+    --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+    --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+  --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+  --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;font-weight:500}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
+.logo i{width:18px;height:18px;background:var(--accent);display:inline-block;border-radius:4px 4px 4px 10px}
+.nav-links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:15px}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (max-width:700px){.nav-links{display:none}}
+.hero{padding-block:clamp(40px,7vw,96px) clamp(32px,5vw,64px);text-align:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);margin:14px auto 0;max-width:18ch}
+.hero p{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:52ch;margin:20px auto 0}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+.ph{position:relative;background:var(--card);border-radius:22px;box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden}
+.ph .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:var(--ph-text);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;position:relative;z-index:1}
+/* steps + sticky stage */
+.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);gap:clamp(24px,5vw,72px);padding-block:clamp(16px,3vw,40px) clamp(24px,4vw,48px)}
+.steps{display:flex;flex-direction:column}
+.step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding-block:8vh;opacity:.28;transition:opacity .4s}
+.step.is-current{opacity:1}
+.step .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.step.is-current .k{color:var(--accent)}
+.step h3{font-size:clamp(26px,2.6vw,36px);margin-top:12px;letter-spacing:-.02em}
+.step p{font-size:16px;color:var(--muted);max-width:40ch;margin:14px 0 0}
+.stage-wrap{position:sticky;top:calc(6vh + env(safe-area-inset-top,0px));height:88vh;align-self:start}
+.stage{position:relative;height:100%}
+.sec-head{text-align:center;max-width:760px;margin:0 auto;padding-top:clamp(40px,7vw,96px)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);margin-top:12px}
+.sec-head p{color:var(--muted);font-size:17px;margin:14px auto 0;max-width:52ch}
+.close{border-top:1px solid var(--line);margin-top:clamp(56px,9vw,120px);padding-block:clamp(48px,8vw,96px);text-align:center}
+.close h2{font-size:clamp(30px,4vw,48px);max-width:20ch;margin:0 auto}
+.close p{color:var(--muted);max-width:48ch;margin:14px auto 0}
+.close .btn{margin-top:24px}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:900px){
+  .story{grid-template-columns:1fr;gap:0}
+  .stage-wrap{order:-1;position:sticky;top:calc(8px + env(safe-area-inset-top,0px));height:48vh;z-index:2;background:var(--bg);padding-bottom:10px}
+  .step{min-height:62vh;padding-block:6vh}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation:none!important}}
+
+.stage.loop{display:flex;flex-direction:column;gap:14px}
+.days{display:flex;align-items:center;gap:8px;position:relative;height:28px}
+.days .track{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--line);transform:translateY(-50%)}
+.days .fill{position:absolute;left:0;top:50%;height:2px;background:var(--accent);transform:translateY(-50%);width:0;transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.days .d{position:relative;flex:1;display:flex;justify-content:center}
+.days .d span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--bg);padding:4px 8px;border-radius:999px;border:1px solid var(--line);transition:color .3s,border-color .3s}
+.days .d.on span{color:var(--ink);border-color:var(--accent)}
+.days .d.past span{color:var(--muted);border-color:var(--accent)}
+.frames{position:relative;flex:1;min-height:0}
+.panel{position:absolute;inset:0;opacity:0;transform:translateY(24px) scale(.985);transition:opacity .5s,transform .6s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.panel.is-active{opacity:1;transform:none}
+.panel .ph{position:absolute;inset:0}
+.record{position:absolute;left:clamp(12px,3%,28px);bottom:clamp(12px,3%,28px);width:min(300px,78%);background:var(--bg);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 40px -20px rgba(0,0,0,.35);padding:14px 16px;z-index:3;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.record .rk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.record .rt{font-weight:600;font-size:15px;margin-top:4px;letter-spacing:-.01em}
+.record .rs{color:var(--muted);font-size:12px;margin-top:2px}
+.stamps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.stamps li{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--ink);opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;max-height:0;overflow:hidden}
+.stamps li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
+.stamps li.on{opacity:1;transform:none;max-height:24px}
+.stamps li.now{color:var(--accent)}
+@media (max-width:900px){.record{width:min(260px,70%);padding:10px 12px}.record .rt{font-size:13px}.stamps li{font-size:10px}}
+</style>
+<header class="wrap nav">
+  <div class="logo"><i></i>Clad</div>
+  <nav class="nav-links"><a href="#story">How it works</a><a href="#">Pricing</a><a href="#">Log in</a></nav>
+  <button class="btn accent" type="button">Book a demo</button>
+</header>
+<section class="wrap hero">
+  <div class="eyebrow">Field software for telecom, utility, and infrastructure contractors</div>
+  <h1>Enter the work once. Everything else follows.</h1>
+  <p>One field update becomes the approval, the progress report, the forecast, the invoice, and the sub bill match. Scroll to follow a single Monday through the week.</p>
+  <div class="row"><button class="btn accent" type="button">Book a demo</button><button class="btn ghost" type="button">Follow one update</button></div>
+</section>
+<section class="wrap story" id="story">
+  <div class="steps"><article class="step is-current"><div class="k">Mon · Field</div><h3>1,000 feet of fiber and two hand holes go in.</h3><p>The crew logs quantities, photos, and the redline from the truck. That's the record. Everything after this reads from it.</p></article><article class="step"><div class="k">Tue · Office</div><h3>Someone checks it.</h3><p>Tuesday morning you open the update, look at the photos and quantities, and approve. Nothing gets re-typed.</p></article><article class="step"><div class="k">Wed · AT&T check-in</div><h3>AT&T asks how far along you are.</h3><p>Of 500 planned hand holes, 108 are in. Percent complete comes straight from approved production, not a spreadsheet you built the night before.</p></article><article class="step"><div class="k">Wed · Forecast</div><h3>You're behind.</h3><p>Clad's forecast shows the gap to the target date and what closes it. In this case, one more crew member.</p></article><article class="step"><div class="k">Next Mon · Invoice</div><h3>Time to bill last week.</h3><p>Select the week's approved updates. Clad builds the invoice and syncs it to QuickBooks.</p></article><article class="step"><div class="k">Next Mon · Sub bills</div><h3>Sub bills land in your inbox.</h3><p>Clad ties each bill to the update it covers, so you pay for what was built and nothing else.</p></article><article class="step"><div class="k">Fri · Report</div><h3>Your boss wants all five projects.</h3><p>One production report across every job you manage. Same record, one more view.</p></article></div>
+  <div class="stage-wrap"><div class="stage loop">
+    <div class="days"><div class="track"></div><div class="fill" id="fill"></div><div class="d on"><span>Mon</span></div><div class="d"><span>Tue</span></div><div class="d"><span>Wed</span></div><div class="d"><span>Mon</span></div><div class="d"><span>Fri</span></div></div>
+    <div class="frames">
+      <div class="panel is-active"><div class="ph"><span class="lbl">Mock · Field update</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Approval</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Progress · 108 / 500 HH</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Forecast</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Invoice</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Sub bill matching</span></div></div><div class="panel"><div class="ph"><span class="lbl">Mock · Portfolio report</span></div></div>
+      <div class="record" id="record">
+        <div class="rk">One update · Mon</div>
+        <div class="rt">1,000 FT fiber · 2 hand holes</div>
+        <div class="rs">Crew 3 · 6 photos · redline attached</div>
+        <ul class="stamps" id="stamps"><li>Approved · Tue 8:12 AM</li><li>Counted · 108 / 500 HH</li><li>In forecast · gap: 1 crew</li><li>Invoice #14 · synced to QuickBooks</li><li>Matched · 3 sub bills</li><li>In 5-project report</li></ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+<section class="wrap close">
+  <h2>From the field to the invoice, on one record.</h2>
+  <p>See Clad on one of your live projects.</p>
+  <button class="btn accent" type="button">Book a demo</button>
+</section>
+<footer class="wrap"><span>Clad · Prototype</span><span>Telecom · Utility · Infrastructure</span></footer>
+<script>
+(function(){
+
+function stepDriver(steps, onChange){
+  var current=-1, ticking=false;
+  function measure(){
+    ticking=false; var mid=window.innerHeight*0.5, best=0, bestD=Infinity;
+    steps.forEach(function(s,k){var r=s.getBoundingClientRect();var d=Math.abs((r.top+r.bottom)/2-mid);if(d<bestD){bestD=d;best=k;}});
+    if(best!==current){current=best; steps.forEach(function(s,k){s.classList.toggle('is-current',k===best);}); onChange(best);}
+  }
+  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(measure);}},{passive:true});
+  window.addEventListener('resize',measure); measure();
+}
+
+  var steps=[].slice.call(document.querySelectorAll('.step'));
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  var days=[].slice.call(document.querySelectorAll('.days .d'));
+  var stamps=[].slice.call(document.querySelectorAll('#stamps li'));
+  var fill=document.getElementById('fill');
+  var map=[0, 1, 2, 2, 3, 3, 4];
+  stepDriver(steps,function(i){
+    panels.forEach(function(p,k){p.classList.toggle('is-active',k===i);});
+    var d=map[i];
+    days.forEach(function(el,k){el.classList.toggle('on',k===d);el.classList.toggle('past',k<d);});
+    fill.style.width=(d/(days.length-1)*100)+'%';
+    stamps.forEach(function(s,k){s.classList.toggle('on',k<i);s.classList.toggle('now',k===i-1);});
+  });
+})();
+</script>

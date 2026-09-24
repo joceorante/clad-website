@@ -1,0 +1,253 @@
+<title>Clad Pinboard</title>
+<meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#2A2823; --muted:#5E5B54; --line:#E8E7E3;
+  --accent:#6D6AF0; --accent-ink:#FFFFFF;
+  --card:#F2F2F0; --shape:#DCDCDA; --shape-2:#CFCFCC; --ph-text:#6E6B64;
+  --shadow:0 40px 70px -30px rgba(30,28,20,.35),0 0 0 1px rgba(30,28,20,.05);
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+    --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+    --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C; --accent:#8A88FF;
+  --card:#1F1F21; --shape:#2E2E31; --shape-2:#3A3A3E; --ph-text:#8E8B84;
+  --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;font-weight:500}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
+.logo i{width:18px;height:18px;background:var(--accent);display:inline-block;border-radius:4px 4px 4px 10px}
+.nav-links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:15px}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (max-width:700px){.nav-links{display:none}}
+.hero{padding-block:clamp(40px,7vw,96px) clamp(32px,5vw,64px);text-align:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);margin:14px auto 0;max-width:18ch}
+.hero p{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:52ch;margin:20px auto 0}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+.ph{position:relative;background:var(--card);border-radius:22px;box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden}
+.ph .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:var(--ph-text);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;position:relative;z-index:1}
+/* steps + sticky stage */
+.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);gap:clamp(24px,5vw,72px);padding-block:clamp(16px,3vw,40px) clamp(24px,4vw,48px)}
+.steps{display:flex;flex-direction:column}
+.step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding-block:8vh;opacity:.28;transition:opacity .4s}
+.step.is-current{opacity:1}
+.step .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.step.is-current .k{color:var(--accent)}
+.step h3{font-size:clamp(26px,2.6vw,36px);margin-top:12px;letter-spacing:-.02em}
+.step p{font-size:16px;color:var(--muted);max-width:40ch;margin:14px 0 0}
+.stage-wrap{position:sticky;top:calc(6vh + env(safe-area-inset-top,0px));height:88vh;align-self:start}
+.stage{position:relative;height:100%}
+.sec-head{text-align:center;max-width:760px;margin:0 auto;padding-top:clamp(40px,7vw,96px)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);margin-top:12px}
+.sec-head p{color:var(--muted);font-size:17px;margin:14px auto 0;max-width:52ch}
+.close{border-top:1px solid var(--line);margin-top:clamp(56px,9vw,120px);padding-block:clamp(48px,8vw,96px);text-align:center}
+.close h2{font-size:clamp(30px,4vw,48px);max-width:20ch;margin:0 auto}
+.close p{color:var(--muted);max-width:48ch;margin:14px auto 0}
+.close .btn{margin-top:24px}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:900px){
+  .story{grid-template-columns:1fr;gap:0}
+  .stage-wrap{order:-1;position:sticky;top:calc(8px + env(safe-area-inset-top,0px));height:48vh;z-index:2;background:var(--bg);padding-bottom:10px}
+  .step{min-height:62vh;padding-block:6vh}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation:none!important}}
+
+.board{position:relative;height:620vh}
+.pin{position:sticky;top:calc(env(safe-area-inset-top,0px));height:100vh}
+.stage{position:absolute;inset:0;overflow:hidden;container-type:size;font-size:clamp(9px,1.05cqw,12.5px)}
+.world{position:absolute;left:0;top:0;width:200%;height:140%;transform-origin:0 0;will-change:transform}
+.world svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.edge{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:round;opacity:0;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1),opacity .4s}
+.edge.on{opacity:.22;stroke-dashoffset:0}
+.mock{position:absolute;transform:translate(-50%,-50%) scale(.9);opacity:0;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.7,.2,1.1)}
+.mock.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.mock .cap{margin:1.1em .4em 0;font-size:1.15em;line-height:1.45;color:var(--muted);max-width:34em}
+.mock .cap .day{display:block;font-family:var(--mono);font-size:.78em;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.35em}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:1.3em;box-shadow:var(--shadow);padding:1.2em 1.4em;font-size:1em}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline;gap:1em;padding-bottom:.9em;border-bottom:1px solid var(--line);margin-bottom:1em}
+.card .hd b{font-weight:600;font-size:1.15em;letter-spacing:-.01em}
+.k{font-family:var(--mono);font-size:.78em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tagpill{font-family:var(--mono);font-size:.78em;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:.3em .8em;white-space:nowrap;display:inline-block}
+/* update card */
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:.6em}
+.thumbs i{aspect-ratio:4/3;border-radius:.6em;background:linear-gradient(160deg,var(--shape),var(--shape-2))}
+.thumbs i.pdf{background:var(--card);border:1px solid var(--line);position:relative}
+.thumbs i.pdf::after{content:"";position:absolute;left:18%;top:38%;width:64%;height:24%;border:2px solid var(--accent);border-radius:50% 45% 55% 40%}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:.6em;margin-top:1em}
+.fields div{border:1px solid var(--line);border-radius:.6em;padding:.55em .8em}
+.fields small{display:block;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fields b{font-weight:600;font-size:1.15em;font-variant-numeric:tabular-nums}
+.note{border:1px solid var(--line);border-radius:.6em;padding:.55em .8em;margin-top:.6em;display:flex;gap:.7em;align-items:center}
+.note em{font-style:normal;font-family:var(--mono);font-size:.7em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* approvals */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:.8em}
+.col{background:var(--card);border-radius:.9em;padding:.8em}
+.col h4{margin:0 0 .7em;font-family:var(--mono);font-size:.75em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.ghost{height:3.6em;border-radius:.6em;background:var(--shape);margin-bottom:.6em;opacity:.75}
+.mini{background:var(--bg);border:1px solid var(--line);border-radius:.8em;padding:.8em .9em;box-shadow:0 14px 30px -18px rgba(0,0,0,.5);position:relative}
+.mini .d{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mini .t{font-weight:600;margin-top:.2em}
+.mini .row{display:flex;justify-content:space-between;margin-top:.5em;font-size:.95em;font-variant-numeric:tabular-nums}
+.mini .row span:last-child{color:var(--muted)}
+.mini .tag{position:absolute;right:.7em;top:.7em}
+.mini .total{border-top:1px solid var(--line);margin-top:.7em;padding-top:.5em;display:flex;justify-content:space-between;font-weight:600;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;background:var(--ink);color:var(--bg);border-radius:999px;padding:.25em .65em;font-family:var(--mono);font-size:.72em;white-space:nowrap}
+.priced .row{align-items:center}
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.9em}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:1.1em;padding:1em 1.2em;box-shadow:var(--shadow)}
+.tile h5{margin:0;font-family:var(--mono);font-size:.75em;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tile .big{font-weight:700;font-size:1.9em;letter-spacing:-.02em;margin-top:.25em;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .big small{font-size:.5em;color:var(--muted);font-weight:500}
+.tile .bar{height:.55em;background:var(--card);border-radius:.3em;margin-top:.9em;position:relative;overflow:hidden}
+.tile .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:.3em;width:var(--w)}
+/* chart */
+.chart .bars{display:flex;align-items:flex-end;gap:.7em;height:9em;border-bottom:1px solid var(--line);margin-top:1em}
+.chart .bars i{flex:1;background:var(--shape);border-radius:.3em .3em 0 0;height:var(--h)}
+.chart .bars i.now{background:var(--accent)}
+.chart .fc{display:flex;justify-content:space-between;gap:1em;font-size:.9em;color:var(--muted);margin-top:.9em}
+.chart .fc b{color:var(--accent);font-weight:600}
+/* invoice */
+.iline{display:flex;justify-content:space-between;padding:.55em 0;border-bottom:1px solid var(--line);font-size:.95em;font-variant-numeric:tabular-nums}
+.iline b{font-weight:600}
+.sum{display:flex;justify-content:space-between;padding:.45em 0;font-size:.95em;font-variant-numeric:tabular-nums}
+.sum.due{border-top:2px solid var(--ink);font-weight:700;font-size:1.1em;margin-top:.3em}
+.inv .foot{display:flex;justify-content:flex-end;margin-top:.8em}
+/* sub bill */
+.match{display:flex;justify-content:space-between;align-items:center;gap:.8em;background:var(--card);border-radius:.7em;padding:.7em .9em;font-size:.92em;margin-top:.6em}
+.match b{font-weight:600;font-variant-numeric:tabular-nums}
+/* report */
+.rep .r{display:grid;grid-template-columns:7em 1fr 3.5em;align-items:center;gap:.8em;padding:.45em 0;font-size:.92em}
+.rep .r .bar{height:.5em;background:var(--card);border-radius:.25em;position:relative;overflow:hidden}
+.rep .r .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);width:var(--w);border-radius:.25em}
+.rep .r .bar i.dim{background:var(--shape-2)}
+.rep .r span:last-child{font-family:var(--mono);font-size:.85em;text-align:right;color:var(--muted)}
+.rep .r.me span:first-child{font-weight:600}
+.hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:opacity .3s}
+</style>
+<header class="wrap nav">
+  <div class="logo"><i></i>Clad</div>
+  <nav class="nav-links"><a href="#story">How it works</a><a href="#">Pricing</a><a href="#">Log in</a></nav>
+  <button class="btn accent" type="button">Book a demo</button>
+</header>
+<section class="wrap hero">
+  <div class="eyebrow">Field software for telecom, utility, and infrastructure contractors</div>
+  <h1>One record. A whole week of work hangs off it.</h1>
+  <p>Capture, manage, and bill don't happen in a line. They happen all week, on every project, and they all read from the same field update. Scroll to see two weeks on one job.</p>
+  <div class="row"><button class="btn accent" type="button">Book a demo</button><button class="btn ghost" type="button">Follow the thread</button></div>
+</section>
+<section class="board" id="board">
+  <div class="pin"><div class="stage" id="stage">
+    <div class="world" id="world">
+      <svg id="web" aria-hidden="true"></svg>
+      <div class="mock" data-a="m1" style="left:11.000%;top:17.143%;width:15.000%"><div class="card"><div class="hd"><b>Field update · Mon, Sep 14</b><span class="k">Crew 3</span></div>
+  <div class="thumbs"><i></i><i></i><i></i><i class="pdf"></i></div>
+  <div class="fields"><div><small>Fiber placed</small><b>1,000 FT</b></div><div><small>Hand holes</small><b>2 HH</b></div></div>
+  <div class="note"><em>Note</em>Both hand holes set at 4th &amp; Main. Photos attached.</div></div><p class="cap"><span class="day">Monday</span>The crew logs the day's work from the truck: photos, the redline, quantities, a note. Entered once.</p></div><div class="mock" data-a="m2" style="left:33.000%;top:8.571%;width:15.000%"><div class="card"><div class="hd"><b>Approvals</b><span class="k">Week of Sep 14</span></div>
+  <div class="cols"><div class="col"><h4>Submitted</h4><div class="ghost"></div><div class="ghost"></div></div>
+  <div class="col"><h4>Approved</h4><div class="mini"><span class="tag tagpill">Approved</span><div class="d">Mon · Crew 3</div><div class="t">4th &amp; Main</div><div class="row"><span>Fiber</span><span>1,000 FT</span></div><div class="row"><span>Hand holes</span><span>2 HH</span></div></div></div></div></div><p class="cap"><span class="day">Tuesday</span>Someone opens Monday's update, checks the photos and quantities, and approves. Nothing gets re-typed.</p></div><div class="mock" data-a="m3" style="left:23.000%;top:42.857%;width:13.500%"><div class="card priced"><div class="hd"><b>Priced production</b><span class="k">Contract rates</span></div>
+  <div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-top:.2em"><span>1,000 FT fiber</span><span class="chip">× $4.20 = $4,200</span></div>
+  <div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-top:.7em"><span>2 hand holes</span><span class="chip">× $850 = $1,700</span></div>
+  <div class="mini total" style="box-shadow:none;border:0;padding:.7em 0 0;border-top:1px solid var(--line);margin-top:.9em;border-radius:0"><span>Monday's production</span><span>$5,900</span></div></div><p class="cap"><span class="day">Tuesday</span>Every approved quantity picks up its contract rate. Monday is now $5,900 of production, without anyone opening a spreadsheet.</p></div><div class="mock" data-a="m4" style="left:48.000%;top:28.571%;width:17.000%"><div class="tiles"><div class="tile"><h5>Hand holes</h5><div class="big">108 <small>/ 500</small></div><div class="bar"><i style="--w:21.6%"></i></div></div>
+  <div class="tile"><h5>Fiber placed</h5><div class="big">41,200 <small>/ 180k FT</small></div><div class="bar"><i style="--w:22.9%"></i></div></div></div><p class="cap"><span class="day">Wednesday</span>AT&amp;T asks how far along you are. 108 of 500 hand holes, read straight from approved production.</p></div><div class="mock" data-a="m5" style="left:69.000%;top:11.429%;width:17.000%"><div class="card chart"><div class="hd"><b>Weekly production · HH</b><span class="k">Forecast</span></div>
+  <div class="bars"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:45%"></i><i style="--h:60%"></i><i style="--h:70%"></i><i class="now" style="--h:64%"></i></div>
+  <div class="fc"><span>At this pace: <b>Dec 2</b> · Target: Nov 14</span><span>Close the gap: <b>+1 crew</b></span></div></div><p class="cap"><span class="day">Wednesday</span>You're behind. The forecast shows the gap to the target date and what closes it: one more crew.</p></div><div class="mock" data-a="m6" style="left:64.000%;top:57.143%;width:17.000%"><div class="card inv"><div class="hd"><b>Invoice #14 · AT&amp;T</b><span class="k">Sep 14–18</span></div>
+  <div class="iline"><span>Mon · 1,000 FT fiber, 2 HH</span><b>$5,900</b></div><div class="iline"><span>Tue · 1,400 FT fiber</span><b>$5,880</b></div><div class="iline"><span>Wed · 3 HH</span><b>$2,550</b></div><div class="iline"><span>Thu · 800 FT fiber</span><b>$3,360</b></div>
+  <div class="sum"><span class="k">Subtotal</span><span>$17,690</span></div><div class="sum"><span class="k">Retainage · 10%</span><span>−$1,769</span></div><div class="sum due"><span>Due</span><span>$15,921</span></div>
+  <div class="foot"><span class="tagpill">Synced to QuickBooks</span></div></div><p class="cap"><span class="day">Next Monday</span>Select the week's approved updates. The invoice builds itself, retainage held, and lands in QuickBooks.</p></div><div class="mock" data-a="m7" style="left:42.000%;top:74.286%;width:15.000%"><div class="card"><div class="hd"><b>Sub bills</b><span class="k">3 received</span></div>
+  <div class="match"><span>Ortiz Underground · $4,100</span><span class="tagpill">Matched to Tue</span></div>
+  <div class="match"><span>Bell Boring · $2,300</span><span class="tagpill">Matched to Wed</span></div>
+  <div class="match" style="opacity:.6"><span>Kline Civil · $1,850</span><span class="k">Reviewing</span></div></div><p class="cap"><span class="day">Next Monday</span>Sub bills tie to the update they cover, so you pay for what was built and nothing else.</p></div><div class="mock" data-a="m8" style="left:84.000%;top:75.714%;width:16.000%"><div class="card rep"><div class="hd"><b>Production · all projects</b><span class="k">Week of Sep 21</span></div>
+  <div class="r me"><span>Maple Run</span><div class="bar"><i style="--w:26%"></i></div><span>26%</span></div>
+  <div class="r"><span>Cedar Loop</span><div class="bar"><i class="dim" style="--w:61%"></i></div><span>61%</span></div>
+  <div class="r"><span>Hwy 9 Relocate</span><div class="bar"><i class="dim" style="--w:44%"></i></div><span>44%</span></div>
+  <div class="r"><span>Riverside Ph. 2</span><div class="bar"><i class="dim" style="--w:88%"></i></div><span>88%</span></div>
+  <div class="r"><span>Downtown Splice</span><div class="bar"><i class="dim" style="--w:12%"></i></div><span>12%</span></div></div><p class="cap"><span class="day">Friday</span>Your boss wants all five projects. One production report, fed by every update on this board.</p></div>
+    </div>
+    <div class="hint" id="hint">Scroll</div>
+  </div></div>
+</section>
+<section class="wrap close">
+  <h2>From the field to the invoice, on one record.</h2>
+  <p>See Clad on one of your live projects.</p>
+  <button class="btn accent" type="button">Book a demo</button>
+</section>
+<footer class="wrap"><span>Clad · Prototype</span><span>Telecom · Utility · Infrastructure</span></footer>
+<script>
+(function(){
+  var M=[{"id": "m1", "x": 22, "y": 24, "w": 30, "at": 0.04}, {"id": "m2", "x": 66, "y": 12, "w": 30, "at": 0.16}, {"id": "m3", "x": 46, "y": 60, "w": 27, "at": 0.28}, {"id": "m4", "x": 96, "y": 40, "w": 34, "at": 0.4}, {"id": "m5", "x": 138, "y": 16, "w": 34, "at": 0.52}, {"id": "m6", "x": 128, "y": 80, "w": 34, "at": 0.64}, {"id": "m7", "x": 84, "y": 104, "w": 30, "at": 0.76}, {"id": "m8", "x": 168, "y": 106, "w": 32, "at": 0.88}], E=[["m1", "m2"], ["m2", "m3"], ["m3", "m4"], ["m4", "m5"], ["m5", "m6"], ["m6", "m7"], ["m7", "m8"], ["m1", "m6"], ["m3", "m6"], ["m4", "m8"], ["m1", "m3"], ["m5", "m8"]];
+  var sec=document.getElementById('board'), stage=document.getElementById('stage'), world=document.getElementById('world'), hint=document.getElementById('hint');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  M.forEach(function(m){ m.el=stage.querySelector('.mock[data-a="'+m.id+'"]'); });
+  var svg=document.getElementById('web'), edges=[];
+  var P={}; M.forEach(function(m){P[m.id]=m;});
+  E.forEach(function(e){ var el=document.createElementNS('http://www.w3.org/2000/svg','path'); el.setAttribute('class','edge'); el.setAttribute('pathLength','1'); el.dataset.a=e[0]; el.dataset.b=e[1]; svg.appendChild(el); edges.push(el); });
+  function layoutEdges(){
+    var sw=stage.clientWidth, sh=stage.clientHeight;
+    svg.setAttribute('viewBox','0 0 '+(2*sw)+' '+(1.4*sh));
+    edges.forEach(function(el){
+      var a=P[el.dataset.a], b=P[el.dataset.b];
+      var x1=a.x/100*sw, y1=a.y/100*sh, x2=b.x/100*sw, y2=b.y/100*sh, dx=x2-x1, dy=y2-y1;
+      el.setAttribute('d','M'+x1+' '+y1+' Q'+((x1+x2)/2-dy*.18)+' '+((y1+y2)/2+dx*.18)+' '+x2+' '+y2);
+    });
+  }
+  var AT={}; M.forEach(function(m){AT[m.id]=m.at;});
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function smooth(p,a,b){var t=clamp((p-a)/(b-a),0,1);return t*t*(3-2*t);}
+  function lerp(a,b,t){return a+(b-a)*t;}
+  var OVER=.93;
+  function camera(p){
+    // drift from mock to mock, arriving just before each one pops
+    var cx=M[0].x, cy=M[0].y;
+    for(var i=1;i<M.length;i++){
+      var t=smooth(p, M[i].at-.055, M[i].at);
+      cx=lerp(cx,M[i].x,t); cy=lerp(cy,M[i].y,t);
+    }
+    var s=1;
+    if(p>OVER){
+      var t2=smooth(p,OVER,1), sw=stage.clientWidth, sh=stage.clientHeight;
+      var minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+      M.forEach(function(m){ var h=m.el.offsetHeight/sh*100; minx=Math.min(minx,m.x-m.w/2); maxx=Math.max(maxx,m.x+m.w/2); miny=Math.min(miny,m.y-h/2); maxy=Math.max(maxy,m.y+h/2); });
+      var fit=Math.min(100/(maxx-minx+10), 100/(maxy-miny+10));
+      cx=lerp(cx,(minx+maxx)/2,t2); cy=lerp(cy,(miny+maxy)/2,t2); s=lerp(1,fit,t2);
+    }
+    return {cx:cx,cy:cy,s:s};
+  }
+  function render(p){
+    var c=camera(p), sw=stage.clientWidth, sh=stage.clientHeight;
+    var tx=sw/2-(c.cx/100*sw)*c.s, ty=sh/2-(c.cy/100*sh)*c.s;
+    world.style.transform='translate('+tx+'px,'+ty+'px) scale('+c.s+')';
+    M.forEach(function(m){ m.el.classList.toggle('on',p>=m.at); });
+    edges.forEach(function(e){ e.classList.toggle('on', p>=AT[e.dataset.a]&&p>=AT[e.dataset.b]); });
+    hint.style.opacity=p<.02?1:0;
+  }
+  var ticking=false;
+  function measure(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(), total=sec.offsetHeight-window.innerHeight;
+    var p=clamp(-r.top/total,0,1);
+    render(reduce?(p<.5?0:1):p);
+  }
+  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(measure);}},{passive:true});
+  window.addEventListener('resize',function(){layoutEdges();measure();}); layoutEdges(); measure();
+})();
+</script>

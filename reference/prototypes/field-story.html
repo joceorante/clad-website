@@ -1,0 +1,196 @@
+<title>Clad Scroll Story</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#2A2823; --muted:#5E5B54; --line:#E8E7E3;
+  --accent:#6D6AF0; --accent-ink:#FFFFFF;
+  --card:#F2F2F0; --shape:#DCDCDA; --shadow:0 40px 70px -30px rgba(30,28,20,.35),0 0 0 1px rgba(30,28,20,.04);
+  --card-h:clamp(260px,46vh,440px); --gap:55vh;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C;
+    --accent:#8A88FF; --card:#1F1F21; --shape:#2E2E31; --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131314; --ink:#ECEBE7; --muted:#A5A29B; --line:#2A2A2C;
+  --accent:#8A88FF; --card:#1F1F21; --shape:#2E2E31; --shadow:0 40px 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent)}
+
+/* nav + hero */
+.nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
+.logo i{width:18px;height:18px;background:var(--accent);display:inline-block;border-radius:4px 4px 4px 10px}
+.nav-links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font-weight:600;font-size:15px}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (max-width:700px){.nav-links{display:none}}
+.hero{padding-block:clamp(40px,7vw,96px) clamp(40px,6vw,80px);text-align:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);margin:14px auto 0;max-width:18ch}
+.hero p{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:50ch;margin:20px auto 0}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+
+/* section heads */
+.sec{padding-block:clamp(56px,9vw,120px) 0}
+.sec-head{text-align:center;max-width:760px;margin:0 auto}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);margin-top:12px}
+
+/* three-up (capture, bill) */
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,40px);margin-top:clamp(40px,5vw,72px)}
+.col h3{font-size:20px;letter-spacing:-.02em;margin-top:18px}
+.col p{color:var(--muted);margin:6px 0 0;font-size:15px;max-width:30ch}
+.reveal{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.pre{opacity:0;transform:translateY(22px)}
+.three .col:nth-child(2){transition-delay:.12s}.three .col:nth-child(3){transition-delay:.24s}
+/* abstract shape placeholders */
+.shape{position:relative;height:180px}
+.shape span{position:absolute;background:var(--shape)}
+.shape.a span:nth-child(1){left:0;top:24px;width:55%;height:66px}
+.shape.a span:nth-child(2){left:20%;top:52px;width:64%;height:70px;border-radius:0 0 4px 4px}
+.shape.a span:nth-child(3){left:66%;top:52px;width:20%;height:70px}
+.shape.b span:nth-child(1){left:0;top:0;width:42%;height:150px}
+.shape.b span:nth-child(2){left:38%;top:26px;width:30%;height:52px}
+.shape.b span:nth-child(3){left:60%;top:60px;width:40%;height:90px}
+.shape.c span:nth-child(1){left:0;top:8px;width:40%;height:40px}
+.shape.c span:nth-child(2){left:4%;top:56px;width:70%;height:94px}
+.shape.c span:nth-child(3){left:40%;top:36px;width:60%;height:58px}
+/* large box placeholders */
+.box{aspect-ratio:4/2.6;background:var(--shape);border-radius:22px;max-width:100%}
+@media (max-width:760px){.three{grid-template-columns:1fr;gap:40px}.shape{max-width:320px}}
+
+/* manage: stacking cards */
+.m-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,2fr);gap:clamp(24px,4vw,56px);margin-top:clamp(40px,5vw,72px);align-items:start}
+.m-slot{height:calc(var(--card-h) + var(--gap))}
+.m-slot:last-child{height:var(--card-h)}
+.m-texts .m-slot:last-child{height:calc(var(--card-h) + 12vh)}
+.m-cards{padding-bottom:12vh}
+.m-text{position:sticky;top:var(--top);transition:opacity .35s}
+.m-text.is-past{opacity:0}
+.m-text h3{font-size:20px;letter-spacing:-.02em}
+.m-text p{color:var(--muted);margin:6px 0 0;font-size:15px;max-width:28ch}
+.m-card{position:sticky;top:var(--top);height:var(--card-h);width:84%;margin:0 0 var(--gap) var(--x);border-radius:26px;background:var(--card);box-shadow:var(--shadow)}
+.m-card:last-child{margin-bottom:0}
+.m-slot:nth-child(1),.m-card:nth-child(1){--top:14vh;--x:4%}
+.m-slot:nth-child(2),.m-card:nth-child(2){--top:19vh;--x:16%}
+.m-slot:nth-child(3),.m-card:nth-child(3){--top:24vh;--x:0%}
+.m-cap{display:none}
+@media (max-width:900px){
+  .m-grid{grid-template-columns:1fr}
+  .m-texts{display:none}
+  .m-cap{display:block;margin-bottom:14px}
+  .m-cap h3{font-size:20px;letter-spacing:-.02em}
+  .m-cap p{color:var(--muted);margin:6px 0 0;font-size:15px}
+  .m-card{position:static;width:100%;height:auto;margin:0 0 56px;background:transparent;box-shadow:none;border-radius:0}
+  .m-card::after{content:"";display:block;aspect-ratio:4/2.8;background:var(--card);border-radius:26px;box-shadow:var(--shadow)}
+  .m-cards{padding-bottom:0}
+}
+
+/* close */
+.close{border-top:1px solid var(--line);margin-top:clamp(56px,9vw,120px);padding-block:clamp(48px,8vw,96px);text-align:center}
+.close h2{font-size:clamp(30px,4vw,48px);max-width:20ch;margin:0 auto}
+.close p{color:var(--muted);max-width:48ch;margin:14px auto 0}
+.close .btn{margin-top:24px}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation:none!important}
+}
+</style>
+
+<header class="wrap nav">
+  <div class="logo"><i></i>Clad</div>
+  <nav class="nav-links"><a href="#capture">Capture</a><a href="#manage">Manage</a><a href="#bill">Bill</a><a href="#">Pricing</a><a href="#">Log in</a></nav>
+  <button class="btn accent" type="button">Book a demo</button>
+</header>
+
+<section class="wrap hero">
+  <div class="eyebrow">Field software for contractors</div>
+  <h1>Capture the work. Manage the job. Bill it right.</h1>
+  <p>Clad follows your production from the field to the invoice, so what got built is what gets tracked, forecast, and billed.</p>
+  <div class="row"><button class="btn accent" type="button">Book a demo</button><button class="btn ghost" type="button">See how it works</button></div>
+</section>
+
+<!-- CAPTURE -->
+<section class="wrap sec" id="capture">
+  <div class="sec-head"><div class="eyebrow">Capture</div><h2>Intuitive tools to collect the data you need from the field</h2></div>
+  <div class="three">
+    <div class="col reveal"><div class="shape a"><span></span><span></span><span></span></div><h3>Digital as-builts</h3><p>Create PDF or GIS redlines tied to your production.</p></div>
+    <div class="col reveal"><div class="shape b"><span></span><span></span><span></span></div><h3>Production tracking</h3><p>Record what work was done, linked to your project's budget.</p></div>
+    <div class="col reveal"><div class="shape c"><span></span><span></span><span></span></div><h3>Custom forms</h3><p>Collect photos, bore logs, damages, and more.</p></div>
+  </div>
+</section>
+
+<!-- MANAGE -->
+<section class="wrap sec" id="manage">
+  <div class="sec-head"><div class="eyebrow">Manage</div><h2>Know where projects stand, and where they're heading</h2></div>
+  <div class="m-grid">
+    <div class="m-texts">
+      <div class="m-slot"><div class="m-text"><h3>Insights</h3><p>Monitor production, spend, and revenue across all of your projects.</p></div></div>
+      <div class="m-slot"><div class="m-text"><h3>Forecasting</h3><p>Understand the production you need to do in order to finish your work on time.</p></div></div>
+      <div class="m-slot"><div class="m-text"><h3>Schedules</h3><p>Monitor project milestones, compare actual dates against your initial plan.</p></div></div>
+    </div>
+    <div class="m-cards">
+      <div class="m-card" aria-label="Insights mock"><div class="m-cap"><h3>Insights</h3><p>Monitor production, spend, and revenue across all of your projects.</p></div></div>
+      <div class="m-card" aria-label="Forecasting mock"><div class="m-cap"><h3>Forecasting</h3><p>Understand the production you need to do in order to finish your work on time.</p></div></div>
+      <div class="m-card" aria-label="Schedules mock"><div class="m-cap"><h3>Schedules</h3><p>Monitor project milestones, compare actual dates against your initial plan.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- BILL -->
+<section class="wrap sec" id="bill">
+  <div class="sec-head"><div class="eyebrow">Bill</div><h2>Eliminate over- and under-billing. Streamline time-consuming AP &amp; AR workflows.</h2></div>
+  <div class="three">
+    <div class="col reveal"><div class="box"></div><h3>Link production to invoices</h3><p>Build invoices from approved work, and tie subcontractor bills to production.</p></div>
+    <div class="col reveal"><div class="box"></div><h3>Track retainage</h3><p>Monitor and release retainage.</p></div>
+    <div class="col reveal"><div class="box"></div><h3>Integrate with your ERP</h3><p>Sync Clad to QuickBooks. More ERPs coming soon.</p></div>
+  </div>
+</section>
+
+<section class="wrap close">
+  <h2>From the field to the invoice, on one record.</h2>
+  <p>See Clad on one of your live projects.</p>
+  <button class="btn accent" type="button">Book a demo</button>
+</section>
+<footer class="wrap"><span>Clad · Prototype</span><span>Capture · Manage · Bill</span></footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // reveal-on-scroll: only pre-hide what starts below the fold
+  var items=[].slice.call(document.querySelectorAll('.reveal'));
+  if(!reduce && 'IntersectionObserver' in window){
+    items.forEach(function(el){ if(el.getBoundingClientRect().top>window.innerHeight) el.classList.add('pre'); });
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.remove('pre'); io.unobserve(e.target);} }); },{threshold:.2});
+    items.forEach(function(el){ io.observe(el); });
+  }
+
+  // manage stack: fade out text once a later card has stacked on top
+  var texts=[].slice.call(document.querySelectorAll('.m-texts .m-text'));
+  var cards=[].slice.call(document.querySelectorAll('.m-cards .m-card'));
+  var ticking=false;
+  function measure(){
+    ticking=false;
+    if(window.innerWidth<=900){ texts.forEach(function(t){t.classList.remove('is-past');}); return; }
+    var active=0;
+    cards.forEach(function(c,i){ var top=parseFloat(getComputedStyle(c).top)||0; if(c.getBoundingClientRect().top<=top+2) active=i; });
+    texts.forEach(function(t,i){ t.classList.toggle('is-past',i<active); });
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(measure);} },{passive:true});
+  window.addEventListener('resize',measure);
+  measure();
+})();
+</script>
