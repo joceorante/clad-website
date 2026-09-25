@@ -1,13 +1,13 @@
 ---
-const tabs = ["Capture", "Manage", "Bill"];
+const tabs = [["Project Management", "pm"], ["Billing", "billing"], ["Locates", "locates"]];
 ---
 <section class="hero" id="products">
   <div class="container-wide">
     <h1>Scale your construction operations</h1>
     <p class="tagline">Project management and billing software for building infrastructure</p>
     <div class="tabs" role="tablist" aria-label="Product areas">
-      {tabs.map((t, i) => (
-        <button role="tab" aria-selected={i === 0 ? "true" : "false"} class:list={["tab", { "is-active": i === 0 }]} data-tab={t.toLowerCase()}>{t}</button>
+      {tabs.map(([label, id], i) => (
+        <button role="tab" aria-selected={i === 0 ? "true" : "false"} class:list={["tab", { "is-active": i === 0 }]} data-tab={id}>{label}</button>
       ))}
     </div>
     <div class="shot">
@@ -32,9 +32,9 @@ const tabs = ["Capture", "Manage", "Bill"];
   .tab:last-child { border-right: 0; }
   .tab:hover { background: var(--color-paper-dim); }
   .tab.is-active { font-weight: 700; }
-  .tab.is-active[data-tab="capture"] { background: var(--color-cobalt); color: var(--color-paper); }
-  .tab.is-active[data-tab="manage"] { background: var(--color-orange); color: var(--color-paper); }
-  .tab.is-active[data-tab="bill"] { background: var(--color-stoplight); color: var(--color-tar); }
+  .tab.is-active[data-tab="pm"] { background: var(--color-cobalt); color: var(--color-paper); }
+  .tab.is-active[data-tab="billing"] { background: var(--color-orange); color: var(--color-paper); }
+  .tab.is-active[data-tab="locates"] { background: var(--color-stoplight); color: var(--color-tar); }
   .shot {
     position: relative; z-index: 1; margin-bottom: -113px;
     background: var(--color-tar) url("/assets/grid.svg") -505px -573px / 2214px 2211px no-repeat;

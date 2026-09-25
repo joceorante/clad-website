@@ -23,6 +23,22 @@ def rows_reveal(items, step):
     """items: list of html strings; each gets --i so it reveals as --draw passes i*step."""
     return "".join(h.replace('class="r"', f'class="r" style="--i:{i}"', 1) for i, h in enumerate(items))
 
+SERIES = [("#4750ff",[28,35,52,55,45,47]),("#3cb043",[47,30,47,46,44,53]),("#e5533c",[48,55,58,50,43,22]),("#e64ca7",[0,0,0,12,28,45]),("#f2c230",[5,17,10,24,18,6])]
+PW, PH, YMAX = 600, 260, 60
+def pt(i, v): return (round(i * PW / 5, 1), round(PH - v / YMAX * PH, 1))
+svg = "".join(f'<line class="grid" x1="0" y1="{round(PH - i*10/YMAX*PH,1)}" x2="{PW}" y2="{round(PH - i*10/YMAX*PH,1)}"/>' for i in range(7))
+for color, vals in SERIES:
+    pts = [pt(i, v) for i, v in enumerate(vals)]
+    svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x,y in pts)}" style="stroke:{color}"/>'
+    for i, (x, y) in enumerate(pts):
+        svg += f'<line class="dot bg" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="--i:{i}"/><line class="dot" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="stroke:{color};--i:{i}"/>'
+CHART_HTML = (
+  '<div class="report"><div class="rhd">Projects <span>/</span> Insights <span>/</span> Weekly Production Report <i class="chev"></i></div>'
+  '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -10)) + '</div>'
+  f'<svg viewBox="0 0 {PW} {PH}" preserveAspectRatio="none" aria-hidden="true">{svg}</svg>'
+  '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2","Mar 9","Mar 16","Mar 23","Mar 30","Apr 6"]) + '</div></div></div>')
+
+
 # =====================================================================================
 # CAPTURE
 # =====================================================================================
@@ -82,16 +98,19 @@ PRODUCTION = (
   + '</div>')
 
 capture = {
-  "id": "capture", "name": "Capture", "title": "Record everything you need from the field in a single place",
+  "id": "pm", "name": "Project Management", "title": "See every project clearly, so work gets built on time and under budget",
+  "feats": ["Intuitive data collection", "Reporting & forecasting", "Materials & fleet tracking"],
   "html": (
     f'<div class="act skin" data-a="sketch">{img("capture-sketch.png","Handwritten field sketch on paper")}<div class="mock app">{MAP}</div></div>'
     f'<div class="act skin" data-a="sheet"><div class="mock photo">{SPREADSHEET}</div><div class="mock app">{PRODUCTION}</div></div>'
     f'<div class="act" data-a="gmail"><div class="gmail">{img("capture-gmail.png","Gmail","icon")}<span class="badge">8,201</span></div></div>'
+    f'<div class="act" data-a="pmchart" role="img" aria-label="Weekly production report: five projects, March 2 to April 6">{CHART_HTML}</div>'
   ),
   "actors": [
-    {"id": "sketch", "kf": [P(367, 344, 366, 244, Y1, at=.0, r=-2.5, d=0, v=0), P(367, 344, 366, 244, Y1, at=.18, r=-2.5, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.6, r=0, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.9, r=0, d=1, v=868)], "skin": [.34, .54]},
-    {"id": "sheet",  "kf": [P(623, 523, 483, 193, Y1, at=.0, r=5, d=0, v=0), P(623, 523, 483, 193, Y1, at=.22, r=5, d=0, v=0), P(677, 405, 631, 350, Y1, at=.64, r=0, d=0, v=0), P(677, 405, 631, 350, Y1, at=.92, r=0, d=1, v=138)], "skin": [.4, .58]},
-    {"id": "gmail",  "kf": [P(783, 344, 87, 87, Y1, at=.0, o=1, s=1), P(783, 344, 87, 87, Y1, at=.2, o=1, s=1), P(783, 300, 87, 87, Y1, at=.4, o=0, s=.85)]},
+    {"id": "sketch", "kf": [P(367, 344, 366, 244, Y1, at=.0, r=-2.5, d=0, v=0), P(367, 344, 366, 244, Y1, at=.16, r=-2.5, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.5, r=0, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.72, r=0, d=1, v=868)], "skin": [.3, .46]},
+    {"id": "sheet",  "kf": [P(623, 523, 483, 193, Y1, at=.0, r=5, d=0, v=0, o=1), P(623, 523, 483, 193, Y1, at=.2, r=5, d=0, v=0, o=1), P(677, 405, 631, 350, Y1, at=.52, r=0, d=0, v=0, o=1), P(677, 405, 631, 350, Y1, at=.7, r=0, d=1, v=138, o=1), P(677, 405, 631, 350, Y1, at=.76, r=0, d=1, v=138, o=1), P(677, 375, 631, 350, Y1, at=.84, r=0, d=1, v=138, o=0)], "skin": [.34, .5]},
+    {"id": "gmail",  "kf": [P(783, 344, 87, 87, Y1, at=.0, o=1, s=1), P(783, 344, 87, 87, Y1, at=.18, o=1, s=1), P(783, 300, 87, 87, Y1, at=.36, o=0, s=.85)]},
+    {"id": "pmchart","kf": [P(677, 440, 631, 350, Y1, at=.0, o=0, d=0), P(677, 440, 631, 350, Y1, at=.78, o=0, d=0), P(677, 405, 631, 350, Y1, at=.88, o=1, d=0), P(677, 405, 631, 350, Y1, at=1.0, o=1, d=1)]},
   ],
 }
 
@@ -120,21 +139,6 @@ BOARD_HTML = (
   + '</div>'
   + '<div class="act hero" data-a="hero">' + card("10428 India Ave","WD","Aug 31, 2026",0,"demo","tx",count=True) + '</div>'
   '</div>')
-
-SERIES = [("#4750ff",[28,35,52,55,45,47]),("#3cb043",[47,30,47,46,44,53]),("#e5533c",[48,55,58,50,43,22]),("#e64ca7",[0,0,0,12,28,45]),("#f2c230",[5,17,10,24,18,6])]
-PW, PH, YMAX = 600, 260, 60
-def pt(i, v): return (round(i * PW / 5, 1), round(PH - v / YMAX * PH, 1))
-svg = "".join(f'<line class="grid" x1="0" y1="{round(PH - i*10/YMAX*PH,1)}" x2="{PW}" y2="{round(PH - i*10/YMAX*PH,1)}"/>' for i in range(7))
-for color, vals in SERIES:
-    pts = [pt(i, v) for i, v in enumerate(vals)]
-    svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x,y in pts)}" style="stroke:{color}"/>'
-    for i, (x, y) in enumerate(pts):
-        svg += f'<line class="dot bg" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="--i:{i}"/><line class="dot" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="stroke:{color};--i:{i}"/>'
-CHART_HTML = (
-  '<div class="report"><div class="rhd">Projects <span>/</span> Insights <span>/</span> Weekly Production Report <i class="chev"></i></div>'
-  '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -10)) + '</div>'
-  f'<svg viewBox="0 0 {PW} {PH}" preserveAspectRatio="none" aria-hidden="true">{svg}</svg>'
-  '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2","Mar 9","Mar 16","Mar 23","Mar 30","Apr 6"]) + '</div></div></div>')
 
 manage = {
   "id": "manage", "name": "Manage", "title": "Connect the dots on all the projects you manage",
@@ -175,7 +179,8 @@ INVOICE = (
   + '<div class="vtot"><span>Amount due (USD)</span><b data-count="money">$0.00</b></div></div>')
 
 bill = {
-  "id": "bill", "name": "Bill", "title": "Generate accurate invoices and eliminate over- or under-billing",
+  "id": "billing", "name": "Billing", "title": "Bill accurately, and bill fast",
+  "feats": ["Production linked to invoices", "QuickBooks integration", "Automatic as-built creation"],
   "html": (
     f'<div class="act" data-a="items"><div class="mock app">{ITEMS}</div></div>'
     f'<div class="act" data-a="invoice"><div class="mock photo">{INVOICE}</div></div>'
@@ -186,14 +191,52 @@ bill = {
   ],
 }
 
-SCENES = [capture, manage, bill]
+
+# =====================================================================================
+# LOCATES
+# =====================================================================================
+Y4 = 2800
+TICKETS = [
+  ("2609-2211-04","1420 Maple Run Rd","Boring",("Submitted","Cleared"),"Oct 12"),
+  ("2609-2210-17","388 Cedar Loop","Trench",("Cleared",None),"Oct 9"),
+  ("2609-2208-02","Hwy 9 & Mill Rd","Boring",("Expires Fri","Update requested"),"Sep 26"),
+  ("2609-2207-11","71 Riverside Dr","Aerial",("Cleared",None),"Oct 3"),
+  ("2609-2205-06","902 Main St","Trench",("Cleared",None),"Oct 1"),
+]
+def status(a, b, i):
+    cls = lambda t: "ok" if t in ("Cleared",) else "warn" if t.startswith("Expires") else "info"
+    if not b: return f'<span class="st"><em class="pill {cls(a)}">{a}</em></span>'
+    return f'<span class="st swap" style="--j:{i}"><em class="pill {cls(a)} a">{a}</em><em class="pill {cls(b)} b">{b}</em></span>'
+LOCATES = (
+  '<div class="ui locates"><div class="lhd"><b>Locate tickets</b><span class="k2">Maple Run · 14 active</span><span class="btn2">Filter</span></div>'
+  '<div class="lth"><span>Ticket</span><span>Address</span><span>Type</span><span>Status</span><span>Expires</span></div>'
+  + "".join(f'<div class="r" style="--i:{i}"><span class="code">{t}</span><span>{ad}</span><span>{ty}</span>{status(sa, sb, i)}<span>{ex}</span></div>' for i,(t,ad,ty,(sa,sb),ex) in enumerate(TICKETS))
+  + '</div>')
+AIFORM = (
+  '<div class="ui aiform"><div class="ahd"><i class="spark"></i><b>New locate ticket</b><span>Drafted by Clad from the work order</span></div>'
+  + "".join(f'<div class="r af" style="--i:{i}"><span>{k}</span><em>{v}</em></div>' for i,(k,v) in enumerate([("Address","1420 Maple Run Rd, Suffolk, VA"),("Work type","Directional boring · 1.25” conduit"),("Dig start","Mon, Sep 28"),("Duration","5 working days"),("Contact","Crew 3 · D. Alvarez")]))
+  + '<div class="r af cta" style="--i:5"><span class="btn2 primary">Submit to 811</span><span class="sent"><i></i>Submitted · ticket 2609-2211-04</span></div></div>')
+locates = {
+  "id": "locates", "name": "Locates", "title": "Automate your locates admin",
+  "feats": ["AI ticket submission", "Automated tracking", "Expiring ticket updates"],
+  "html": (
+    f'<div class="act" data-a="aiform"><div class="mock app">{AIFORM}</div></div>'
+    f'<div class="act" data-a="tickets"><div class="mock app">{LOCATES}</div></div>'
+  ),
+  "actors": [
+    {"id": "aiform",  "kf": [P(800, 2860, 470, 380, Y4, at=.0, o=0, d=0), P(800, 2840, 470, 380, Y4, at=.12, o=1, d=0), P(800, 2840, 470, 380, Y4, at=.5, o=1, d=1), P(800, 2840, 470, 380, Y4, at=.62, o=1, d=1.4), P(830, 2840, 470, 380, Y4, at=.78, o=.55, d=1.4)]},
+    {"id": "tickets", "kf": [P(136, 2840, 640, 400, Y4, at=.0, o=1, d=0), P(136, 2840, 640, 400, Y4, at=.52, o=1, d=0), P(136, 2840, 640, 400, Y4, at=.98, o=1, d=1)]},
+  ],
+}
+
+SCENES = [capture, bill, locates]
 
 scenes_html = ""
 for sc in SCENES:
     scenes_html += f'''
   <section class="scene" id="story-{sc["id"]}" data-scene="{sc["id"]}">
     <div class="pin">
-      <div class="head"><span class="label">{sc["name"]}</span><h3>{sc["title"]}</h3></div>
+      <div class="head"><span class="label">{sc["name"]}</span><h3>{sc["title"]}</h3><ul class="feats">{"".join(f"<li>{f}</li>" for f in sc["feats"])}</ul></div>
       <div class="stage">{sc["html"]}</div>
     </div>
   </section>'''
