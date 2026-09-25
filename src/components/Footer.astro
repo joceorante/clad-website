@@ -47,7 +47,12 @@ const colB = [["Login", "#login"], ["Terms of service", "#terms"], ["Privacy pol
   .form input::placeholder { color: var(--color-paper); opacity: 1; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .stripes { display: flex; flex-direction: column; gap: 3.35px; overflow: hidden; }
-  .stripes span { display: block; height: 15.93px; width: 110%; margin-left: -5%; border-radius: 28px; }
+  .stripes span { display: block; height: 15.93px; width: 110%; margin-left: -5%; border-radius: 28px; transform-origin: left center; }
+  /* cascade: once JS arms the block, each stripe sweeps in from the left, staggered top to bottom */
+  .stripes.is-armed span { transform: scaleX(0); transition: transform .9s cubic-bezier(.2,.7,.2,1); }
+  .stripes.is-armed span:nth-child(2) { transition-delay: .08s; } .stripes.is-armed span:nth-child(3) { transition-delay: .16s; } .stripes.is-armed span:nth-child(4) { transition-delay: .24s; }
+  .stripes.is-armed span:nth-child(5) { transition-delay: .32s; } .stripes.is-armed span:nth-child(6) { transition-delay: .40s; } .stripes.is-armed span:nth-child(7) { transition-delay: .48s; } .stripes.is-armed span:nth-child(8) { transition-delay: .56s; }
+  .stripes.is-armed.is-in span { transform: scaleX(1); }
   .bottom { background: url("/assets/grid-footer.svg") -182px -984px / 1819px 1816px no-repeat; }
   .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; padding: 159px 0 141px; }
   .brand { width: 315px; max-width: 100%; }
@@ -64,3 +69,15 @@ const colB = [["Login", "#login"], ["Terms of service", "#terms"], ["Privacy pol
     .row { flex-direction: column; padding: 80px 0 72px; background-position: -600px -700px; }
   }
 </style>
+
+<script>
+  const stripes = document.querySelector<HTMLElement>(".footer .stripes");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (stripes && !reduce && "IntersectionObserver" in window) {
+    stripes.classList.add("is-armed");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { stripes.classList.add("is-in"); io.disconnect(); }
+    }, { threshold: 0.4 });
+    io.observe(stripes);
+  }
+</script>
