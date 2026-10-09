@@ -63,3 +63,24 @@ function mount(cfg) {
 }
 
 SCENES.forEach(mount);
+
+// Each pinned frame is a full viewport tall with its content centered, which leaves empty space above the
+// first scene and below the last before they pin. Pull the story up and the next section in by that slack
+// so the gaps to the neighbouring sections stay a fixed size.
+const story = document.getElementById("story");
+function trimSlack() {
+  if (!story) return;
+  const scenes = story.querySelectorAll(".scene");
+  if (!scenes.length) return;
+  const slack = (sc) => {
+    const pin = sc.querySelector(".pin");
+    const h = Math.max(...Array.from(pin.children, (c) => c.offsetHeight));
+    return Math.max(0, (pin.clientHeight - h) / 2);
+  };
+  const gap = window.innerWidth <= 900 ? 64 : 112;
+  story.style.marginTop = `${gap - slack(scenes[0])}px`;
+  story.style.marginBottom = `${gap - slack(scenes[scenes.length - 1])}px`;
+}
+trimSlack();
+window.addEventListener("resize", trimSlack);
+document.fonts?.ready.then(trimSlack);

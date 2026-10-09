@@ -51,7 +51,9 @@
     position: sticky; top: 72px; height: calc(100vh - 72px);
     display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(32px, 5vw, 72px);
     align-items: center;
+    pointer-events: none; /* the empty part of the frame can overlap neighbouring sections; let clicks through */
   }
+  .story .head, .story .stage { pointer-events: auto; }
   .story .head { display: flex; flex-direction: column; gap: 14px; }
   .story .head .label { font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; color: var(--color-cobalt); line-height: 1.2; }
   .story .head h3 { font-size: var(--text-h2); line-height: 1.15; letter-spacing: -1.5px; font-weight: 600; }
