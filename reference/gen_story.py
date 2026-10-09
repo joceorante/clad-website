@@ -1,281 +1,298 @@
 """Generates src/components/ProductStory.astro, src/scripts/story.config.js and src/scripts/story.js.
 Run: python3 reference/gen_story.py
-Scenes come from the Figma frames "Start state" (6:67) and "End state" (6:56). Every product surface is coded
-HTML/SVG (abstracted from the Clad screenshots) so it can animate; only the analog artifacts stay as images."""
+Styles live in reference/story.css.
+
+Layout: each scene pins a two-column frame centered in the viewport. Left: label, headline, subhead and three
+stacked features. Right: a stage where the product UI animates. Scroll progress p (0..1) is split into three
+steps; step i highlights feature i and plays its part of the animation, one thing at a time.
+
+Actors are positioned by their CENTER in % of the stage (x, y), width w in % of the stage, and scale s.
+Copy follows Jason's "Q3 2026 Marketing Site Content - Homepage" doc."""
 import json, os
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+STEPS = [0, .36, .69]  # where features 2 and 3 take over
 
-SX, SW = 118, 1204
-SH = SW * 9 / 16
-def P(x=None, y=None, w=None, h=None, y0=0, **k):
-    """Figma px -> stage %. y0 is the Figma y where this scene's stage starts."""
-    d = {}
-    if x is not None: d["x"] = round((x - SX) / SW * 100, 2)
-    if y is not None: d["y"] = round((y - y0) / SH * 100, 2)
-    if w is not None: d["w"] = round(w / SW * 100, 2)
-    if h is not None: d["h"] = round(h / SH * 100, 2)
-    d.update(k); return d
 
-def img(src, alt, frame="photo"):
-    return f'<figure class="mock {frame}"><img src="/assets/story/{src}" alt="{alt}" /></figure>'
+def kf(at, **k):
+    d = {"at": at}
+    d.update(k)
+    return d
 
-def rows_reveal(items, step):
-    """items: list of html strings; each gets --i so it reveals as --draw passes i*step."""
-    return "".join(h.replace('class="r"', f'class="r" style="--i:{i}"', 1) for i, h in enumerate(items))
 
-SERIES = [("#4750ff",[28,35,52,55,45,47]),("#3cb043",[47,30,47,46,44,53]),("#e5533c",[48,55,58,50,43,22]),("#e64ca7",[0,0,0,12,28,45]),("#f2c230",[5,17,10,24,18,6])]
-PW, PH, YMAX, FW = 600, 260, 60, 240   # FW: forecast region width (two more weeks)
-FORECAST = {"#4750ff": [47, 51, 55], "#e5533c": [22, 27, 31], "#3cb043": [53, 55, 58]}
-def pt(i, v): return (round(i * PW / 5, 1), round(PH - v / YMAX * PH, 1))
-svg = "".join(f'<line class="grid" x1="0" y1="{round(PH - i*10/YMAX*PH,1)}" x2="{PW+FW}" y2="{round(PH - i*10/YMAX*PH,1)}"/>' for i in range(7))
-svg += f'<rect class="fzone" x="{PW}" y="0" width="{FW}" height="{PH}"/><line class="today" x1="{PW}" y1="0" x2="{PW}" y2="{PH}"/>'
+def avatar(name):
+    company = any(t in name for t in ("Underground", "Boring", "Civil", "Fiber"))
+    ini = "".join(w[0] for w in name.replace(".", "").split()[:2]).upper()
+    return f'<span class="who {"co" if company else "person"}"><i>{ini}</i>{name}</span>'
+
+
+# =====================================================================================
+# 1. BILLING: daily updates -> invoice built from them -> synced to QuickBooks
+# =====================================================================================
+UPDATES = [  # date, code, item, qty, completed by, attachments
+    ("Mon Sep 14", "D02", "Mount NID at service address", "24 EA", "D. Alvarez", ["IMG", "IMG"]),
+    ("Tue Sep 15", "D03", "UG pull fiber drop", "180 LF", "Ortiz Underground", ["PDF"]),
+    ("Wed Sep 16", "GT-CON01", "1.25” Conduit", "271 LF", "Bell Boring", ["IMG"]),
+]
+INVOICE_LINES = [  # code, item, qty, amount (qty x contract rate)
+    ("D02", "Mount NID at service address", "24", "$290.88"),
+    ("D03", "UG pull fiber drop", "180", "$1,530.00"),
+    ("GT-CON01", "1.25” Conduit", "271", "$2,200.52"),
+]
+INVOICE_TOTAL = 4021.40
+
+UPDATES_HTML = (
+    '<div class="card updates"><div class="chd"><b>Daily updates</b><span>Maple Run · Week of Sep 14</span></div>'
+    + "".join(
+        f'<div class="row" style="--i:{i}"><div class="l1"><span class="item"><em>{c}</em> {n}</span><span class="qty">{q}</span></div>'
+        f'<div class="l2"><span class="date">{d}</span>{avatar(by)}<span class="att">{"".join(f"<i>{a}</i>" for a in att)}</span></div></div>'
+        for i, (d, c, n, q, by, att) in enumerate(UPDATES))
+    + '</div>')
+
+INVOICE_HTML = (
+    '<div class="card invoice">'
+    '<div class="vhd"><div><b>Invoice #487</b><span>Big TelCo · Suffolk, VA - Z1.4</span></div><span class="logo">ACME</span></div>'
+    '<div class="vdue"><span data-count="money">$0.00</span><small>due Oct 1, 2026</small></div>'
+    '<div class="vth"><span>Description</span><span>Qty</span><span>Amount</span></div>'
+    + "".join(
+        f'<div class="row" style="--i:{i}"><span class="item"><em>{c}</em> {n}<small>Linked to {UPDATES[i][0]} update</small></span><span>{q}</span><span>{a}</span></div>'
+        for i, (c, n, q, a) in enumerate(INVOICE_LINES))
+    + '<div class="vtot"><span>Amount due</span><b data-count="money">$0.00</b></div></div>')
+
+QB_HTML = (
+    '<div class="qbchip"><span class="qbi" aria-hidden="true">qb</span>'
+    '<span class="txt"><b>Synced to QuickBooks</b><small>Invoice #487 · just now</small></span>'
+    '<span class="ok" aria-hidden="true"></span></div>')
+
+billing = {
+    "id": "billing", "name": "Billing", "title": "Bill accurately",
+    "sub": "One system to prevent over- and under-billing",
+    "feats": [
+        ("Production tracking", "Collect daily production and documentation from the field"),
+        ("Linked invoices & bills", "Tie your invoices and bills directly to approved production, so you only bill for work that’s done"),
+        ("QBO integration", "Sync invoices with QuickBooks to speed up AR accounting and track retainage"),
+    ],
+    "html": (
+        f'<div class="act" data-a="updates">{UPDATES_HTML}</div>'
+        f'<div class="act" data-a="invoice">{INVOICE_HTML}</div>'
+        f'<div class="act" data-a="qb">{QB_HTML}</div>'
+    ),
+    "actors": [
+        # step 1: updates arrive one by one, centered
+        {"id": "updates", "kf": [
+            kf(0, x=50, y=46, w=78, s=1, o=1, d=0), kf(.04, x=50, y=46, w=78, s=1, o=1, d=0),
+            kf(.28, x=50, y=46, w=78, s=1, o=1, d=1), kf(.36, x=50, y=46, w=78, s=1, o=1, d=1),
+            kf(.48, x=50, y=20, w=78, s=.86, o=.45, d=1)]},
+        # step 2: the invoice comes forward and fills from those updates
+        {"id": "invoice", "kf": [
+            kf(0, x=50, y=60, w=72, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=60, w=72, s=.96, o=0, d=0, v=0),
+            kf(.5, x=50, y=53, w=72, s=1, o=1, d=0, v=0), kf(.65, x=50, y=53, w=72, s=1, o=1, d=1, v=INVOICE_TOTAL),
+            kf(1, x=50, y=53, w=72, s=1, o=1, d=1, v=INVOICE_TOTAL)]},
+        # step 3: a single sync chip lands on the invoice
+        {"id": "qb", "kf": [
+            kf(0, x=50, y=94, w=50, s=.7, o=0, d=0), kf(.71, x=50, y=94, w=50, s=.7, o=0, d=0),
+            kf(.8, x=50, y=92.5, w=50, s=1, o=1, d=0), kf(.9, x=50, y=92.5, w=50, s=1, o=1, d=1),
+            kf(1, x=50, y=92.5, w=50, s=1, o=1, d=1)]},
+    ],
+}
+
+# =====================================================================================
+# 2. PROJECT MANAGEMENT: minimal blueprint -> redlines + labels -> report -> forecast
+# =====================================================================================
+# blueprint drawn in a 600 x 360 box; preserveAspectRatio meet keeps text undistorted
+LOTS = [(178 + c * 46, 22 + r * 44) for r in range(3) for c in range(4)] + [(430 + c * 44, 300 + r * 30) for r in range(2) for c in range(3)]
+REDLINE = "135,26 135,232 330,232 392,160 520,160"
+LABELS = [  # node (x, y, kind), label box (x, y), text
+    ((135, 92, "hh"), (150, 80), "UG-104-01"),
+    ((135, 232, "bore"), (30, 252), "BD03-01"),
+    ((330, 232, "hh"), (282, 252), "BM60-01"),
+    ((392, 160, "hh"), (404, 124), "UG-104-02"),
+]
+
+
+def label_svg(i, node, box, text):
+    nx, ny, kind = node
+    mark = (f'<circle cx="{nx}" cy="{ny}" r="7" class="nbore"/>' if kind == "bore"
+            else f'<rect x="{nx - 7}" y="{ny - 7}" width="14" height="14" class="nhh"/>')
+    bx, by = box
+    w = 10 + len(text) * 7.2
+    return (f'<g class="lbl" style="--i:{i}">{mark}'
+            f'<rect x="{bx}" y="{by}" width="{w:.0f}" height="22" class="lbox"/>'
+            f'<text x="{bx + w / 2:.0f}" y="{by + 15}" text-anchor="middle">{text}</text></g>')
+
+
+BLUEPRINT_SVG = (
+    '<svg class="bpsvg" viewBox="0 0 600 360" aria-hidden="true">'
+    '<defs><pattern id="bpgrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#f0efeb" stroke-width="1"/></pattern></defs>'
+    '<rect width="600" height="360" fill="#fff"/><rect width="600" height="360" fill="url(#bpgrid)"/>'
+    '<g class="roads"><path d="M0 214H600M0 250H600M118 0V214M152 0V214M360 250L420 360M396 250L456 360"/></g>'
+    '<g class="lots">' + "".join(f'<rect x="{x}" y="{y}" width="38" height="34"/>' for x, y in LOTS) + '</g>'
+    '<g class="bldg"><rect x="24" y="40" width="70" height="52"/><rect x="24" y="120" width="70" height="60"/><rect x="190" y="290" width="120" height="50"/></g>'
+    f'<polyline class="redline" pathLength="1" points="{REDLINE}"/>'
+    + "".join(label_svg(i, n, b, t) for i, (n, b, t) in enumerate(LABELS))
+    + '<g class="north"><path d="M570 40l8 20h-16z"/><text x="570" y="74" text-anchor="middle">N</text></g>'
+    '</svg>')
+
+BLUEPRINT_HTML = (
+    '<div class="card blueprint"><div class="chd"><b>As-built</b><span>Suffolk, VA · Zone 1.4 · Sheet 3 of 12</span>'
+    '<em class="live">Live</em></div>' + BLUEPRINT_SVG + '</div>')
+
+# weekly production report: three series, then a dashed two-week forecast
+SERIES = [("#3cb043", [47, 30, 47, 46, 44, 53]), ("#e5533c", [48, 55, 58, 50, 43, 22]), ("#f2c230", [5, 17, 10, 24, 18, 6])]
+FORECAST = {"#3cb043": [53, 55, 58], "#e5533c": [22, 27, 31], "#f2c230": [6, 11, 15]}
+PW, PH, YMAX, FW = 600, 260, 60, 240
+
+
+def pt(i, v):
+    return (round(i * PW / 5, 1), round(PH - v / YMAX * PH, 1))
+
+
+chart_svg = "".join(
+    f'<line class="grid" x1="0" y1="{round(PH - i * 10 / YMAX * PH, 1)}" x2="{PW + FW}" y2="{round(PH - i * 10 / YMAX * PH, 1)}"/>'
+    for i in range(7))
+chart_svg += f'<rect class="fzone" x="{PW}" y="0" width="{FW}" height="{PH}"/><line class="today" x1="{PW}" y1="0" x2="{PW}" y2="{PH}"/>'
 for color, vals in SERIES:
     pts = [pt(i, v) for i, v in enumerate(vals)]
-    svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x,y in pts)}" style="stroke:{color}"/>'
+    chart_svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x, y in pts)}" style="stroke:{color}"/>'
     for i, (x, y) in enumerate(pts):
-        svg += f'<line class="dot bg" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="--i:{i}"/><line class="dot" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="stroke:{color};--i:{i}"/>'
-svg += '<g class="fcast">'
+        chart_svg += (f'<line class="dot bg" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="--i:{i}"/>'
+                      f'<line class="dot" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="stroke:{color};--i:{i}"/>')
+chart_svg += '<g class="fcast">'
 for color, fv in FORECAST.items():
     fp = [pt(5 + i, v) for i, v in enumerate(fv)]
-    svg += f'<polyline class="fline" points="{" ".join(f"{x},{y}" for x,y in fp)}" style="stroke:{color}"/>'
-svg += '</g>'
+    chart_svg += f'<polyline class="fline" points="{" ".join(f"{x},{y}" for x, y in fp)}" style="stroke:{color}"/>'
+chart_svg += '</g>'
+
 CHART_HTML = (
-  '<div class="report"><div class="rhd">Projects <span>/</span> Insights <span>/</span> Weekly Production Report <i class="chev"></i><span class="flab">Forecast</span></div>'
-  '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -10)) + '</div>'
-  f'<svg viewBox="0 0 {PW+FW} {PH}" preserveAspectRatio="none" aria-hidden="true">{svg}</svg>'
-  '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2","Mar 9","Mar 16","Mar 23","Mar 30","Apr 6"]) + '<span class="fx">Apr 13</span><span class="fx">Apr 20</span></div></div></div>')
+    '<div class="card report" role="img" aria-label="Weekly production report with a two-week forecast">'
+    '<div class="chd"><b>Weekly Production Report</b><span>All projects</span><em class="flab">Forecast</em></div>'
+    '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -20)) + '</div>'
+    f'<svg viewBox="0 0 {PW + FW} {PH}" preserveAspectRatio="none" aria-hidden="true">{chart_svg}</svg>'
+    '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2", "Mar 16", "Mar 30"]) + '<span class="fx">Apr 20</span></div></div></div>')
 
-
-# =====================================================================================
-# CAPTURE
-# =====================================================================================
-Y1 = 330
-
-SPREADSHEET = (
-  '<div class="ui sheet">'
-  '<div class="sh1">CONCRETE VOLUME &amp; COST CALCULATOR</div>'
-  '<div class="sh2">Slabs · Footings · Walls · Columns · Piers - volume, waste, trucks, bags, and cost</div>'
-  '<div class="sh3">PROJECT INPUTS</div>'
-  + "".join(f'<div class="kv"><span>{k}</span><b>{v}</b><span></span></div>' for k, v in
-            [("Project Name","Riverside Medical - 2026-118"),("Waste / Over-Order Allowance","10%"),("Concrete Price per Cubic Yard","$168.00"),("Truck Capacity (cubic yards)","10")])
-  + '<div class="sh3">POURS</div>'
-  '<div class="th"><span>#</span><span>Description</span><span>Shape</span><span>Length (ft)</span><span>Width (ft)</span><span>Qty</span><span>Volume (cu yd)</span></div>'
-  + "".join(f'<div class="tr"><span>{n}</span><span>{d}</span><span>{s}</span><span>{l}</span><span>{w}</span><span>{q}</span><span>{v}</span></div>' for n,d,s,l,w,q,v in
-            [(1,"Level 1 slab on grade - east bay","Slab","120.00","60.00",1,"133.33"),(2,"Level 1 slab on grade - west bay","Slab","96.00","48.00",1,"85.33"),
-             (3,"Perimeter strip footing","Footing","380.00","2.00",1,"28.15"),(4,"Interior spread footings 5' x 5'","Footing","5.00","5.00",12,"22.22"),(5,"Foundation wall - north","Wall","120.00","8.00",1,"29.63")])
-  + '</div>')
-
-# abstract aerial map + tool rail + quantity panel; the yellow bore path draws with --draw, quantity counts with v
-MAP = (
-  '<div class="ui map">'
-  '<svg class="terrain" viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true">'
-  '<rect width="600" height="400" fill="#8a9a63"/>'
-  '<path d="M0 0h600v400H0z" fill="url(#g1)"/>'
-  '<defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9b477"/><stop offset=".5" stop-color="#7f9257"/><stop offset="1" stop-color="#b3a874"/></linearGradient></defs>'
-  '<ellipse cx="200" cy="120" rx="140" ry="90" fill="#4e6a3a" opacity=".85"/><ellipse cx="300" cy="190" rx="90" ry="60" fill="#5c7a44" opacity=".8"/>'
-  '<ellipse cx="480" cy="330" rx="130" ry="70" fill="#6a8a48" opacity=".7"/><ellipse cx="120" cy="330" rx="110" ry="50" fill="#c2b27a" opacity=".6"/>'
-  '<path class="road" d="M90 0v400M0 395h600M90 60h510M420 0v180"/>'
-  '<g class="lots" fill="#d9d2b8" opacity=".85">' + "".join(f'<rect x="{x}" y="{y}" width="16" height="12" rx="2"/>' for x, y in [(440,240),(470,232),(500,244),(530,236),(560,250),(450,280),(485,290),(520,282),(555,300),(440,320),(475,330),(510,322)]) + '</g>'
-  '<polyline class="bore" pathLength="1" points="88,10 88,240 240,240 300,222"/>'
-  '</svg>'
-  '<div class="rail"><i class="t-search"></i><i class="t-rect"></i><i class="t-arrow on"></i><i class="t-text">T</i><i class="t-circle"></i></div>'
-  '<div class="qpanel">'
-  '<div class="qhd"><i class="arrow"></i><div><b>U-BOR04-18</b><span>Boring - 1.25”</span></div></div>'
-  '<div class="qrow"><span>Quantity</span><em><span data-count="int">0</span></em><small>FT</small></div>'
-  '<div class="qrow"><span>Sequential In</span><em class="wide">ABC-12839</em></div>'
-  '<div class="qrow"><span class="ph"></span><em class="wide ph"></em></div>'
-  '</div></div>')
-
-PROD_ROWS = [
-  ("D01","Aerial Drop",True,"-","0","0","LF"),("D02","Mount NID at service address",False,"80","42","0","EA"),
-  ("D03","UG pull fiber drop from Terminal to Flowerpot",False,"2,300","900","0","LF"),("D04","Bury Drop Tail 12\" depth from flowerpot to NID",False,"1,230","582","0","LF"),
-  ("D06","Mount NID at service address",True,"-","0","0","EA"),("D07","UG pull fiber drop from Terminal to Flowerpot",True,"-","0","0","LF"),
-]
-GEO_ROWS = [("GT-CON01","1.25\" Conduit (1)",False,"6,420","737",None,"LF"),("GT-CON02","1.25\" Conduit (2)",False,"6,420","400","0","LF"),("GT-FFP01","FP - 10\" Round",False,"80","2","0","EA")]
-def prow(code, name, nb, bud, prog, new, unit):
-    newcell = '<span class="inp"><span data-count="int">0</span></span>' if new is None else f'<span class="inp">{new}</span>'
-    return f'<div class="r{" hi" if new is None else ""}"><span class="code">{code}</span><span class="name">{name}</span><span class="nb">{"Not Budgeted" if nb else ""}</span><span>{bud}</span><span>{prog}</span>{newcell}<span class="unit">{unit}</span></div>'
-PRODUCTION = (
-  '<div class="ui prod">'
-  '<div class="phd"><b>Production</b><span class="btn2">Upload</span></div>'
-  '<div class="gh"><span>Drop</span><span></span><span></span><span>Budgeted</span><span>Progress to Date</span><span>New Quantity</span><span></span></div>'
-  + rows_reveal([prow(*r) for r in PROD_ROWS], .08)
-  + '<div class="gh"><span>Geotech</span><span></span><span></span><span>Budgeted</span><span>Progress to Date</span><span>New Quantity</span><span></span></div>'
-  + "".join(h.replace('class="r', f'style="--i:{6+i}" class="r', 1) for i, h in enumerate(prow(*r) for r in GEO_ROWS))
-  + '</div>')
-
-capture = {
-  "id": "pm", "name": "Project Management", "title": "Stay on top of every project", "sub": "Live progress, as-builts, and forecasts across all of your projects",
-  "feats": [("Digital as-builts", "Build GIS or PDF as-builts in real-time to visualize your construction progress"), ("Reporting", "Build and share custom reports"), ("Forecasting", "See where every project lands before it gets there")],
-  "html": (
-    f'<div class="act skin" data-a="sketch">{img("capture-sketch.png","Handwritten field sketch on paper")}<div class="mock app">{MAP}</div></div>'
-    f'<div class="act skin" data-a="sheet"><div class="mock photo">{SPREADSHEET}</div><div class="mock app">{PRODUCTION}</div></div>'
-    f'<div class="act" data-a="gmail"><div class="gmail">{img("capture-gmail.png","Gmail","icon")}<span class="badge">8,201</span></div></div>'
-    f'<div class="act" data-a="pmchart" role="img" aria-label="Weekly production report: five projects, March 2 to April 6">{CHART_HTML}</div>'
-  ),
-  "actors": [
-    {"id": "sketch", "kf": [P(367, 344, 366, 244, Y1, at=.0, r=-2.5, d=0, v=0), P(367, 344, 366, 244, Y1, at=.16, r=-2.5, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.5, r=0, d=0, v=0), P(136, 417, 493.5, 329, Y1, at=.72, r=0, d=1, v=868)], "skin": [.3, .46]},
-    {"id": "sheet",  "kf": [P(623, 523, 483, 193, Y1, at=.0, r=5, d=0, v=0, o=1), P(623, 523, 483, 193, Y1, at=.2, r=5, d=0, v=0, o=1), P(677, 405, 631, 350, Y1, at=.52, r=0, d=0, v=0, o=1), P(677, 405, 631, 350, Y1, at=.7, r=0, d=1, v=138, o=1), P(677, 405, 631, 350, Y1, at=.76, r=0, d=1, v=138, o=1), P(677, 375, 631, 350, Y1, at=.84, r=0, d=1, v=138, o=0)], "skin": [.34, .5]},
-    {"id": "gmail",  "kf": [P(783, 344, 87, 87, Y1, at=.0, o=1, s=1), P(783, 344, 87, 87, Y1, at=.18, o=1, s=1), P(783, 300, 87, 87, Y1, at=.36, o=0, s=.85)]},
-    {"id": "pmchart","kf": [P(677, 440, 631, 350, Y1, at=.0, o=0, d=0), P(677, 440, 631, 350, Y1, at=.74, o=0, d=0), P(677, 405, 631, 350, Y1, at=.82, o=1, d=0), P(677, 405, 631, 350, Y1, at=.93, o=1, d=1), P(677, 405, 631, 350, Y1, at=1.0, o=1, d=1.4)]},
-  ],
+pm = {
+    "id": "pm", "name": "Project Management", "title": "Stay on top of every project",
+    "sub": "Live progress, as-builts, and forecasts across all of your projects",
+    "feats": [
+        ("Digital as-builts", "Build GIS or PDF as-builts in real-time to visualize your construction progress"),
+        ("Reporting", "Build and share custom reports"),
+        ("Forecasting", "See where every project lands before it gets there"),
+    ],
+    "html": (
+        f'<div class="act" data-a="blueprint">{BLUEPRINT_HTML}</div>'
+        f'<div class="act" data-a="chart">{CHART_HTML}</div>'
+    ),
+    "actors": [
+        # step 1: blank blueprint, then the redline draws and its labels cascade in
+        {"id": "blueprint", "kf": [
+            kf(0, x=50, y=48, w=88, s=1, o=1, d=0), kf(.04, x=50, y=48, w=88, s=1, o=1, d=0),
+            kf(.2, x=50, y=48, w=88, s=1, o=1, d=1), kf(.32, x=50, y=48, w=88, s=1, o=1, d=1.8),
+            kf(.36, x=50, y=48, w=88, s=1, o=1, d=1.8), kf(.48, x=50, y=22, s=.74, w=88, o=.45, d=1.8)]},
+        # step 2: the report comes forward and draws; step 3: the forecast extends it
+        {"id": "chart", "kf": [
+            kf(0, x=50, y=66, w=84, s=.96, o=0, d=0), kf(.38, x=50, y=66, w=84, s=.96, o=0, d=0),
+            kf(.5, x=50, y=60, w=84, s=1, o=1, d=0), kf(.65, x=50, y=60, w=84, s=1, o=1, d=1),
+            kf(.72, x=50, y=60, w=84, s=1, o=1, d=1), kf(.9, x=50, y=60, w=84, s=1, o=1, d=1.4),
+            kf(1, x=50, y=60, w=84, s=1, o=1, d=1.4)]},
+    ],
 }
 
 # =====================================================================================
-# MANAGE
+# 3. LOCATES: AI-drafted ticket -> your tickets clear and renew -> subcontractor tickets
 # =====================================================================================
-Y2 = 1158
-TAG = {"aerial":("Aerial","#e5484d"),"au":("Aerial & Underground","#3b82f6"),"ug":("Underground","#6b6b6b"),
-       "att":("AT&T","#9b5de5"),"tx":("Texas","#f0782a"),"sa":("San Antonio","#f0782a"),"demo":("Demo","#e5484d")}
-def tags(*keys): return '<div class="tags">'+"".join(f'<span class="tag" style="--c:{TAG[k][1]}">{TAG[k][0]}</span>' for k in keys)+'</div>' if keys else ''
-def card(title, who, date=None, pct=None, *tg, count=False):
-    meta = ""
-    if date or pct is not None:
-        n = f'<span data-count="pct">0%</span>' if count else f'{pct}%'
-        meta = '<div class="meta">' + (f'<span class="date">{date}</span>' if date else '<span></span>') + (f'<span class="pct"><i class="ring" style="--v:{pct}"></i>{n}</span>' if pct is not None else '') + '</div>'
-    return f'<div class="bcard"><div class="row"><span class="title">{title}</span><span class="who">{who}</span></div>{tags(*tg)}{meta}</div>'
-def column(name, count, color, cards):
-    return f'<div class="col"><div class="colhd"><i style="background:{color}"></i>{name}<span>{count}</span></div><div class="slot"></div>' + "".join(cards) + '</div>'
-BOARD_HTML = (
-  '<div class="board">'
-  '<div class="toolbar"><span class="proj">All Projects <i class="chev"></i></span><span class="search">Search</span><span class="filter">Filter</span><span class="ico"></span></div>'
-  '<div class="cols">'
-  + column("Not Started", 188, "#8a8a8a", [card("14280 Oldia Ave","WD","Jul 31, 2026",0), card("25 Court St","JD",None,94,"aerial","au"), card("26 Saddleback Ridge Dr.","WD","Mar 21, 2026")])
-  + column("Permitting", 13, "#3bb7e6", [card("123 Main St Project","WD",None,0), card("1378 El Sereno","MR",None,0,"ug"), card("1378 El Sereno","WD",None,0,"ug")])
-  + column("Make Ready", 16, "#f0782a", [card("26 Saddleback Ridge Dr.","WD","Mar 21, 2026"), card("Campsite integration","JD",None,0,"att","tx"), card("Clean Test Nov 18","de","Dec 11, 2024",0,"sa","tx")])
-  + '</div>'
-  + '<div class="act hero" data-a="hero">' + card("10428 India Ave","WD","Aug 31, 2026",0,"demo","tx",count=True) + '</div>'
-  '</div>')
+FIELDS = [("Address", "1420 Maple Run Rd, Suffolk, VA"), ("Work type", "Directional boring · 1.25” conduit"), ("Dig start", "Mon, Sep 28")]
+FORM_HTML = (
+    '<div class="card aiform"><div class="ahd"><i class="spark" aria-hidden="true"></i><b>New locate ticket</b><span>Drafted by Clad AI from your work order</span></div>'
+    + "".join(f'<div class="fld" style="--i:{i}"><span>{k}</span><em><span class="type">{v}</span></em></div>' for i, (k, v) in enumerate(FIELDS))
+    + '<div class="cta"><span class="btn2 primary submit">Submit to 811</span><span class="sent"><i></i>Submitted · Ticket 2609-2211-04</span></div></div>')
 
-manage = {
-  "id": "manage", "name": "Manage", "title": "Connect the dots on all the projects you manage",
-  "html": (
-    f'<div class="act" data-a="kanban">{BOARD_HTML}</div>'
-    f'<div class="act" data-a="chart" role="img" aria-label="Weekly production report: five projects, March 2 to April 6">{CHART_HTML}</div>'
-  ),
-  "actors": [
-    {"id": "kanban", "kf": [P(300, 1170, 841, 386, Y2, at=.0, s=1), P(300, 1170, 841, 386, Y2, at=.25, s=1), P(192, 1170, 841, 386, Y2, at=.62, s=round(408/841, 3))]},
-    {"id": "chart",  "kf": [P(667, 1220, 643, 429, Y2, at=.0, o=0, d=0), P(667, 1220, 643, 429, Y2, at=.42, o=0, d=0), P(667, 1167, 643, 429, Y2, at=.62, o=1, d=0), P(667, 1167, 643, 429, Y2, at=.92, o=1, d=1)]},
-    # three columns: lefts 1.2 / 34.2 / 67.1 (% of board); rests below the column headers, dips while travelling
-    {"id": "hero",   "kf": [{"at":.0,"x":1.2,"y":23,"v":0},{"at":.08,"x":1.2,"y":23,"v":0},{"at":.16,"x":17.7,"y":34,"v":10},{"at":.24,"x":34.2,"y":23,"v":20},{"at":.36,"x":34.2,"y":23,"v":20},{"at":.45,"x":50.6,"y":34,"v":31},{"at":.54,"x":67.1,"y":23,"v":41}]},
-  ],
-}
-
-# =====================================================================================
-# BILL
-# =====================================================================================
-Y3 = 1968
-LINES = [("D02","Mount NID at service address",24,"$12.12","$290.88"),("D03","UG pull fiber drop from Terminal to Flowerpot",180,"$8.50","$1,530.00"),
-         ("D04","Bury Drop Tail 12\" depth from flowerpot to NID",322,"$9.60","$3,091.20"),("GT-CON01","1.25\" Conduit (1)",271,"$8.12","$2,200.52"),
-         ("GT-CON02","1.25\" Conduit (2)",400,"$8.12","$3,248.00"),("GT-FFP01","FP - 10\" Round",2,"$25.00","$50.00")]
-UPDATES = [  # date, code, item, qty, completed by (person or company), attachments
-  ("Mon Sep 14","D02","Mount NID at service address","24 EA","D. Alvarez",["IMG","IMG"]),
-  ("Mon Sep 14","D03","UG pull fiber drop","180 LF","Ortiz Underground",["PDF"]),
-  ("Tue Sep 15","D04","Bury drop tail 12\"","322 LF","Crew 3",[]),
-  ("Wed Sep 16","GT-CON01","1.25\" Conduit (1)","271 LF","Bell Boring",["IMG"]),
-  ("Thu Sep 17","GT-CON02","1.25\" Conduit (2)","400 LF","Crew 3",["PDF","IMG"]),
-  ("Fri Sep 18","GT-FFP01","FP - 10\" Round","2 EA","D. Alvarez",[]),
+MINE = [  # address, ticket, (status before, after), expires
+    ("1420 Maple Run Rd", "2609-2211-04", ("Submitted", "Cleared"), "Oct 12"),
+    ("Hwy 9 & Mill Rd", "2609-2208-02", ("Expires Fri", "Renewed"), "Oct 24"),
+    ("71 Riverside Dr", "2609-2207-11", ("Pending", "Cleared"), "Oct 3"),
 ]
-def who(name):
-    company = any(k in name for k in ("Underground","Boring","Civil"))
-    ini = "".join(w[0] for w in name.replace(".","").split()[:2]).upper()
-    return f'<span class="by {"co" if company else "person"}"><i>{ini}</i>{name}</span>'
-UPDATES_HTML = (
-  '<div class="ui updates"><div class="uhd"><b>Daily updates</b><span class="k2">Maple Run · Week of Sep 14</span><span class="btn2">Approve all</span></div>'
-  + rows_reveal([f'<div class="r"><span class="date">{d}</span><span class="item"><em>{c}</em> {n}</span><span class="qty">{q}</span>{who(by)}<span class="att">{"".join(f"<i>{t}</i>" for t in att)}</span></div>' for d,c,n,q,by,att in UPDATES], .1)
-  + '</div>')
-INVOICE = (
-  '<div class="ui invoice">'
-  '<div class="vhd"><b>Invoice</b><span class="logo">ACME</span></div>'
-  '<div class="vmeta"><div><span>Invoice #</span><b>487</b></div><div><span>Invoice date</span><b>September 1, 2026</b></div><div><span>Date due</span><b>October 1, 2026</b></div></div>'
-  '<div class="vaddr"><div><b>Acme Inc.</b>123 William Street<br>New York, New York 10038<br>United States</div><div><b>Bill to</b>Big TelCo<br>102 3rd Avenue<br>New York, New York 10003<br>United States</div></div>'
-  '<div class="vdue"><span data-count="money">$0.00</span> USD due October 1, 2026</div>'
-  '<div class="vproj"><b>Project:</b> Suffolk, VA - Z1.4<br><b>Work Dates:</b> 06/17/26, 06/22/26</div>'
-  '<div class="vth"><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span></div>'
-  + rows_reveal([f'<div class="r"><span>{c} {n}</span><span>{q}</span><span>{r}</span><span>{a}</span></div>' for c,n,q,r,a in LINES], .12)
-  + '<div class="vtot"><span>Amount due (USD)</span><b data-count="money">$0.00</b></div></div>')
-QBO = (
-  '<div class="ui qbo"><div class="qhd2">QuickBooks sync</div>'
-  '<div class="pair"><span class="node clad"><img src="/assets/clad-logo.svg" alt="Clad" width="80" height="27" /></span>'
-  '<svg class="arc" viewBox="0 0 200 80" aria-hidden="true"><path pathLength="1" d="M8 60 C 60 0, 140 0, 192 60"/><path class="arc2" pathLength="1" d="M192 20 C 140 80, 60 80, 8 20"/></svg>'
-  '<span class="node qb"><i>qb</i>QuickBooks</span></div>'
-  '<div class="sync"><i></i><span>Invoice #487 synced</span><em>Retainage 10% · $1,041.06 held</em></div></div>')
-
-bill = {
-  "id": "billing", "name": "Billing", "title": "Bill accurately", "sub": "One system to prevent over- and under-billing",
-  "feats": [("Production tracking", "Collect daily production and documentation from the field"), ("Linked invoices & bills", "Tie your invoices and bills directly to approved production, so you only bill for work that’s done"), ("QBO integration", "Sync invoices with QuickBooks to speed up AR accounting and track retainage")],
-  "html": (
-    f'<div class="act" data-a="updates"><div class="mock app">{UPDATES_HTML}</div></div>'
-    f'<div class="act" data-a="invoice"><div class="mock photo">{INVOICE}</div></div>'
-    f'<div class="act" data-a="qbo"><div class="mock app">{QBO}</div></div>'
-  ),
-  "actors": [
-    # daily updates arrive like a production line, then the list slides left to make room for the invoice
-    {"id": "updates", "kf": [P(300, 1975, 640, 420, Y3, at=.0, o=1, d=0), P(300, 1975, 640, 420, Y3, at=.3, o=1, d=1), P(136, 1990, 560, 400, Y3, at=.5, o=.85, d=1), P(136, 1990, 560, 400, Y3, at=.78, o=.85, d=1), P(136, 2010, 560, 400, Y3, at=.9, o=.45, d=1)]},
-    {"id": "invoice", "kf": [P(790, 2000, 512, 540, Y3, at=.0, o=0, d=0, v=0), P(790, 2000, 512, 540, Y3, at=.34, o=0, d=0, v=0), P(740, 1962, 512, 540, Y3, at=.5, o=1, d=0, v=0), P(740, 1962, 512, 540, Y3, at=.76, o=1, d=1, v=10410.60), P(740, 1962, 512, 540, Y3, at=.8, o=1, d=1, v=10410.60), P(700, 1962, 512, 540, Y3, at=.9, o=.5, d=1, v=10410.60)]},
-    {"id": "qbo",     "kf": [P(820, 2420, 470, 230, Y3, at=.0, o=0, d=0), P(820, 2420, 470, 230, Y3, at=.78, o=0, d=0), P(820, 2380, 470, 230, Y3, at=.88, o=1, d=0), P(820, 2380, 470, 230, Y3, at=1.0, o=1, d=1)]},
-  ],
-}
-
-
-# =====================================================================================
-# LOCATES
-# =====================================================================================
-Y4 = 2800
-TICKETS = [  # ticket, address, company (you or a sub), (status before, status after), expires
-  ("2609-2211-04","1420 Maple Run Rd","Acme Fiber",("Submitted","Cleared"),"Oct 12"),
-  ("2609-2210-17","388 Cedar Loop","Ortiz Underground",("Pending","Cleared"),"Oct 9"),
-  ("2609-2208-02","Hwy 9 & Mill Rd","Bell Boring",("Expires Fri","Renewed"),"Oct 24"),
-  ("2609-2207-11","71 Riverside Dr","Acme Fiber",("Pending","Cleared"),"Oct 3"),
-  ("2609-2205-06","902 Main St","Kline Civil",("Pending","Cleared"),"Oct 1"),
+SUBS = [  # address, ticket, company, status, expires
+    ("388 Cedar Loop", "2609-2210-17", "Ortiz Underground", "Cleared", "Oct 9"),
+    ("902 Main St", "2609-2205-06", "Kline Civil", "Pending", "Oct 1"),
+    ("14 Harbor Way", "2609-2212-09", "Bell Boring", "Submitted", "Oct 15"),
 ]
-def status(a, b, i):
-    cls = lambda t: "ok" if t in ("Cleared","Renewed") else "warn" if t.startswith("Expires") or t == "Pending" else "info"
-    if not b: return f'<span class="st"><em class="pill {cls(a)}">{a}</em></span>'
-    return f'<span class="st swap" style="--j:{i}"><em class="pill {cls(a)} a">{a}</em><em class="pill {cls(b)} b">{b}</em></span>'
-LOCATES = (
-  '<div class="ui locates"><div class="lhd"><b>Locate tickets</b><span class="k2">Maple Run · 14 active</span><span class="btn2">Filter</span></div>'
-  '<div class="lth"><span>Ticket</span><span>Address</span><span>Company</span><span>Status</span><span>Expires</span></div>'
-  + "".join(f'<div class="r" style="--i:{i}"><span class="code">{t}</span><span>{ad}</span><span class="co{" you" if co == "Acme Fiber" else ""}">{co}</span>{status(sa, sb, i)}<span>{ex}</span></div>' for i,(t,ad,co,(sa,sb),ex) in enumerate(TICKETS))
-  + '</div>')
-AIFORM = (
-  '<div class="ui aiform"><div class="ahd"><i class="spark"></i><b>New locate ticket</b><span>Drafted by Clad from the work order</span></div>'
-  + "".join(f'<div class="r af" style="--i:{i}"><span>{k}</span><em>{v}</em></div>' for i,(k,v) in enumerate([("Address","1420 Maple Run Rd, Suffolk, VA"),("Work type","Directional boring · 1.25” conduit"),("Dig start","Mon, Sep 28"),("Duration","5 working days"),("Contact","Crew 3 · D. Alvarez")]))
-  + '<div class="r af cta" style="--i:5"><span class="btn2 primary">Submit to 811</span><span class="sent"><i></i>Submitted · ticket 2609-2211-04</span></div></div>')
+
+
+def pill(t, extra=""):
+    cls = "ok" if t in ("Cleared", "Renewed") else "warn" if t.startswith("Expires") or t == "Pending" else "info"
+    return f'<em class="spill {cls} {extra}">{t}</em>'
+
+
+TICKETS_HTML = (
+    '<div class="card tickets"><div class="chd"><b>Locate tickets</b><span class="filter"><em class="fa">Acme Fiber</em><em class="fb">All subcontractors</em></span></div>'
+    '<div class="lth"><span>Ticket</span><span>Company</span><span>Status</span><span>Expires</span></div>'
+    '<div class="rows"><div class="grp a">'
+    + "".join(f'<div class="row" style="--j:{j}"><span class="tk"><b>{ad}</b><small>{t}</small></span>{avatar("Acme Fiber")}'
+              f'<span class="st">{pill(a, "a")}{pill(b, "b")}</span><span class="ex">{ex}</span></div>'
+              for j, (ad, t, (a, b), ex) in enumerate(MINE))
+    + '</div><div class="grp b">'
+    + "".join(f'<div class="row" style="--i:{i}"><span class="tk"><b>{ad}</b><small>{t}</small></span>{avatar(co)}'
+              f'<span class="st">{pill(stt)}</span><span class="ex">{ex}</span></div>'
+              for i, (ad, t, co, stt, ex) in enumerate(SUBS))
+    + '</div></div></div>')
+
 locates = {
-  "id": "locates", "name": "Locates", "title": "Automate your 811 tickets", "sub": "AI 811 ticket management to submit and track your locate requests", "link": ("Learn more", "#locates"),
-  "feats": [("AI ticket submission", "Use AI to create and submit 811 tickets in bulk"), ("Automated tracking and renewals", "Visualize ticket status and keep tickets updated from a single dashboard"), ("Subcontractor visibility", "Monitor your subcontractors’ 811 tickets")],
-  "html": (
-    f'<div class="act" data-a="aiform"><div class="mock app">{AIFORM}</div></div>'
-    f'<div class="act" data-a="tickets"><div class="mock app">{LOCATES}</div></div>'
-  ),
-  "actors": [
-    {"id": "aiform",  "kf": [P(800, 2860, 470, 380, Y4, at=.0, o=0, d=0), P(800, 2840, 470, 380, Y4, at=.12, o=1, d=0), P(800, 2840, 470, 380, Y4, at=.5, o=1, d=1), P(800, 2840, 470, 380, Y4, at=.62, o=1, d=1.4), P(830, 2840, 470, 380, Y4, at=.78, o=.55, d=1.4)]},
-    {"id": "tickets", "kf": [P(136, 2840, 640, 400, Y4, at=.0, o=1, d=0), P(136, 2840, 640, 400, Y4, at=.5, o=1, d=0), P(136, 2840, 640, 400, Y4, at=.98, o=1, d=1.2)]},
-  ],
+    "id": "locates", "name": "Locates", "title": "Automate your 811 tickets",
+    "sub": "AI 811 ticket management to submit and track your locate requests", "link": ("Learn more", "#locates"),
+    "feats": [
+        ("AI ticket submission", "Use AI to create and submit 811 tickets in bulk"),
+        ("Automated tracking and renewals", "Visualize ticket status and keep tickets updated from a single dashboard"),
+        ("Subcontractor visibility", "Monitor your subcontractors’ 811 tickets"),
+    ],
+    "html": (
+        f'<div class="act" data-a="form">{FORM_HTML}</div>'
+        f'<div class="act" data-a="tickets">{TICKETS_HTML}</div>'
+    ),
+    "actors": [
+        # step 1: the form types itself out and submits
+        {"id": "form", "kf": [
+            kf(0, x=50, y=46, w=68, s=1, o=1, d=0), kf(.04, x=50, y=46, w=68, s=1, o=1, d=0),
+            kf(.24, x=50, y=46, w=68, s=1, o=1, d=1), kf(.3, x=50, y=46, w=68, s=1, o=1, d=1.3),
+            kf(.36, x=50, y=46, w=68, s=1, o=1, d=1.3), kf(.48, x=50, y=20, w=68, s=.84, o=.45, d=1.3)]},
+        # step 2: your tickets clear and renew; step 3: the view switches to subcontractor tickets
+        {"id": "tickets", "kf": [
+            kf(0, x=50, y=66, w=90, s=.96, o=0, d=0), kf(.38, x=50, y=66, w=90, s=.96, o=0, d=0),
+            kf(.5, x=50, y=60, w=90, s=1, o=1, d=0), kf(.65, x=50, y=60, w=90, s=1, o=1, d=1),
+            kf(.72, x=50, y=60, w=90, s=1, o=1, d=1), kf(.94, x=50, y=60, w=90, s=1, o=1, d=1.9),
+            kf(1, x=50, y=60, w=90, s=1, o=1, d=1.9)]},
+    ],
 }
 
-SCENES = [bill, capture, locates]
+SCENES = [billing, pm, locates]
 
+# =====================================================================================
+# output
+# =====================================================================================
 scenes_html = ""
 for sc in SCENES:
+    link = f'<a class="more" href="{sc["link"][1]}">{sc["link"][0]} <span aria-hidden="true">›</span></a>' if sc.get("link") else ""
+    feats = "".join(
+        f'<li data-step="{i}"{" class=is-active" if i == 0 else ""}><button type="button"><b>{t}</b><span>{d}</span></button></li>'
+        for i, (t, d) in enumerate(sc["feats"]))
     scenes_html += f'''
   <section class="scene" id="story-{sc["id"]}" data-scene="{sc["id"]}">
     <div class="pin">
       <div class="head">
         <span class="label">{sc["name"]}</span>
-        <div class="hrow"><h3>{sc["title"]}</h3>{f'<a class="more" href="{sc["link"][1]}">{sc["link"][0]} <span aria-hidden="true">›</span></a>' if sc.get("link") else ""}</div>
+        <h3>{sc["title"]}</h3>
         <p class="sub">{sc["sub"]}</p>
-        <ul class="feats">{"".join(f"<li><b>{t}</b><span>{d}</span></li>" for t, d in sc["feats"])}</ul>
+        {link}
+        <ul class="feats">{feats}</ul>
       </div>
       <div class="stage">{sc["html"]}</div>
     </div>
   </section>'''
 
-CSS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "story.css")).read()
+CSS = open(os.path.join(HERE, "story.css")).read()
 astro = f'''---
-/* Product story: three scroll-scrubbed scenes (Capture, Manage, Bill). GENERATED by reference/gen_story.py;
-   styles in reference/story.css. Edit those, not this file. */
+/* Product story: three pinned scenes (Billing, Project Management, Locates), each three scroll steps.
+   GENERATED by reference/gen_story.py; styles in reference/story.css. Edit those, not this file. */
 ---
 <div class="story container-wide" id="story" aria-label="How Clad works">{scenes_html}
 </div>
@@ -288,31 +305,31 @@ astro = f'''---
 '''
 open(f"{ROOT}/src/components/ProductStory.astro", "w").write(astro)
 
-config = "// Generated by reference/gen_story.py. Poses are % of the stage (or of the parent for nested actors); `at` is scroll progress 0..1.\n"
-config += "export const SCENES = " + json.dumps([{"id": sc["id"], "actors": sc["actors"]} for sc in SCENES]) + ";\n"
+config = ("// Generated by reference/gen_story.py. x/y are actor centers in % of the stage, w is width %, s scale,\n"
+          "// o opacity, d draw progress (--draw), v a counted value. `at` and `steps` are scroll progress 0..1.\n")
+config += "export const SCENES = " + json.dumps(
+    [{"id": sc["id"], "steps": STEPS, "actors": sc["actors"]} for sc in SCENES]) + ";\n"
 open(f"{ROOT}/src/scripts/story.config.js", "w").write(config)
 
 engine = r'''import { SCENES } from "./story.config.js";
 
-// Scroll-scrubbed keyframe engine. Each scene is a tall section with a sticky stage; progress p (0..1)
-// is how far the section has scrolled, and every actor's pose is interpolated from its keyframes.
-// Pose keys: x y w h (%), r (deg), s (scale), o (opacity), d (draw 0..1 -> --draw), v (value -> [data-count] text).
-// An actor with a `skin` range crossfades its first child into its second across that range.
+// Scroll-scrubbed keyframe engine. Each scene is a tall section with a sticky frame; progress p (0..1)
+// is how far the section has scrolled. Every actor's pose is interpolated from its keyframes, and the
+// feature list highlights whichever step p is in. Clicking a feature scrolls to its step.
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const smooth = (p, a, b) => { const t = clamp((p - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const UNITS = { x: "left", y: "top", w: "width", h: "height" };
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const fmt = (v, kind) => kind === "pct" ? Math.round(v) + "%" : kind === "money" ? money.format(v) : Math.round(v).toLocaleString("en-US");
 
 function apply(el, pose) {
-  for (const k in UNITS) if (pose[k] != null) el.style[UNITS[k]] = pose[k] + "%";
+  if (pose.x != null) el.style.left = pose.x + "%";
+  if (pose.y != null) el.style.top = pose.y + "%";
+  if (pose.w != null) el.style.width = pose.w + "%";
   if (pose.o != null) el.style.opacity = pose.o;
+  if (pose.s != null) el.style.transform = `scale(${pose.s})`;
   if (pose.d != null) el.style.setProperty("--draw", pose.d);
-  if (pose.v != null) { el.style.setProperty("--v", pose.v); el.querySelectorAll("[data-count]").forEach((t) => { t.textContent = fmt(pose.v, t.dataset.count); }); }
-  if (pose.r != null || pose.s != null)
-    el.style.transform = (pose.r != null ? `rotate(${pose.r}deg) ` : "") + (pose.s != null ? `scale(${pose.s})` : "");
+  if (pose.v != null) el.querySelectorAll("[data-count]").forEach((t) => { t.textContent = fmt(pose.v, t.dataset.count); });
 }
 
 function poseAt(kf, p) {
@@ -334,21 +351,26 @@ function mount(cfg) {
   if (!sec) return;
   const stage = sec.querySelector(".stage");
   const actors = cfg.actors.map((a) => ({ ...a, el: stage.querySelector(`.act[data-a="${a.id}"]`) }));
-  let ticking = false;
+  const feats = Array.from(sec.querySelectorAll(".feats li"));
+  let current = -1;
+  const total = () => sec.offsetHeight - window.innerHeight;
+
   function render(p) {
-    for (const a of actors) {
-      if (!a.el) continue;
-      apply(a.el, poseAt(a.kf, p));
-      if (a.skin) { const k = smooth(p, a.skin[0], a.skin[1]); a.el.children[0].style.opacity = 1 - k; a.el.children[1].style.opacity = k; }
-    }
+    for (const a of actors) if (a.el) apply(a.el, poseAt(a.kf, p));
+    let s = 0;
+    cfg.steps.forEach((t, i) => { if (p >= t) s = i; });
+    if (s !== current) { current = s; feats.forEach((li, i) => li.classList.toggle("is-active", i === s)); }
   }
   function measure() {
-    ticking = false;
-    const r = sec.getBoundingClientRect(), total = sec.offsetHeight - window.innerHeight;
-    const p = clamp(-r.top / total, 0, 1);
+    const p = clamp(-sec.getBoundingClientRect().top / total(), 0, 1);
     render(reduce ? (p < 0.5 ? 0 : 1) : p);
   }
-  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(measure); } }, { passive: true });
+  feats.forEach((li, i) => li.querySelector("button")?.addEventListener("click", () => {
+    const top = window.scrollY + sec.getBoundingClientRect().top + (cfg.steps[i] + 0.06) * total();
+    window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+  }));
+  // scroll events are already delivered once per frame, so render directly
+  window.addEventListener("scroll", measure, { passive: true });
   window.addEventListener("resize", measure);
   measure();
 }
