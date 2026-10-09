@@ -100,39 +100,43 @@ billing = {
 # =====================================================================================
 # 2. PROJECT MANAGEMENT: minimal blueprint -> redlines + labels -> report -> forecast
 # =====================================================================================
-# blueprint drawn in a 600 x 360 box; preserveAspectRatio meet keeps text undistorted
-LOTS = [(178 + c * 46, 22 + r * 44) for r in range(3) for c in range(4)] + [(430 + c * 44, 300 + r * 30) for r in range(2) for c in range(3)]
-REDLINE = "135,26 135,232 330,232 392,160 520,160"
-LABELS = [  # node (x, y, kind), label box (x, y), text
-    ((135, 92, "hh"), (150, 80), "UG-104-01"),
-    ((135, 232, "bore"), (30, 252), "BD03-01"),
-    ((330, 232, "hh"), (282, 252), "BM60-01"),
-    ((392, 160, "hh"), (404, 124), "UG-104-02"),
+# Blueprint traced from Jocelyn's start/end frames (reference/figma/blueprint-start.png, -end.png). The basemap
+# is the start frame with its markup removed (reference/figma/blueprint-clean.py), traced to vector with potrace
+# into reference/figma/blueprint-map.svg. Coordinates below are in that 547 x 456 frame.
+import re
+_map = open(os.path.join(HERE, "figma", "blueprint-map.svg")).read()
+MAP_G = re.search(r"(<g transform=.*?</g>)", _map, re.S).group(1).replace('fill="#000000"', 'class="basemap"')
+BP_LINE = "98,305 414,354.5 462,178"
+BP_SQUARES = [(251, 73, 31), (450, 161, 32)]  # x, y, size (stroke centerline)
+BP_CIRCLE = (98, 305, 16)
+BP_LABELS = [  # box x, y, w, text; cascade order follows the line, the standalone square last
+    (62, 340, 78, "BDO3-01"),
+    (233, 365, 142, "BM60(1)(1.25)-01"),
+    (420, 214, 93, "UG-104-02"),
+    (220, 122, 93, "UG-104-03"),
 ]
 
 
-def label_svg(i, node, box, text):
-    nx, ny, kind = node
-    mark = (f'<circle cx="{nx}" cy="{ny}" r="7" class="nbore"/>' if kind == "bore"
-            else f'<rect x="{nx - 7}" y="{ny - 7}" width="14" height="14" class="nhh"/>')
-    bx, by = box
-    w = 10 + len(text) * 7.2
-    return (f'<g class="lbl" style="--i:{i}">{mark}'
-            f'<rect x="{bx}" y="{by}" width="{w:.0f}" height="22" class="lbox"/>'
-            f'<text x="{bx + w / 2:.0f}" y="{by + 15}" text-anchor="middle">{text}</text></g>')
+def bp_label(i, x, y, w, text):
+    return (f'<g class="lbl" style="--i:{i}"><rect class="lbox" x="{x}" y="{y}" width="{w}" height="28"/>'
+            f'<text x="{x + w / 2:.1f}" y="{y + 19}" text-anchor="middle">{text}</text></g>')
+
+
+def bp_marks(cls):
+    sq = "".join(f'<rect class="{cls} sq" x="{x}" y="{y}" width="{n}" height="{n}"/>' for x, y, n in BP_SQUARES)
+    cx, cy, r = BP_CIRCLE
+    return f'{sq}<circle class="{cls} ci" cx="{cx}" cy="{cy}" r="{r}"/>'
 
 
 BLUEPRINT_SVG = (
-    '<svg class="bpsvg" viewBox="0 0 600 360" aria-hidden="true">'
-    '<defs><pattern id="bpgrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#f0efeb" stroke-width="1"/></pattern></defs>'
-    '<rect width="600" height="360" fill="#fff"/><rect width="600" height="360" fill="url(#bpgrid)"/>'
-    '<g class="roads"><path d="M0 214H600M0 250H600M118 0V214M152 0V214M360 250L420 360M396 250L456 360"/></g>'
-    '<g class="lots">' + "".join(f'<rect x="{x}" y="{y}" width="38" height="34"/>' for x, y in LOTS) + '</g>'
-    '<g class="bldg"><rect x="24" y="40" width="70" height="52"/><rect x="24" y="120" width="70" height="60"/><rect x="190" y="290" width="120" height="50"/></g>'
-    f'<polyline class="redline" pathLength="1" points="{REDLINE}"/>'
-    + "".join(label_svg(i, n, b, t) for i, (n, b, t) in enumerate(LABELS))
-    + '<g class="north"><path d="M570 40l8 20h-16z"/><text x="570" y="74" text-anchor="middle">N</text></g>'
-    '</svg>')
+    '<svg class="bpsvg" viewBox="0 0 547 456" aria-hidden="true">'
+    '<rect width="547" height="456" fill="#fff"/>'
+    + MAP_G
+    # the black markup from the start frame, covered stroke by stroke as the red redline draws over it
+    + f'<g class="ink"><polyline points="{BP_LINE}"/>{bp_marks("k")}</g>'
+    + f'<g class="red"><polyline class="redline" pathLength="1" points="{BP_LINE}"/>{bp_marks("r")}</g>'
+    + "".join(bp_label(i, *l) for i, l in enumerate(BP_LABELS))
+    + '</svg>')
 
 BLUEPRINT_HTML = (
     '<div class="card blueprint"><div class="chd"><b>As-built</b><span>Suffolk, VA · Zone 1.4 · Sheet 3 of 12</span>'
@@ -177,7 +181,7 @@ pm = {
     "feats": [
         ("Digital as-builts", "Build GIS or PDF as-builts in real-time to visualize your construction progress"),
         ("Reporting", "Build and share custom reports"),
-        ("Forecasting", "See where every project lands before it gets there"),
+        ("Forecasting", "See where projects are headed ahead of time"),
     ],
     "html": (
         f'<div class="act" data-a="blueprint">{BLUEPRINT_HTML}</div>'
@@ -186,9 +190,9 @@ pm = {
     "actors": [
         # step 1: blank blueprint, then the redline draws and its labels cascade in
         {"id": "blueprint", "kf": [
-            kf(0, x=50, y=48, w=88, s=1, o=1, d=0), kf(.04, x=50, y=48, w=88, s=1, o=1, d=0),
-            kf(.2, x=50, y=48, w=88, s=1, o=1, d=1), kf(.32, x=50, y=48, w=88, s=1, o=1, d=1.8),
-            kf(.36, x=50, y=48, w=88, s=1, o=1, d=1.8), kf(.48, x=50, y=22, s=.74, w=88, o=.45, d=1.8)]},
+            kf(0, x=50, y=50, w=74, s=1, o=1, d=0), kf(.05, x=50, y=50, w=74, s=1, o=1, d=0),
+            kf(.21, x=50, y=50, w=74, s=1, o=1, d=1), kf(.32, x=50, y=50, w=74, s=1, o=1, d=1.8),
+            kf(.36, x=50, y=50, w=74, s=1, o=1, d=1.8), kf(.48, x=50, y=26, s=.72, w=74, o=.45, d=1.8)]},
         # step 2: the report comes forward and draws; step 3: the forecast extends it
         {"id": "chart", "kf": [
             kf(0, x=50, y=66, w=84, s=.96, o=0, d=0), kf(.38, x=50, y=66, w=84, s=.96, o=0, d=0),

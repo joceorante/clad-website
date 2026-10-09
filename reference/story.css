@@ -88,16 +88,17 @@
   .story .blueprint .live { margin-left: auto; font-style: normal; font-size: .8em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-orange); display: inline-flex; align-items: center; gap: .4em; }
   .story .blueprint .live::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: currentColor; }
   .story .bpsvg { display: block; width: 100%; height: auto; }
-  .story .bpsvg .roads path { fill: none; stroke: #1f1f1f; stroke-width: 1.2; }
-  .story .bpsvg .lots rect, .story .bpsvg .bldg rect { fill: none; stroke: #b7b5ad; stroke-width: 1; }
-  .story .bpsvg .bldg rect { stroke: #8f8d85; }
-  .story .bpsvg .north path { fill: #1f1f1f; }
-  .story .bpsvg .north text { font-size: 11px; font-weight: 600; fill: #1f1f1f; }
-  .story .bpsvg .redline { fill: none; stroke: #e5484d; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, var(--draw, 0), 1)); }
-  .story .bpsvg .nhh { fill: #fff; stroke: #e5484d; stroke-width: 2.4; }
-  .story .bpsvg .nbore { fill: #fff; stroke: #f0a020; stroke-width: 2.4; }
-  .story .bpsvg .lbox { fill: #fff; stroke: #1f1f1f; stroke-width: 1; }
-  .story .bpsvg .lbl text { font-size: 12px; font-weight: 600; fill: #1f1f1f; font-family: var(--font-body); }
+  /* basemap goes from ink to light gray as the redline draws (--draw 0 -> 1) */
+  .story .bpsvg .basemap { fill: #1f1f1f; opacity: calc(1 - clamp(0, var(--draw, 0), 1) * .72); }
+  .story .bpsvg .ink polyline, .story .bpsvg .ink .k { fill: none; stroke: #111; stroke-width: 3.5; stroke-linejoin: round; }
+  .story .bpsvg .ink { opacity: calc(1 - clamp(0, (var(--draw, 0) - .95) * 20, 1)); }
+  .story .bpsvg .redline { fill: none; stroke: #f0402b; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, var(--draw, 0), 1)); }
+  .story .bpsvg .r { fill: none; stroke: #f0402b; stroke-width: 4.5; }
+  /* the circle turns red as the line leaves it, the squares as the line (and then the sweep) reaches them */
+  .story .bpsvg .r.ci { opacity: clamp(0, var(--draw, 0) * 12, 1); }
+  .story .bpsvg .r.sq { opacity: clamp(0, (var(--draw, 0) - .9) * 10, 1); }
+  .story .bpsvg .lbox { fill: #fff; stroke: #8f8d85; stroke-width: 1; }
+  .story .bpsvg .lbl text { font-size: 14.5px; font-weight: 500; fill: #1f1f1f; font-family: var(--font-body); letter-spacing: .01em; }
   /* labels cascade in after the line finishes: label i appears at --draw = 1 + i * .18 */
   .story .bpsvg .lbl { --k: clamp(0, calc((var(--draw, 0) - 1 - var(--i) * .18) * 6), 1); opacity: var(--k); transform: translateY(calc((1 - var(--k)) * 6px)); transform-box: fill-box; }
 
