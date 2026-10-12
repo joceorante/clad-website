@@ -58,9 +58,9 @@ INVOICE_HTML = (
     '<div class="card invoice">'
     '<div class="vhd"><div><b>Invoice #487</b><span>Intrepid · Suffolk, VA - Z1.4</span></div></div>'
     '<div class="vdue"><span data-count="money">$0.00</span><small>due Oct 1, 2026</small></div>'
-    '<div class="vth"><span>Description</span><span>Qty</span><span>Amount</span></div>'
+    '<div class="vth"><span>Description</span><span class="num">Qty</span><span class="num">Amount</span></div>'
     + "".join(
-        f'<div class="row" style="--i:{i}"><span class="item"><em>{c}</em> {n}<small>From {UPDATES[i][0]} update</small></span><span>{q}</span><span>{a}</span></div>'
+        f'<div class="row" style="--i:{i}"><span class="item"><em>{c}</em> {n}</span><span class="num">{q}</span><span class="num">{a}</span></div>'
         for i, (c, n, q, a) in enumerate(INVOICE_LINES))
     + '<div class="vtot"><span>Amount due</span><b data-count="money">$0.00</b></div></div>')
 
@@ -72,7 +72,7 @@ QB_HTML = (
 # step 1: cards cascade down and to the right, each overlapping the one above it (center x, y, tilt);
 # the header lines up with the first card. ROW_Y is the invoice row each card lands on in step 2.
 CARD_POS = [(40, 30, 0), (50, 50, 0), (60, 70, 0)]
-ROW_Y = [44.5, 55, 65]  # measured centers of the invoice rows
+ROW_Y = [48, 55.2, 62.4]  # measured centers of the invoice rows
 
 
 def card_actor(i):

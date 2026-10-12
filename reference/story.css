@@ -69,8 +69,9 @@
   .story .vdue span { font-size: 1.9em; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
   .story .vdue small { color: #8a8a86; font-size: 1em; }
   .story .vth, .story .invoice .row { display: grid; grid-template-columns: 1fr 3.5em 6.5em; gap: .8em; align-items: center; }
-  .story .vth { color: #8a8a86; font-size: .85em; padding-bottom: .5em; border-bottom: 1px solid #2a2a2a; }
-  .story .vth span:not(:first-child), .story .invoice .row span:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+  .story .vth { color: #8a8a86; padding-bottom: .5em; border-bottom: 1px solid #2a2a2a; }
+  .story .vth span { font-size: .85em; }  /* shrink the header text, not the row, so its columns line up with the rows below */
+  .story .invoice .num { text-align: right; font-variant-numeric: tabular-nums; }
   .story .invoice .row { padding: .5em 0; }
   .story .invoice .item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .story .invoice .item small { display: block; color: #8a8a86; font-size: .8em; margin-top: .15em; }
