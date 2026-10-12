@@ -72,7 +72,7 @@ QB_HTML = (
 # step 1: cards cascade down and to the right, each overlapping the one above it (center x, y, tilt);
 # the header lines up with the first card. ROW_Y is the invoice row each card lands on in step 2.
 CARD_POS = [(40, 30, 0), (50, 50, 0), (60, 70, 0)]
-ROW_Y = [48, 55.2, 62.4]  # measured centers of the invoice rows
+ROW_Y = [45.7, 55.3, 65]  # measured centers of the invoice rows
 
 
 def card_actor(i):
@@ -105,11 +105,11 @@ billing = {
             kf(1, x=50, y=45, w=64, s=1, o=1, d=1, v=INVOICE_TOTAL)]},
         # step 1: field updates float in as loose cards
         *[card_actor(i) for i in range(3)],
-        # step 3: a single sync chip lands under the invoice
+        # step 3: a single sync chip lands overlapping the invoice's bottom edge
         {"id": "qb", "kf": [
-            kf(0, x=50, y=92, w=46, s=.7, o=0, d=0), kf(.72, x=50, y=92, w=46, s=.7, o=0, d=0),
-            kf(.8, x=50, y=88, w=46, s=1, o=1, d=0), kf(.9, x=50, y=88, w=46, s=1, o=1, d=1),
-            kf(1, x=50, y=88, w=46, s=1, o=1, d=1)]},
+            kf(0, x=50, y=86, w=46, s=.7, o=0, d=0), kf(.72, x=50, y=86, w=46, s=.7, o=0, d=0),
+            kf(.8, x=50, y=82.2, w=46, s=1, o=1, d=0), kf(.9, x=50, y=82.2, w=46, s=1, o=1, d=1),
+            kf(1, x=50, y=82.2, w=46, s=1, o=1, d=1)]},
     ],
 }
 
