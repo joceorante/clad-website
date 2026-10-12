@@ -30,10 +30,14 @@ def avatar(name):
 # =====================================================================================
 # 1. BILLING: daily updates -> invoice built from them -> synced to QuickBooks
 # =====================================================================================
-UPDATES = [  # date, code, item, qty, completed by, attachments
-    ("Mon Sep 14", "D02", "Mount NID at service address", "24 EA", "D. Alvarez", ["IMG", "IMG"]),
-    ("Tue Sep 15", "D03", "UG pull fiber drop", "180 LF", "Ortiz Underground", ["PDF"]),
-    ("Wed Sep 16", "GT-CON01", "1.25” Conduit", "271 LF", "Bell Boring", ["IMG"]),
+ICON_DOC = ('<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/>'
+            '<path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>')
+ICON_IMG = ('<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/>'
+            '<circle cx="5.5" cy="6.2" r="1.3"/><path d="M2 12.5l4-4 3 3 2-2 3.5 3.5"/></svg>')
+UPDATES = [  # date, item, completed by, avatar tint, attachments  (layout from Jocelyn's "Daily updates" frame)
+    ("Mon Sep 14", "Mount NID at service address", "D. Alvarez", "cobalt", ["pdf", "img"]),
+    ("Tue Sep 15", "UG pull fiber drop", "Ortiz Underground", "orange", ["pdf"]),
+    ("Wed Sep 16", "1.25” Conduit", "Bell Boring", "gray", ["img"]),
 ]
 INVOICE_LINES = [  # code, item, qty, amount (qty x contract rate)
     ("D02", "Mount NID at service address", "24", "$290.88"),
@@ -42,13 +46,17 @@ INVOICE_LINES = [  # code, item, qty, amount (qty x contract rate)
 ]
 INVOICE_TOTAL = 4021.40
 
-UPDATES_HTML = (
-    '<div class="card updates"><div class="chd"><b>Daily updates</b><span>Maple Run · Week of Sep 14</span></div>'
-    + "".join(
-        f'<div class="row" style="--i:{i}"><div class="l1"><span class="item"><em>{c}</em> {n}</span><span class="qty">{q}</span></div>'
-        f'<div class="l2"><span class="date">{d}</span>{avatar(by)}<span class="att">{"".join(f"<i>{a}</i>" for a in att)}</span></div></div>'
-        for i, (d, c, n, q, by, att) in enumerate(UPDATES))
-    + '</div>')
+
+def update_card(date, item, by, tint, att):
+    ini = "".join(w[0] for w in by.replace(".", "").split()[:2]).upper()
+    icons = "".join(ICON_DOC if a == "pdf" else ICON_IMG for a in att)
+    return (f'<div class="card ucard"><b class="item">{item}</b>'
+            f'<div class="uf"><span class="by"><i class="t-{tint}">{ini}</i>{by}</span><span class="att">{icons}</span></div></div>')
+
+
+UPDATES_HEAD = ('<div class="uhead"><div><b>Daily updates</b><span>Week of Sep 14</span></div>'
+                '<span class="addnew">Add new</span></div>')
+
 
 INVOICE_HTML = (
     '<div class="card invoice">'
@@ -56,7 +64,7 @@ INVOICE_HTML = (
     '<div class="vdue"><span data-count="money">$0.00</span><small>due Oct 1, 2026</small></div>'
     '<div class="vth"><span>Description</span><span>Qty</span><span>Amount</span></div>'
     + "".join(
-        f'<div class="row" style="--i:{i}"><span class="item"><em>{c}</em> {n}<small>Linked to {UPDATES[i][0]} update</small></span><span>{q}</span><span>{a}</span></div>'
+        f'<div class="row" style="--i:{i}"><span class="item"><em>{c}</em> {n}<small>From {UPDATES[i][0]} update</small></span><span>{q}</span><span>{a}</span></div>'
         for i, (c, n, q, a) in enumerate(INVOICE_LINES))
     + '<div class="vtot"><span>Amount due</span><b data-count="money">$0.00</b></div></div>')
 
@@ -65,8 +73,23 @@ QB_HTML = (
     '<span class="txt"><b>Synced to QuickBooks</b><small>Invoice #487 · just now</small></span>'
     '<span class="ok" aria-hidden="true"></span></div>')
 
+# step 1: cards cascade down and to the right, each overlapping the one above it (center x, y, tilt);
+# the header lines up with the first card. ROW_Y is the invoice row each card lands on in step 2.
+CARD_POS = [(42, 39, 0), (50, 55, 0), (58, 71, 0)]
+ROW_Y = [44.5, 55, 65]  # measured centers of the invoice rows
+
+
+def card_actor(i):
+    x, y, r = CARD_POS[i]
+    t0, land = .04 + i * .07, .52 + i * .06
+    return {"id": f"u{i}", "kf": [
+        kf(0, x=x, y=y + 10, w=62, s=.97, o=0, r=r), kf(t0, x=x, y=y + 10, w=62, s=.97, o=0, r=r),
+        kf(t0 + .1, x=x, y=y, w=62, s=1, o=1, r=r), kf(land - .08, x=x, y=y, w=62, s=1, o=1, r=r),
+        kf(land, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0), kf(1, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0)]}
+
+
 billing = {
-    "id": "billing", "name": "Billing", "title": "Bill accurately",
+    "id": "billing", "name": "Billing", "accent": "orange", "title": "Bill accurately",
     "sub": "One system to prevent over- and under-billing",
     "feats": [
         ("Production tracking", "Collect daily production and documentation from the field"),
@@ -74,26 +97,28 @@ billing = {
         ("QBO integration", "Sync invoices with QuickBooks to speed up AR accounting and track retainage"),
     ],
     "html": (
-        f'<div class="act" data-a="updates">{UPDATES_HTML}</div>'
+        f'<div class="act" data-a="uhead">{UPDATES_HEAD}</div>'
         f'<div class="act" data-a="invoice">{INVOICE_HTML}</div>'
-        f'<div class="act" data-a="qb">{QB_HTML}</div>'
+        + "".join(f'<div class="act" data-a="u{i}">{update_card(*u)}</div>' for i, u in enumerate(UPDATES))
+        + f'<div class="act" data-a="qb">{QB_HTML}</div>'
     ),
     "actors": [
-        # step 1: updates arrive one by one, centered
-        {"id": "updates", "kf": [
-            kf(0, x=50, y=46, w=78, s=1, o=1, d=0), kf(.04, x=50, y=46, w=78, s=1, o=1, d=0),
-            kf(.28, x=50, y=46, w=78, s=1, o=1, d=1), kf(.36, x=50, y=46, w=78, s=1, o=1, d=1),
-            kf(.48, x=50, y=20, w=78, s=.86, o=.45, d=1)]},
-        # step 2: the invoice comes forward and fills from those updates
+        # step 1 header; it steps aside when the invoice takes over
+        {"id": "uhead", "kf": [
+            kf(0, x=42, y=19, w=62, s=1, o=0), kf(.02, x=42, y=19, w=62, s=1, o=0), kf(.08, x=42, y=19, w=62, s=1, o=1),
+            kf(.38, x=42, y=19, w=62, s=1, o=1), kf(.46, x=42, y=15, w=62, s=1, o=0), kf(1, x=42, y=15, w=62, s=1, o=0)]},
+        # step 2: the invoice forms, and each update card flies into the line it becomes
         {"id": "invoice", "kf": [
-            kf(0, x=50, y=60, w=72, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=60, w=72, s=.96, o=0, d=0, v=0),
-            kf(.5, x=50, y=53, w=72, s=1, o=1, d=0, v=0), kf(.65, x=50, y=53, w=72, s=1, o=1, d=1, v=INVOICE_TOTAL),
-            kf(1, x=50, y=53, w=72, s=1, o=1, d=1, v=INVOICE_TOTAL)]},
-        # step 3: a single sync chip lands on the invoice
+            kf(0, x=50, y=48, w=64, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=48, w=64, s=.96, o=0, d=0, v=0),
+            kf(.46, x=50, y=45, w=64, s=1, o=1, d=0, v=0), kf(.66, x=50, y=45, w=64, s=1, o=1, d=1, v=INVOICE_TOTAL),
+            kf(1, x=50, y=45, w=64, s=1, o=1, d=1, v=INVOICE_TOTAL)]},
+        # step 1: field updates float in as loose cards
+        *[card_actor(i) for i in range(3)],
+        # step 3: a single sync chip lands under the invoice
         {"id": "qb", "kf": [
-            kf(0, x=50, y=94, w=50, s=.7, o=0, d=0), kf(.71, x=50, y=94, w=50, s=.7, o=0, d=0),
-            kf(.8, x=50, y=92.5, w=50, s=1, o=1, d=0), kf(.9, x=50, y=92.5, w=50, s=1, o=1, d=1),
-            kf(1, x=50, y=92.5, w=50, s=1, o=1, d=1)]},
+            kf(0, x=50, y=92, w=46, s=.7, o=0, d=0), kf(.72, x=50, y=92, w=46, s=.7, o=0, d=0),
+            kf(.8, x=50, y=88, w=46, s=1, o=1, d=0), kf(.9, x=50, y=88, w=46, s=1, o=1, d=1),
+            kf(1, x=50, y=88, w=46, s=1, o=1, d=1)]},
     ],
 }
 
@@ -106,35 +131,50 @@ billing = {
 import re
 _map = open(os.path.join(HERE, "figma", "blueprint-map.svg")).read()
 MAP_G = re.search(r"(<g transform=.*?</g>)", _map, re.S).group(1).replace('fill="#000000"', 'class="basemap"')
-BP_LINE = "98,305 414,354.5 462,178"
-BP_SQUARES = [(251, 73, 31), (450, 161, 32)]  # x, y, size (stroke centerline)
-BP_CIRCLE = (98, 305, 16)
-BP_LABELS = [  # box x, y, w, text; cascade order follows the line, the standalone square last
-    (62, 340, 78, "BDO3-01"),
-    (233, 365, 142, "BM60(1)(1.25)-01"),
-    (420, 214, 93, "UG-104-02"),
-    (220, 122, 93, "UG-104-03"),
+# Each as-built run gets its own color, and those colors carry into the report as its three series.
+RUN_A, RUN_B, RUN_C = "#ff5900", "#4750ff", "#2f9e5b"  # BM60 bore run, UG-104-02 drop, UG-104-03 handhole
+BP_SEG1 = "98,305 414,354.5"   # circle -> vertex (run A)
+BP_SEG2 = "414,354.5 462,178"  # vertex -> right square (run B)
+BP_SQUARES = [(251, 73, 31, RUN_C), (450, 161, 32, RUN_B)]  # x, y, size (stroke centerline), color
+BP_CIRCLE = (98, 305, 16, RUN_A)
+BP_LABELS = [  # box x, y, w, text, color; cascade order follows the line, the standalone square last
+    (56, 340, 90, "BDO3-01", RUN_A),
+    (227, 365, 154, "BM60(1)(1.25)-01", RUN_A),
+    (414, 214, 105, "UG-104-02", RUN_B),
+    (214, 122, 105, "UG-104-03", RUN_C),
 ]
+BP_VIEW = "0 46 547 354"  # crop to a 16:10-ish landscape frame
 
 
-def bp_label(i, x, y, w, text):
+def bp_label(i, x, y, w, text, color):
     return (f'<g class="lbl" style="--i:{i}"><rect class="lbox" x="{x}" y="{y}" width="{w}" height="28"/>'
-            f'<text x="{x + w / 2:.1f}" y="{y + 19}" text-anchor="middle">{text}</text></g>')
+            f'<rect x="{x + 8}" y="{y + 10}" width="8" height="8" rx="1.5" fill="{color}"/>'
+            f'<text x="{x + 6 + w / 2:.1f}" y="{y + 19}" text-anchor="middle">{text}</text></g>')
 
 
-def bp_marks(cls):
-    sq = "".join(f'<rect class="{cls} sq" x="{x}" y="{y}" width="{n}" height="{n}"/>' for x, y, n in BP_SQUARES)
-    cx, cy, r = BP_CIRCLE
-    return f'{sq}<circle class="{cls} ci" cx="{cx}" cy="{cy}" r="{r}"/>'
+def bp_ink():
+    sq = "".join(f'<rect class="k" x="{x}" y="{y}" width="{n}" height="{n}"/>' for x, y, n, _ in BP_SQUARES)
+    cx, cy, r, _ = BP_CIRCLE
+    return f'<polyline points="{BP_SEG1} 462,178"/>{sq}<circle class="k" cx="{cx}" cy="{cy}" r="{r}"/>'
+
+
+def bp_runs():
+    (x1, y1, n1, c1), (x2, y2, n2, c2) = BP_SQUARES
+    cx, cy, r, ca = BP_CIRCLE
+    return (f'<polyline class="seg s1" pathLength="1" points="{BP_SEG1}" style="stroke:{RUN_A}"/>'
+            f'<polyline class="seg s2" pathLength="1" points="{BP_SEG2}" style="stroke:{RUN_B}"/>'
+            f'<circle class="mk ci" cx="{cx}" cy="{cy}" r="{r}" style="stroke:{ca}"/>'
+            f'<rect class="mk sq2" x="{x2}" y="{y2}" width="{n2}" height="{n2}" style="stroke:{c2}"/>'
+            f'<rect class="mk sq1" x="{x1}" y="{y1}" width="{n1}" height="{n1}" style="stroke:{c1}"/>')
 
 
 BLUEPRINT_SVG = (
-    '<svg class="bpsvg" viewBox="0 0 547 456" aria-hidden="true">'
+    f'<svg class="bpsvg" viewBox="{BP_VIEW}" aria-hidden="true">'
     '<rect width="547" height="456" fill="#fff"/>'
     + MAP_G
-    # the black markup from the start frame, covered stroke by stroke as the red redline draws over it
-    + f'<g class="ink"><polyline points="{BP_LINE}"/>{bp_marks("k")}</g>'
-    + f'<g class="red"><polyline class="redline" pathLength="1" points="{BP_LINE}"/>{bp_marks("r")}</g>'
+    # the black markup from the start frame, covered stroke by stroke as the colored runs draw over it
+    + f'<g class="ink">{bp_ink()}</g>'
+    + f'<g class="runs">{bp_runs()}</g>'
     + "".join(bp_label(i, *l) for i, l in enumerate(BP_LABELS))
     + '</svg>')
 
@@ -142,9 +182,11 @@ BLUEPRINT_HTML = (
     '<div class="card blueprint"><div class="chd"><b>As-built</b><span>Suffolk, VA · Zone 1.4 · Sheet 3 of 12</span>'
     '<em class="live">Live</em></div>' + BLUEPRINT_SVG + '</div>')
 
-# weekly production report: three series, then a dashed two-week forecast
-SERIES = [("#3cb043", [47, 30, 47, 46, 44, 53]), ("#e5533c", [48, 55, 58, 50, 43, 22]), ("#f2c230", [5, 17, 10, 24, 18, 6])]
-FORECAST = {"#3cb043": [53, 55, 58], "#e5533c": [22, 27, 31], "#f2c230": [6, 11, 15]}
+# weekly production report: one series per as-built run, in the run's color, then a dashed two-week forecast
+SERIES = [(RUN_A, "BM60(1)(1.25)-01", [48, 55, 58, 50, 43, 22]),
+          (RUN_B, "UG-104-02", [30, 38, 46, 44, 50, 53]),
+          (RUN_C, "UG-104-03", [8, 14, 11, 20, 24, 30])]
+FORECAST = {RUN_A: [22, 28, 34], RUN_B: [53, 55, 58], RUN_C: [30, 35, 39]}
 PW, PH, YMAX, FW = 600, 260, 60, 240
 
 
@@ -156,7 +198,7 @@ chart_svg = "".join(
     f'<line class="grid" x1="0" y1="{round(PH - i * 10 / YMAX * PH, 1)}" x2="{PW + FW}" y2="{round(PH - i * 10 / YMAX * PH, 1)}"/>'
     for i in range(7))
 chart_svg += f'<rect class="fzone" x="{PW}" y="0" width="{FW}" height="{PH}"/><line class="today" x1="{PW}" y1="0" x2="{PW}" y2="{PH}"/>'
-for color, vals in SERIES:
+for color, _, vals in SERIES:
     pts = [pt(i, v) for i, v in enumerate(vals)]
     chart_svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x, y in pts)}" style="stroke:{color}"/>'
     for i, (x, y) in enumerate(pts):
@@ -169,14 +211,15 @@ for color, fv in FORECAST.items():
 chart_svg += '</g>'
 
 CHART_HTML = (
-    '<div class="card report" role="img" aria-label="Weekly production report with a two-week forecast">'
-    '<div class="chd"><b>Weekly Production Report</b><span>All projects</span><em class="flab">Forecast</em></div>'
+    '<div class="card report" role="img" aria-label="Weekly production report for the three as-built runs, with a two-week forecast">'
+    '<div class="chd"><b>Weekly Production Report</b><span>Zone 1.4</span><em class="flab">Forecast</em></div>'
+    '<div class="legend">' + "".join(f'<span><i style="background:{c}"></i>{n}</span>' for c, n, _ in SERIES) + '</div>'
     '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -20)) + '</div>'
     f'<svg viewBox="0 0 {PW + FW} {PH}" preserveAspectRatio="none" aria-hidden="true">{chart_svg}</svg>'
     '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2", "Mar 16", "Mar 30"]) + '<span class="fx">Apr 20</span></div></div></div>')
 
 pm = {
-    "id": "pm", "name": "Project Management", "title": "Stay on top of every project",
+    "id": "pm", "name": "Project Management", "accent": "cobalt", "title": "Stay on top of every project",
     "sub": "Live progress, as-builts, and forecasts across all of your projects",
     "feats": [
         ("Digital as-builts", "Build GIS or PDF as-builts in real-time to visualize your construction progress"),
@@ -190,15 +233,15 @@ pm = {
     "actors": [
         # step 1: blank blueprint, then the redline draws and its labels cascade in
         {"id": "blueprint", "kf": [
-            kf(0, x=50, y=50, w=74, s=1, o=1, d=0), kf(.05, x=50, y=50, w=74, s=1, o=1, d=0),
-            kf(.21, x=50, y=50, w=74, s=1, o=1, d=1), kf(.32, x=50, y=50, w=74, s=1, o=1, d=1.8),
-            kf(.36, x=50, y=50, w=74, s=1, o=1, d=1.8), kf(.48, x=50, y=26, s=.72, w=74, o=.45, d=1.8)]},
-        # step 2: the report comes forward and draws; step 3: the forecast extends it
+            kf(0, x=50, y=50, w=70, s=1, o=1, d=0), kf(.05, x=50, y=50, w=70, s=1, o=1, d=0),
+            kf(.22, x=50, y=50, w=70, s=1, o=1, d=1), kf(.32, x=50, y=50, w=70, s=1, o=1, d=1.8),
+            kf(.36, x=50, y=50, w=70, s=1, o=1, d=1.8), kf(.48, x=50, y=40, s=.88, w=70, o=.35, d=1.8)]},
+        # step 2: the report comes forward with the runs' colors and draws; step 3: the forecast extends it
         {"id": "chart", "kf": [
-            kf(0, x=50, y=66, w=84, s=.96, o=0, d=0), kf(.38, x=50, y=66, w=84, s=.96, o=0, d=0),
-            kf(.5, x=50, y=60, w=84, s=1, o=1, d=0), kf(.65, x=50, y=60, w=84, s=1, o=1, d=1),
-            kf(.72, x=50, y=60, w=84, s=1, o=1, d=1), kf(.9, x=50, y=60, w=84, s=1, o=1, d=1.4),
-            kf(1, x=50, y=60, w=84, s=1, o=1, d=1.4)]},
+            kf(0, x=50, y=60, w=70, s=.96, o=0, d=0), kf(.38, x=50, y=60, w=70, s=.96, o=0, d=0),
+            kf(.48, x=50, y=56, w=70, s=1, o=1, d=0), kf(.65, x=50, y=56, w=70, s=1, o=1, d=1),
+            kf(.72, x=50, y=56, w=70, s=1, o=1, d=1), kf(.9, x=50, y=56, w=70, s=1, o=1, d=1.4),
+            kf(1, x=50, y=56, w=70, s=1, o=1, d=1.4)]},
     ],
 }
 
@@ -242,7 +285,7 @@ TICKETS_HTML = (
     + '</div></div></div>')
 
 locates = {
-    "id": "locates", "name": "Locates", "title": "Automate your 811 tickets",
+    "id": "locates", "name": "Locates", "accent": "stoplight", "title": "Automate your 811 tickets",
     "sub": "AI 811 ticket management to submit and track your locate requests", "link": ("Learn more", "#locates"),
     "feats": [
         ("AI ticket submission", "Use AI to create and submit 811 tickets in bulk"),
@@ -256,15 +299,15 @@ locates = {
     "actors": [
         # step 1: the form types itself out and submits
         {"id": "form", "kf": [
-            kf(0, x=50, y=46, w=68, s=1, o=1, d=0), kf(.04, x=50, y=46, w=68, s=1, o=1, d=0),
-            kf(.24, x=50, y=46, w=68, s=1, o=1, d=1), kf(.3, x=50, y=46, w=68, s=1, o=1, d=1.3),
-            kf(.36, x=50, y=46, w=68, s=1, o=1, d=1.3), kf(.48, x=50, y=20, w=68, s=.84, o=.45, d=1.3)]},
+            kf(0, x=50, y=50, w=62, s=1, o=1, d=0), kf(.04, x=50, y=50, w=62, s=1, o=1, d=0),
+            kf(.24, x=50, y=50, w=62, s=1, o=1, d=1), kf(.3, x=50, y=50, w=62, s=1, o=1, d=1.3),
+            kf(.36, x=50, y=50, w=62, s=1, o=1, d=1.3), kf(.48, x=50, y=36, w=62, s=.88, o=.35, d=1.3)]},
         # step 2: your tickets clear and renew; step 3: the view switches to subcontractor tickets
         {"id": "tickets", "kf": [
-            kf(0, x=50, y=66, w=90, s=.96, o=0, d=0), kf(.38, x=50, y=66, w=90, s=.96, o=0, d=0),
-            kf(.5, x=50, y=60, w=90, s=1, o=1, d=0), kf(.65, x=50, y=60, w=90, s=1, o=1, d=1),
-            kf(.72, x=50, y=60, w=90, s=1, o=1, d=1), kf(.94, x=50, y=60, w=90, s=1, o=1, d=1.9),
-            kf(1, x=50, y=60, w=90, s=1, o=1, d=1.9)]},
+            kf(0, x=50, y=64, w=84, s=.96, o=0, d=0), kf(.38, x=50, y=64, w=84, s=.96, o=0, d=0),
+            kf(.48, x=50, y=60, w=84, s=1, o=1, d=0), kf(.65, x=50, y=60, w=84, s=1, o=1, d=1),
+            kf(.72, x=50, y=60, w=84, s=1, o=1, d=1), kf(.94, x=50, y=60, w=84, s=1, o=1, d=1.9),
+            kf(1, x=50, y=60, w=84, s=1, o=1, d=1.9)]},
     ],
 }
 
@@ -280,10 +323,10 @@ for sc in SCENES:
         f'<li data-step="{i}"{" class=is-active" if i == 0 else ""}><button type="button"><b>{t}</b><span>{d}</span></button></li>'
         for i, (t, d) in enumerate(sc["feats"]))
     scenes_html += f'''
-  <section class="scene" id="story-{sc["id"]}" data-scene="{sc["id"]}">
+  <section class="scene" id="story-{sc["id"]}" data-scene="{sc["id"]}" style="--accent: var(--color-{sc["accent"]})">
     <div class="pin">
       <div class="head">
-        <span class="label">{sc["name"]}</span>
+        <span class="label"><i aria-hidden="true"></i>{sc["name"]}</span>
         <h3>{sc["title"]}</h3>
         <p class="sub">{sc["sub"]}</p>
         {link}
@@ -310,7 +353,7 @@ astro = f'''---
 open(f"{ROOT}/src/components/ProductStory.astro", "w").write(astro)
 
 config = ("// Generated by reference/gen_story.py. x/y are actor centers in % of the stage, w is width %, s scale,\n"
-          "// o opacity, d draw progress (--draw), v a counted value. `at` and `steps` are scroll progress 0..1.\n")
+          "// r rotation (deg), o opacity, d draw progress (--draw), v a counted value. `at` and `steps` are scroll progress 0..1.\n")
 config += "export const SCENES = " + json.dumps(
     [{"id": sc["id"], "steps": STEPS, "actors": sc["actors"]} for sc in SCENES]) + ";\n"
 open(f"{ROOT}/src/scripts/story.config.js", "w").write(config)
@@ -331,7 +374,7 @@ function apply(el, pose) {
   if (pose.y != null) el.style.top = pose.y + "%";
   if (pose.w != null) el.style.width = pose.w + "%";
   if (pose.o != null) el.style.opacity = pose.o;
-  if (pose.s != null) el.style.transform = `scale(${pose.s})`;
+  if (pose.s != null || pose.r != null) el.style.transform = `rotate(${pose.r || 0}deg) scale(${pose.s ?? 1})`;
   if (pose.d != null) el.style.setProperty("--draw", pose.d);
   if (pose.v != null) el.querySelectorAll("[data-count]").forEach((t) => { t.textContent = fmt(pose.v, t.dataset.count); });
 }

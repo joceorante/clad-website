@@ -53,5 +53,12 @@
   --container: 1040px;
   --container-wide: 1204px;
   --gutter: clamp(16px, 4vw, 40px);
+  /* page rail: the header's logo divider, the content column's edges and every section's vertical rules.
+     200px at 1440 (Figma), never narrower than 160px on desktop; collapses to the gutter on small screens */
+  --rail: max(160px, calc((100vw - var(--container)) / 2));
   --header-h: 118px;
+}
+
+@media (max-width: 900px) {
+  :root { --rail: var(--gutter); }
 }

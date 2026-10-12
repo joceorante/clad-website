@@ -14,7 +14,7 @@ function apply(el, pose) {
   if (pose.y != null) el.style.top = pose.y + "%";
   if (pose.w != null) el.style.width = pose.w + "%";
   if (pose.o != null) el.style.opacity = pose.o;
-  if (pose.s != null) el.style.transform = `scale(${pose.s})`;
+  if (pose.s != null || pose.r != null) el.style.transform = `rotate(${pose.r || 0}deg) scale(${pose.s ?? 1})`;
   if (pose.d != null) el.style.setProperty("--draw", pose.d);
   if (pose.v != null) el.querySelectorAll("[data-count]").forEach((t) => { t.textContent = fmt(pose.v, t.dataset.count); });
 }

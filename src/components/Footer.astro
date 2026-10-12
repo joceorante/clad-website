@@ -16,7 +16,7 @@ const colB = [["Login", "#login"], ["Terms of service", "#terms"], ["Privacy pol
     </div>
   </div>
   <div class="stripes" aria-hidden="true">
-    {stripes.map((c) => <span style={`background:var(--color-${c})`}></span>)}
+    {stripes.map((c, i) => <span style={`background:var(--color-${c});--n:${i}`}></span>)}
   </div>
   <div class="bottom">
     <div class="container-wide row">
@@ -49,10 +49,9 @@ const colB = [["Login", "#login"], ["Terms of service", "#terms"], ["Privacy pol
   .stripes { display: flex; flex-direction: column; gap: 3.35px; overflow: hidden; }
   .stripes span { display: block; height: 15.93px; width: 110%; margin-left: -5%; border-radius: 28px; transform-origin: left center; }
   /* cascade: once JS arms the block, each stripe sweeps in from the left, staggered top to bottom */
-  .stripes.is-armed span { transform: scaleX(0); transition: transform .9s cubic-bezier(.2,.7,.2,1); }
-  .stripes.is-armed span:nth-child(2) { transition-delay: .08s; } .stripes.is-armed span:nth-child(3) { transition-delay: .16s; } .stripes.is-armed span:nth-child(4) { transition-delay: .24s; }
-  .stripes.is-armed span:nth-child(5) { transition-delay: .32s; } .stripes.is-armed span:nth-child(6) { transition-delay: .40s; } .stripes.is-armed span:nth-child(7) { transition-delay: .48s; } .stripes.is-armed span:nth-child(8) { transition-delay: .56s; }
-  .stripes.is-armed.is-in span { transform: scaleX(1); }
+  /* armed = collapsed instantly; only the reveal animates: slow ease-in-out, a short beat, then a top-to-bottom cascade */
+  .stripes.is-armed span { transform: scaleX(0); }
+  .stripes.is-armed.is-in span { transform: scaleX(1); transition: transform 1.6s cubic-bezier(.65, 0, .25, 1) calc(.25s + var(--n) * .11s); }
   .bottom { background: url("/assets/grid-footer.svg") -182px -984px / 1819px 1816px no-repeat; }
   .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; padding: 159px 0 141px; }
   .brand { width: 315px; max-width: 100%; }
@@ -77,7 +76,7 @@ const colB = [["Login", "#login"], ["Terms of service", "#terms"], ["Privacy pol
     stripes.classList.add("is-armed");
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { stripes.classList.add("is-in"); io.disconnect(); }
-    }, { threshold: 0.4 });
+    }, { threshold: 0.6 });
     io.observe(stripes);
   }
 </script>
