@@ -19,7 +19,7 @@ button { font: inherit; cursor: pointer; color: inherit; background: none; borde
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 3px; }
 
-.container { width: min(var(--container), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.container { width: calc(100% - 2 * var(--rail)); margin-inline: auto; }
 .container-wide { width: min(var(--container-wide), 100% - 2 * var(--gutter)); margin-inline: auto; }
 
 /* section header, 44 / 1.2 */

@@ -3,13 +3,14 @@
   .story .scene { position: relative; height: 420vh; }
   .story .pin {
     position: sticky; top: 72px; height: calc(100vh - 72px);
-    display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(32px, 5vw, 72px);
+    display: grid; grid-template-columns: minmax(0, .74fr) minmax(0, 1.26fr); gap: clamp(32px, 4.5vw, 64px);
     align-items: center;
     pointer-events: none; /* the empty part of the frame can overlap neighbouring sections; let clicks through */
   }
   .story .head, .story .stage { pointer-events: auto; }
   .story .head { display: flex; flex-direction: column; gap: 14px; }
-  .story .head .label { font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; color: var(--color-cobalt); line-height: 1.2; }
+  .story .head .label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; color: var(--color-tar); line-height: 1.2; }
+  .story .head .label i { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
   .story .head h3 { font-size: var(--text-h2); line-height: 1.15; letter-spacing: -1.5px; font-weight: 600; }
   .story .head .sub { font-size: 18px; line-height: 1.4; letter-spacing: -0.2px; max-width: 34ch; }
   .story .more { align-self: flex-start; font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--color-tar); }
@@ -20,14 +21,17 @@
   .story .feats li { opacity: .3; transition: opacity .35s ease; }
   .story .feats li.is-active { opacity: 1; }
   .story .feats button { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 14px 0 14px 20px; text-align: left; border-left: 2px solid rgb(37 34 12 / .18); transition: border-color .35s ease; }
-  .story .feats li.is-active button { border-left-color: var(--color-tar); }
+  .story .feats li.is-active button { border-left-color: var(--accent); }
   .story .feats button:hover { opacity: 1; }
   .story .feats b { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; }
   .story .feats span { font-size: 14px; line-height: 1.45; letter-spacing: -0.1px; max-width: 40ch; }
 
+  /* every scene's UI sits in the same 16:10 panel, tinted with that product's color */
   .story .stage {
-    position: relative; justify-self: center; width: min(100%, calc((100vh - 72px - 96px) * 1.2)); aspect-ratio: 6 / 5;
-    container-type: inline-size; font-size: clamp(8px, 1.75cqw, 14px); color: #1f1f1f; letter-spacing: 0; line-height: 1.3;
+    position: relative; justify-self: center; width: min(100%, calc((100vh - 72px - 120px) * 1.6)); aspect-ratio: 16 / 10;
+    border-radius: 20px; background: color-mix(in srgb, var(--accent) 9%, #fff);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+    container-type: inline-size; font-size: clamp(7px, 1.62cqw, 13px); color: #1f1f1f; letter-spacing: 0; line-height: 1.3;
   }
   .story .act { position: absolute; translate: -50% -50%; transform-origin: center; }
 
@@ -44,35 +48,39 @@
   .story .btn2 { display: inline-flex; align-items: center; height: 2.8em; padding: 0 1.3em; border: 1px solid #e3e3e0; border-radius: .55em; background: #fff; white-space: nowrap; }
   .story .btn2.primary { background: var(--color-cobalt); border-color: var(--color-cobalt); color: #fff; }
 
-  /* ---------- billing: daily updates ---------- */
-  .story .updates .row { padding: .9em 1.3em; display: flex; flex-direction: column; gap: .45em; }
-  .story .updates .l1, .story .updates .l2 { display: flex; align-items: center; gap: .9em; }
-  .story .updates .item { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .story .updates .item em, .story .invoice .item em { font-style: normal; color: #9a9a96; font-weight: 400; }
-  .story .updates .qty { font-weight: 600; font-variant-numeric: tabular-nums; }
-  .story .updates .date { color: #8a8a86; min-width: 6.2em; }
-  .story .updates .att { margin-left: auto; display: flex; gap: .35em; }
-  .story .updates .att i { font-style: normal; font-size: .7em; font-weight: 600; letter-spacing: .04em; padding: .25em .45em; border: 1px solid #ddd; border-radius: .3em; color: #6f6f6b; }
-  /* rows roll in from the left one at a time as --draw goes 0 -> 1 */
-  .story .updates .row { --k: clamp(0, calc((var(--draw, 0) - var(--i) * .3) * 4), 1); opacity: var(--k); transform: translateX(calc((1 - var(--k)) * -2.4em)); }
+  /* ---------- billing: update cards ---------- */
+  .story .ico { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; }
+  .story .ucard { display: grid; grid-template-columns: 5.4em 1fr; gap: .9em; padding: .8em; align-items: center; border-radius: 12px; }
+  .story .ucard .thumb { aspect-ratio: 1; border-radius: .6em; display: grid; place-items: center; }
+  .story .ucard .thumb .ico { width: 2.2em; height: 2.2em; stroke-width: 1.1; }
+  .story .ucard .thumb.photo { background: linear-gradient(150deg, #cfd8c2, #93a37c 70%, #7d8c66); color: #fff; }
+  .story .ucard .thumb.doc { background: #f6f6f4; color: #6f6f6b; box-shadow: inset 0 0 0 1px #ececea; }
+  .story .ucard .ub { display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+  .story .ucard .date { color: #9a9a96; font-size: .85em; }
+  .story .ucard .qty { font-size: 1.55em; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .story .ucard .item { color: #4a4a46; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .story .ucard .uf { display: flex; align-items: center; gap: .6em; margin-top: .45em; min-width: 0; }
+  .story .ucard .uf .who { flex: 1; min-width: 0; font-size: .9em; color: #4a4a46; }
+  .story .ucard .att { display: flex; gap: .3em; color: #6f6f6b; }
 
   /* ---------- billing: invoice ---------- */
-  .story .invoice { padding: 1.3em 1.5em 1.2em; }
+  .story .invoice { padding: 1.1em 1.4em 1em; }
+  .story .invoice .item em { font-style: normal; color: #9a9a96; font-weight: 400; }
   .story .vhd { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; }
   .story .vhd b { display: block; font-size: 1.45em; font-weight: 700; letter-spacing: -.01em; }
   .story .vhd span { color: #8a8a86; }
   .story .vhd .logo { width: 4.6em; height: 2.6em; display: grid; place-items: center; background: #2a2a2a; color: #fff; font-size: .8em; font-weight: 700; letter-spacing: .12em; border-radius: .25em; }
-  .story .vdue { display: flex; align-items: baseline; gap: .6em; margin: 1em 0 1.1em; }
+  .story .vdue { display: flex; align-items: baseline; gap: .6em; margin: .55em 0 .8em; }
   .story .vdue span { font-size: 1.9em; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
   .story .vdue small { color: #8a8a86; font-size: 1em; }
   .story .vth, .story .invoice .row { display: grid; grid-template-columns: 1fr 3.5em 6.5em; gap: .8em; align-items: center; }
   .story .vth { color: #8a8a86; font-size: .85em; padding-bottom: .5em; border-bottom: 1px solid #2a2a2a; }
   .story .vth span:not(:first-child), .story .invoice .row span:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
-  .story .invoice .row { padding: .7em 0; }
+  .story .invoice .row { padding: .5em 0; }
   .story .invoice .item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .story .invoice .item small { display: block; color: var(--color-cobalt); font-size: .8em; margin-top: .15em; }
+  .story .invoice .item small { display: block; color: #8a8a86; font-size: .8em; margin-top: .15em; }
   .story .invoice .row { --k: clamp(0, calc((var(--draw, 0) - var(--i) * .28) * 4), 1); opacity: var(--k); transform: translateY(calc((1 - var(--k)) * .6em)); }
-  .story .vtot { display: flex; justify-content: space-between; padding-top: .8em; border-top: 1px solid #2a2a2a; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .story .vtot { display: flex; justify-content: space-between; padding-top: .6em; border-top: 1px solid #2a2a2a; font-weight: 700; font-variant-numeric: tabular-nums; }
 
   /* ---------- billing: QuickBooks sync chip ---------- */
   .story .qbchip { display: flex; align-items: center; gap: .9em; padding: .8em 1.1em; background: #fff; border-radius: 999px; box-shadow: 0 0 0 1px rgb(0 0 0 / .1), 0 10px 30px -14px rgb(37 34 12 / .45); }
@@ -87,23 +95,29 @@
   .story .blueprint .chd { align-items: center; }
   .story .blueprint .live { margin-left: auto; font-style: normal; font-size: .8em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-orange); display: inline-flex; align-items: center; gap: .4em; }
   .story .blueprint .live::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: currentColor; }
-  .story .bpsvg { display: block; width: 100%; height: auto; }
+  .story .bpsvg { display: block; width: 100%; height: auto; aspect-ratio: 547 / 354; }
   /* basemap goes from ink to light gray as the redline draws (--draw 0 -> 1) */
   .story .bpsvg .basemap { fill: #1f1f1f; opacity: calc(1 - clamp(0, var(--draw, 0), 1) * .72); }
   .story .bpsvg .ink polyline, .story .bpsvg .ink .k { fill: none; stroke: #111; stroke-width: 3.5; stroke-linejoin: round; }
   .story .bpsvg .ink { opacity: calc(1 - clamp(0, (var(--draw, 0) - .95) * 20, 1)); }
-  .story .bpsvg .redline { fill: none; stroke: #f0402b; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, var(--draw, 0), 1)); }
-  .story .bpsvg .r { fill: none; stroke: #f0402b; stroke-width: 4.5; }
-  /* the circle turns red as the line leaves it, the squares as the line (and then the sweep) reaches them */
-  .story .bpsvg .r.ci { opacity: clamp(0, var(--draw, 0) * 12, 1); }
-  .story .bpsvg .r.sq { opacity: clamp(0, (var(--draw, 0) - .9) * 10, 1); }
+  /* run A draws first (--draw 0 -> .55), then run B (.55 -> 1); the marks take their run's color as it reaches them */
+  .story .bpsvg .seg { fill: none; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; }
+  .story .bpsvg .s1 { stroke-dashoffset: calc(1 - clamp(0, var(--draw, 0) / .55, 1)); }
+  .story .bpsvg .s2 { stroke-dashoffset: calc(1 - clamp(0, (var(--draw, 0) - .55) / .45, 1)); }
+  .story .bpsvg .mk { fill: none; stroke-width: 4.5; }
+  .story .bpsvg .ci { opacity: clamp(0, var(--draw, 0) * 12, 1); }
+  .story .bpsvg .sq2 { opacity: clamp(0, (var(--draw, 0) - .92) * 12, 1); }
+  .story .bpsvg .sq1 { opacity: clamp(0, (var(--draw, 0) - .98) * 12, 1); }
   .story .bpsvg .lbox { fill: #fff; stroke: #8f8d85; stroke-width: 1; }
   .story .bpsvg .lbl text { font-size: 14.5px; font-weight: 500; fill: #1f1f1f; font-family: var(--font-body); letter-spacing: .01em; }
   /* labels cascade in after the line finishes: label i appears at --draw = 1 + i * .18 */
   .story .bpsvg .lbl { --k: clamp(0, calc((var(--draw, 0) - 1 - var(--i) * .18) * 6), 1); opacity: var(--k); transform: translateY(calc((1 - var(--k)) * 6px)); transform-box: fill-box; }
 
   /* ---------- project management: report + forecast ---------- */
-  .story .report { aspect-ratio: 16 / 10.5; display: flex; flex-direction: column; }
+  .story .report { aspect-ratio: 16 / 10; display: flex; flex-direction: column; }
+  .story .legend { display: flex; flex-wrap: wrap; gap: .4em 1.2em; padding: .7em 1.3em 0; color: #4a4a46; font-size: .9em; }
+  .story .legend span { display: inline-flex; align-items: center; gap: .45em; white-space: nowrap; }
+  .story .legend i { width: .75em; height: .75em; border-radius: .2em; }
   .story .report .chd { align-items: center; }
   .story .report .flab { margin-left: auto; font-style: normal; font-size: .85em; color: #8a8a86; border: 1px dashed #c9c9c4; border-radius: 999px; padding: .2em .8em; opacity: clamp(0, calc((var(--draw, 0) - 1.05) * 4), 1); }
   .story .plot { flex: 1; min-height: 0; display: grid; grid-template-columns: 3.6em 1fr; grid-template-rows: 1fr 2em; padding: 1em 1.6em 1em 1em; column-gap: .8em; }
@@ -182,5 +196,5 @@
     .story .feats b { font-size: 15px; }
     .story .feats span { display: none; }
     .story .feats li.is-active span { display: block; font-size: 13px; }
-    .story .stage { width: min(100%, calc((100vh - 64px - 300px) * 1.2)); }
+    .story .stage { width: min(100%, calc((100vh - 64px - 300px) * 1.6)); border-radius: 14px; }
   }
