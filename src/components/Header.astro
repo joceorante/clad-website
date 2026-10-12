@@ -28,7 +28,7 @@ const links = [
     border-bottom: var(--hairline) solid var(--color-tar);
     transition: height .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s;
   }
-  .header.is-compact { height: 72px; box-shadow: 0 1px 0 var(--color-tar), 0 12px 30px -24px rgb(37 34 12 / .35); }
+  .header.is-compact { height: 72px; box-shadow: 0 12px 30px -24px rgb(37 34 12 / .35); }  /* keep the same 1px rule; no extra line */
   .logo { height: 100%; display: grid; place-items: center; border-right: var(--hairline) solid var(--color-tar); }
   .logo img { transform-origin: center; transition: transform .3s cubic-bezier(.2,.7,.2,1); }
   .is-compact .logo img { transform: scale(.8); }
@@ -37,8 +37,8 @@ const links = [
   .links { display: flex; gap: 45px; padding-left: 32px; font-size: var(--text-ui); line-height: 1.2; letter-spacing: 0; }
   .links a { text-decoration: none; }
   .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
-  .actions { display: flex; gap: 9px; padding-right: 55px; }
-  @media (max-width: 1100px) { .links { gap: 28px; } .actions { padding-right: var(--gutter); } }
+  .actions { display: flex; gap: 9px; padding-right: var(--gutter); }  /* CTAs sit at the window's right edge, outside the grid on purpose */
+  @media (max-width: 1100px) { .links { gap: 28px; } }
   @media (max-width: 900px) {
     .header, .header.is-compact { grid-template-columns: auto 1fr auto; height: 64px; }
     .logo { padding-inline: var(--gutter); border-right: 0; }
