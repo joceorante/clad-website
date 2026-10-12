@@ -73,8 +73,9 @@ QB_HTML = (
     '<span class="txt"><b>Synced to QuickBooks</b><small>Invoice #487 · just now</small></span>'
     '<span class="ok" aria-hidden="true"></span></div>')
 
-# step 1 stack (center x, y, tilt) under the "Daily updates" header, and the invoice row each card lands on in step 2
-CARD_POS = [(50, 37, 0), (50, 58, 0), (50, 79, 0)]
+# step 1: cards cascade down and to the right, each overlapping the one above it (center x, y, tilt);
+# the header lines up with the first card. ROW_Y is the invoice row each card lands on in step 2.
+CARD_POS = [(42, 39, 0), (50, 55, 0), (58, 71, 0)]
 ROW_Y = [44.5, 55, 65]  # measured centers of the invoice rows
 
 
@@ -104,8 +105,8 @@ billing = {
     "actors": [
         # step 1 header; it steps aside when the invoice takes over
         {"id": "uhead", "kf": [
-            kf(0, x=50, y=14, w=62, s=1, o=0), kf(.02, x=50, y=14, w=62, s=1, o=0), kf(.08, x=50, y=14, w=62, s=1, o=1),
-            kf(.38, x=50, y=14, w=62, s=1, o=1), kf(.46, x=50, y=10, w=62, s=1, o=0), kf(1, x=50, y=10, w=62, s=1, o=0)]},
+            kf(0, x=42, y=19, w=62, s=1, o=0), kf(.02, x=42, y=19, w=62, s=1, o=0), kf(.08, x=42, y=19, w=62, s=1, o=1),
+            kf(.38, x=42, y=19, w=62, s=1, o=1), kf(.46, x=42, y=15, w=62, s=1, o=0), kf(1, x=42, y=15, w=62, s=1, o=0)]},
         # step 2: the invoice forms, and each update card flies into the line it becomes
         {"id": "invoice", "kf": [
             kf(0, x=50, y=48, w=64, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=48, w=64, s=.96, o=0, d=0, v=0),
