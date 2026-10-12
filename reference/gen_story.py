@@ -313,8 +313,8 @@ for sc in SCENES:
   <section class="scene" id="story-{sc["id"]}" data-scene="{sc["id"]}" style="--accent: var(--color-{sc["accent"]})">
     <div class="pin">
       <div class="head">
-        <span class="label"><i aria-hidden="true"></i>{sc["name"]}</span>
-        <h3>{sc["title"]}</h3>
+        <span class="label t-label"><i aria-hidden="true"></i>{sc["name"]}</span>
+        <h3 class="t-title">{sc["title"]}</h3>
         <p class="sub">{sc["sub"]}</p>
         {link}
         <ul class="feats">{feats}</ul>

@@ -6,8 +6,8 @@
   <section class="scene" id="story-billing" data-scene="billing" style="--accent: var(--color-orange)">
     <div class="pin">
       <div class="head">
-        <span class="label"><i aria-hidden="true"></i>Billing</span>
-        <h3>Bill accurately</h3>
+        <span class="label t-label"><i aria-hidden="true"></i>Billing</span>
+        <h3 class="t-title">Bill accurately</h3>
         <p class="sub">One system to prevent over- and under-billing</p>
         
         <ul class="feats"><li data-step="0" class=is-active><button type="button"><b>Production tracking</b><span>Collect daily production and documentation from the field</span></button></li><li data-step="1"><button type="button"><b>Linked invoices & bills</b><span>Tie your invoices and bills directly to approved production, so you only bill for work that’s done</span></button></li><li data-step="2"><button type="button"><b>QBO integration</b><span>Sync invoices with QuickBooks to speed up AR accounting and track retainage</span></button></li></ul>
@@ -18,8 +18,8 @@
   <section class="scene" id="story-pm" data-scene="pm" style="--accent: var(--color-cobalt)">
     <div class="pin">
       <div class="head">
-        <span class="label"><i aria-hidden="true"></i>Project Management</span>
-        <h3>Stay on top of every project</h3>
+        <span class="label t-label"><i aria-hidden="true"></i>Project Management</span>
+        <h3 class="t-title">Stay on top of every project</h3>
         <p class="sub">Live progress, as-builts, and forecasts across all of your projects</p>
         
         <ul class="feats"><li data-step="0" class=is-active><button type="button"><b>Digital as-builts</b><span>Build GIS or PDF as-builts in real-time to visualize your construction progress</span></button></li><li data-step="1"><button type="button"><b>Reporting</b><span>Build and share custom reports</span></button></li><li data-step="2"><button type="button"><b>Forecasting</b><span>See where projects are headed ahead of time</span></button></li></ul>
@@ -781,8 +781,8 @@ m835 15 c4 -7 -67 -10 -205 -10 -138 0 -209 3 -205 10 4 6 83 10 205 10 122 0
   <section class="scene" id="story-locates" data-scene="locates" style="--accent: var(--color-stoplight)">
     <div class="pin">
       <div class="head">
-        <span class="label"><i aria-hidden="true"></i>Locates</span>
-        <h3>Automate your 811 tickets</h3>
+        <span class="label t-label"><i aria-hidden="true"></i>Locates</span>
+        <h3 class="t-title">Automate your 811 tickets</h3>
         <p class="sub">AI 811 ticket management to submit and track your locate requests</p>
         <a class="more" href="#locates">Learn more <span aria-hidden="true">›</span></a>
         <ul class="feats"><li data-step="0" class=is-active><button type="button"><b>AI ticket submission</b><span>Use AI to create and submit 811 tickets in bulk</span></button></li><li data-step="1"><button type="button"><b>Automated tracking and renewals</b><span>Visualize ticket status and keep tickets updated from a single dashboard</span></button></li><li data-step="2"><button type="button"><b>Subcontractor visibility</b><span>Monitor your subcontractors’ 811 tickets</span></button></li></ul>
@@ -806,9 +806,8 @@ m835 15 c4 -7 -67 -10 -205 -10 -138 0 -209 3 -205 10 4 6 83 10 205 10 122 0
   }
   .story .head, .story .stage { pointer-events: auto; }
   .story .head { display: flex; flex-direction: column; gap: 14px; }
-  .story .head .label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; color: var(--color-tar); line-height: 1.2; }
+  /* label and title typography come from .t-label / .t-title in global.css */
   .story .head .label i { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
-  .story .head h3 { font-size: var(--text-h2); line-height: 1.15; letter-spacing: -1.5px; font-weight: 600; }
   .story .head .sub { font-size: 18px; line-height: 1.4; letter-spacing: -0.2px; max-width: 34ch; }
   .story .more { align-self: flex-start; font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--color-tar); }
   .story .more:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -976,7 +975,6 @@ m835 15 c4 -7 -67 -10 -205 -10 -138 0 -209 3 -205 10 4 6 83 10 205 10 122 0
     .story .scene { height: 360vh; }
     .story .pin { top: 64px; height: calc(100vh - 64px); grid-template-columns: 1fr; align-content: center; gap: 18px; }
     .story .head { gap: 8px; }
-    .story .head h3 { font-size: 28px; letter-spacing: -.5px; }
     .story .head .sub, .story .more { display: none; }
     .story .feats { margin-top: 6px; }
     .story .feats button { padding: 6px 0 6px 14px; }

@@ -9,9 +9,8 @@
   }
   .story .head, .story .stage { pointer-events: auto; }
   .story .head { display: flex; flex-direction: column; gap: 14px; }
-  .story .head .label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; color: var(--color-tar); line-height: 1.2; }
+  /* label and title typography come from .t-label / .t-title in global.css */
   .story .head .label i { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
-  .story .head h3 { font-size: var(--text-h2); line-height: 1.15; letter-spacing: -1.5px; font-weight: 600; }
   .story .head .sub { font-size: 18px; line-height: 1.4; letter-spacing: -0.2px; max-width: 34ch; }
   .story .more { align-self: flex-start; font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--color-tar); }
   .story .more:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -179,7 +178,6 @@
     .story .scene { height: 360vh; }
     .story .pin { top: 64px; height: calc(100vh - 64px); grid-template-columns: 1fr; align-content: center; gap: 18px; }
     .story .head { gap: 8px; }
-    .story .head h3 { font-size: 28px; letter-spacing: -.5px; }
     .story .head .sub, .story .more { display: none; }
     .story .feats { margin-top: 6px; }
     .story .feats button { padding: 6px 0 6px 14px; }
