@@ -22,7 +22,7 @@ def kf(at, **k):
 
 
 def avatar(name):
-    company = any(t in name for t in ("Underground", "Boring", "Civil", "Fiber"))
+    company = any(t in name for t in ("Underground", "Boring", "Civil", "Fiber", "Intrepid"))
     ini = "".join(w[0] for w in name.replace(".", "").split()[:2]).upper()
     return f'<span class="who {"co" if company else "person"}"><i>{ini}</i>{name}</span>'
 
@@ -50,17 +50,13 @@ INVOICE_TOTAL = 4021.40
 def update_card(date, item, by, tint, att):
     ini = "".join(w[0] for w in by.replace(".", "").split()[:2]).upper()
     icons = "".join(ICON_DOC if a == "pdf" else ICON_IMG for a in att)
-    return (f'<div class="card ucard"><b class="item">{item}</b>'
-            f'<div class="uf"><span class="by"><i class="t-{tint}">{ini}</i>{by}</span><span class="att">{icons}</span></div></div>')
-
-
-UPDATES_HEAD = ('<div class="uhead"><div><b>Daily updates</b><span>Week of Sep 14</span></div>'
-                '<span class="addnew">Add new</span></div>')
+    return (f'<div class="card ucard"><div class="ut"><b class="item">{item}</b>'
+            f'<span class="by"><i class="t-{tint}">{ini}</i>{by}</span></div><span class="att">{icons}</span></div>')
 
 
 INVOICE_HTML = (
     '<div class="card invoice">'
-    '<div class="vhd"><div><b>Invoice #487</b><span>Big TelCo · Suffolk, VA - Z1.4</span></div><span class="logo">ACME</span></div>'
+    '<div class="vhd"><div><b>Invoice #487</b><span>Intrepid · Suffolk, VA - Z1.4</span></div></div>'
     '<div class="vdue"><span data-count="money">$0.00</span><small>due Oct 1, 2026</small></div>'
     '<div class="vth"><span>Description</span><span>Qty</span><span>Amount</span></div>'
     + "".join(
@@ -75,7 +71,7 @@ QB_HTML = (
 
 # step 1: cards cascade down and to the right, each overlapping the one above it (center x, y, tilt);
 # the header lines up with the first card. ROW_Y is the invoice row each card lands on in step 2.
-CARD_POS = [(42, 39, 0), (50, 55, 0), (58, 71, 0)]
+CARD_POS = [(40, 30, 0), (50, 50, 0), (60, 70, 0)]
 ROW_Y = [44.5, 55, 65]  # measured centers of the invoice rows
 
 
@@ -83,9 +79,9 @@ def card_actor(i):
     x, y, r = CARD_POS[i]
     t0, land = .04 + i * .07, .52 + i * .06
     return {"id": f"u{i}", "kf": [
-        kf(0, x=x, y=y + 10, w=62, s=.97, o=0, r=r), kf(t0, x=x, y=y + 10, w=62, s=.97, o=0, r=r),
-        kf(t0 + .1, x=x, y=y, w=62, s=1, o=1, r=r), kf(land - .08, x=x, y=y, w=62, s=1, o=1, r=r),
-        kf(land, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0), kf(1, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0)]}
+        kf(0, x=x, y=y + 10, w=60, s=.97, o=0, r=r), kf(t0, x=x, y=y + 10, w=60, s=.97, o=0, r=r),
+        kf(t0 + .1, x=x, y=y, w=60, s=1, o=1, r=r), kf(land - .08, x=x, y=y, w=60, s=1, o=1, r=r),
+        kf(land, x=50, y=ROW_Y[i], w=60, s=.5, o=0, r=0), kf(1, x=50, y=ROW_Y[i], w=60, s=.5, o=0, r=0)]}
 
 
 billing = {
@@ -97,16 +93,11 @@ billing = {
         ("QBO integration", "Sync invoices with QuickBooks to speed up AR accounting and track retainage"),
     ],
     "html": (
-        f'<div class="act" data-a="uhead">{UPDATES_HEAD}</div>'
         f'<div class="act" data-a="invoice">{INVOICE_HTML}</div>'
         + "".join(f'<div class="act" data-a="u{i}">{update_card(*u)}</div>' for i, u in enumerate(UPDATES))
         + f'<div class="act" data-a="qb">{QB_HTML}</div>'
     ),
     "actors": [
-        # step 1 header; it steps aside when the invoice takes over
-        {"id": "uhead", "kf": [
-            kf(0, x=42, y=19, w=62, s=1, o=0), kf(.02, x=42, y=19, w=62, s=1, o=0), kf(.08, x=42, y=19, w=62, s=1, o=1),
-            kf(.38, x=42, y=19, w=62, s=1, o=1), kf(.46, x=42, y=15, w=62, s=1, o=0), kf(1, x=42, y=15, w=62, s=1, o=0)]},
         # step 2: the invoice forms, and each update card flies into the line it becomes
         {"id": "invoice", "kf": [
             kf(0, x=50, y=48, w=64, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=48, w=64, s=.96, o=0, d=0, v=0),
@@ -186,7 +177,7 @@ BLUEPRINT_HTML = (
 SERIES = [(RUN_A, "BM60(1)(1.25)-01", [48, 55, 58, 50, 43, 22]),
           (RUN_B, "UG-104-02", [30, 38, 46, 44, 50, 53]),
           (RUN_C, "UG-104-03", [8, 14, 11, 20, 24, 30])]
-FORECAST = {RUN_A: [22, 28, 34], RUN_B: [53, 55, 58], RUN_C: [30, 35, 39]}
+FORECAST = {RUN_A: [28, 34], RUN_B: [55, 58], RUN_C: [35, 39]}
 PW, PH, YMAX, FW = 600, 260, 60, 240
 
 
@@ -201,19 +192,15 @@ chart_svg += f'<rect class="fzone" x="{PW}" y="0" width="{FW}" height="{PH}"/><l
 for color, _, vals in SERIES:
     pts = [pt(i, v) for i, v in enumerate(vals)]
     chart_svg += f'<polyline class="line" pathLength="1" points="{" ".join(f"{x},{y}" for x, y in pts)}" style="stroke:{color}"/>'
-    for i, (x, y) in enumerate(pts):
-        chart_svg += (f'<line class="dot bg" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="--i:{i}"/>'
-                      f'<line class="dot" x1="{x}" y1="{y}" x2="{x}" y2="{y}" style="stroke:{color};--i:{i}"/>')
 chart_svg += '<g class="fcast">'
 for color, fv in FORECAST.items():
-    fp = [pt(5 + i, v) for i, v in enumerate(fv)]
+    fp = [pt(5 + i, v) for i, v in enumerate([dict((c, vs) for c, _, vs in SERIES)[color][-1]] + fv)]
     chart_svg += f'<polyline class="fline" points="{" ".join(f"{x},{y}" for x, y in fp)}" style="stroke:{color}"/>'
 chart_svg += '</g>'
 
 CHART_HTML = (
     '<div class="card report" role="img" aria-label="Weekly production report for the three as-built runs, with a two-week forecast">'
-    '<div class="chd"><b>Weekly Production Report</b><span>Zone 1.4</span><em class="flab">Forecast</em></div>'
-    '<div class="legend">' + "".join(f'<span><i style="background:{c}"></i>{n}</span>' for c, n, _ in SERIES) + '</div>'
+    '<div class="chd"><b>Weekly Production Report</b><span>Zone 1.4</span></div>'
     '<div class="plot"><div class="ylab">' + "".join(f'<span>${v}k</span>' for v in range(60, -1, -20)) + '</div>'
     f'<svg viewBox="0 0 {PW + FW} {PH}" preserveAspectRatio="none" aria-hidden="true">{chart_svg}</svg>'
     '<div class="xlab">' + "".join(f'<span>{d}</span>' for d in ["Mar 2", "Mar 16", "Mar 30"]) + '<span class="fx">Apr 20</span></div></div></div>')
@@ -272,10 +259,10 @@ def pill(t, extra=""):
 
 
 TICKETS_HTML = (
-    '<div class="card tickets"><div class="chd"><b>Locate tickets</b><span class="filter"><em class="fa">Acme Fiber</em><em class="fb">All subcontractors</em></span></div>'
+    '<div class="card tickets"><div class="chd"><b>Locate tickets</b><span class="filter"><em class="fa">Intrepid</em><em class="fb">All subcontractors</em></span></div>'
     '<div class="lth"><span>Ticket</span><span>Company</span><span>Status</span><span>Expires</span></div>'
     '<div class="rows"><div class="grp a">'
-    + "".join(f'<div class="row" style="--j:{j}"><span class="tk"><b>{ad}</b><small>{t}</small></span>{avatar("Acme Fiber")}'
+    + "".join(f'<div class="row" style="--j:{j}"><span class="tk"><b>{ad}</b><small>{t}</small></span>{avatar("Intrepid")}'
               f'<span class="st">{pill(a, "a")}{pill(b, "b")}</span><span class="ex">{ex}</span></div>'
               for j, (ad, t, (a, b), ex) in enumerate(MINE))
     + '</div><div class="grp b">'

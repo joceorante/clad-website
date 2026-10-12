@@ -20,7 +20,7 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 3px; }
 
 .container { width: calc(100% - 2 * var(--rail)); margin-inline: auto; }
-.container-wide { width: min(var(--container-wide), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.container-wide { width: calc(100% - 2 * var(--rail)); margin-inline: auto; }  /* same column as .container; kept for markup */
 
 /* section header, 44 / 1.2 */
 .h2 { font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.5px; font-weight: 600; }

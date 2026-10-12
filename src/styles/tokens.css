@@ -50,12 +50,13 @@
   --radius-pill: 28.5px;
 
   /* layout: content column is 1040 (x 200..1240 at 1440); wide column is 1204 (x 118..1322) */
-  --container: 1040px;
+  --container: 1152px;
   --container-wide: 1204px;
   --gutter: clamp(16px, 4vw, 40px);
   /* page rail: the header's logo divider, the content column's edges and every section's vertical rules.
-     200px at 1440 (Figma), never narrower than 160px on desktop; collapses to the gutter on small screens */
-  --rail: max(160px, calc((100vw - var(--container)) / 2));
+     Every section (hero and product story included) uses this one column: 144px at 1440, never narrower than
+     144px on desktop, collapsing to the gutter on small screens */
+  --rail: max(144px, calc((100vw - var(--container)) / 2));
   --header-h: 118px;
 }
 
