@@ -34,10 +34,10 @@ ICON_DOC = ('<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4
             '<path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>')
 ICON_IMG = ('<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/>'
             '<circle cx="5.5" cy="6.2" r="1.3"/><path d="M2 12.5l4-4 3 3 2-2 3.5 3.5"/></svg>')
-UPDATES = [  # date, short item, qty, completed by, thumbnail kind, attachments
-    ("Mon Sep 14", "Mount NID", "24 EA", "D. Alvarez", "photo", ["img", "img"]),
-    ("Tue Sep 15", "UG fiber drop", "180 LF", "Ortiz Underground", "doc", ["pdf"]),
-    ("Wed Sep 16", "1.25” Conduit", "271 LF", "Bell Boring", "photo", ["img"]),
+UPDATES = [  # date, item, completed by, avatar tint, attachments  (layout from Jocelyn's "Daily updates" frame)
+    ("Mon Sep 14", "Mount NID at service address", "D. Alvarez", "cobalt", ["pdf", "img"]),
+    ("Tue Sep 15", "UG pull fiber drop", "Ortiz Underground", "orange", ["pdf"]),
+    ("Wed Sep 16", "1.25” Conduit", "Bell Boring", "gray", ["img"]),
 ]
 INVOICE_LINES = [  # code, item, qty, amount (qty x contract rate)
     ("D02", "Mount NID at service address", "24", "$290.88"),
@@ -47,12 +47,15 @@ INVOICE_LINES = [  # code, item, qty, amount (qty x contract rate)
 INVOICE_TOTAL = 4021.40
 
 
-def update_card(date, item, qty, by, kind, att):
-    thumb = ICON_DOC if kind == "doc" else ICON_IMG
+def update_card(date, item, by, tint, att):
+    ini = "".join(w[0] for w in by.replace(".", "").split()[:2]).upper()
     icons = "".join(ICON_DOC if a == "pdf" else ICON_IMG for a in att)
-    return (f'<div class="card ucard"><div class="thumb {kind}">{thumb}</div>'
-            f'<div class="ub"><span class="date">{date}</span><b class="qty">{qty}</b><span class="item">{item}</span>'
-            f'<div class="uf">{avatar(by)}<span class="att">{icons}</span></div></div></div>')
+    return (f'<div class="card ucard"><b class="item">{item}</b>'
+            f'<div class="uf"><span class="by"><i class="t-{tint}">{ini}</i>{by}</span><span class="att">{icons}</span></div></div>')
+
+
+UPDATES_HEAD = ('<div class="uhead"><div><b>Daily updates</b><span>Week of Sep 14</span></div>'
+                '<span class="addnew">Add new</span></div>')
 
 
 INVOICE_HTML = (
@@ -70,8 +73,8 @@ QB_HTML = (
     '<span class="txt"><b>Synced to QuickBooks</b><small>Invoice #487 · just now</small></span>'
     '<span class="ok" aria-hidden="true"></span></div>')
 
-# step 1 scatter (center x, y, tilt) and the invoice row each card lands on in step 2
-CARD_POS = [(27, 28, -3), (70, 42, 2.5), (40, 72, -1.5)]
+# step 1 stack (center x, y, tilt) under the "Daily updates" header, and the invoice row each card lands on in step 2
+CARD_POS = [(50, 37, 0), (50, 58, 0), (50, 79, 0)]
 ROW_Y = [44.5, 55, 65]  # measured centers of the invoice rows
 
 
@@ -79,9 +82,9 @@ def card_actor(i):
     x, y, r = CARD_POS[i]
     t0, land = .04 + i * .07, .52 + i * .06
     return {"id": f"u{i}", "kf": [
-        kf(0, x=x, y=y + 14, w=31, s=.96, o=0, r=r), kf(t0, x=x, y=y + 14, w=31, s=.96, o=0, r=r),
-        kf(t0 + .1, x=x, y=y, w=31, s=1, o=1, r=r), kf(land - .08, x=x, y=y, w=31, s=1, o=1, r=r),
-        kf(land, x=50, y=ROW_Y[i], w=31, s=.28, o=0, r=0), kf(1, x=50, y=ROW_Y[i], w=31, s=.28, o=0, r=0)]}
+        kf(0, x=x, y=y + 10, w=62, s=.97, o=0, r=r), kf(t0, x=x, y=y + 10, w=62, s=.97, o=0, r=r),
+        kf(t0 + .1, x=x, y=y, w=62, s=1, o=1, r=r), kf(land - .08, x=x, y=y, w=62, s=1, o=1, r=r),
+        kf(land, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0), kf(1, x=50, y=ROW_Y[i], w=62, s=.5, o=0, r=0)]}
 
 
 billing = {
@@ -93,11 +96,16 @@ billing = {
         ("QBO integration", "Sync invoices with QuickBooks to speed up AR accounting and track retainage"),
     ],
     "html": (
+        f'<div class="act" data-a="uhead">{UPDATES_HEAD}</div>'
         f'<div class="act" data-a="invoice">{INVOICE_HTML}</div>'
         + "".join(f'<div class="act" data-a="u{i}">{update_card(*u)}</div>' for i, u in enumerate(UPDATES))
         + f'<div class="act" data-a="qb">{QB_HTML}</div>'
     ),
     "actors": [
+        # step 1 header; it steps aside when the invoice takes over
+        {"id": "uhead", "kf": [
+            kf(0, x=50, y=14, w=62, s=1, o=0), kf(.02, x=50, y=14, w=62, s=1, o=0), kf(.08, x=50, y=14, w=62, s=1, o=1),
+            kf(.38, x=50, y=14, w=62, s=1, o=1), kf(.46, x=50, y=10, w=62, s=1, o=0), kf(1, x=50, y=10, w=62, s=1, o=0)]},
         # step 2: the invoice forms, and each update card flies into the line it becomes
         {"id": "invoice", "kf": [
             kf(0, x=50, y=48, w=64, s=.96, o=0, d=0, v=0), kf(.38, x=50, y=48, w=64, s=.96, o=0, d=0, v=0),
