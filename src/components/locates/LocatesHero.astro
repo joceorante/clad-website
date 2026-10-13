@@ -1,0 +1,34 @@
+---
+/* Locates product page: product sub-nav and hero. Copy is from the current withclad.com/locates/overview page. */
+import EmailForm from "../EmailForm.astro";
+const pages = [["Overview", "/locates"], ["Pricing", "#pricing"]];  /* Pricing page not built yet */
+---
+<div class="container subnav">
+  <a class="t-label name" href="/locates"><i aria-hidden="true"></i>Locates</a>
+  <nav class="pages" aria-label="Locates">
+    {pages.map(([label, href], i) => <a href={href} class:list={{ "is-active": i === 0 }} aria-current={i === 0 ? "page" : undefined}>{label}</a>)}
+  </nav>
+</div>
+
+<section class="container hero">
+  <h1>Submit, track, and update your <span class="hl hl--stoplight">811 tickets</span></h1>
+  <p class="tagline">An AI-powered 811 ticket management system, purpose-built for excavators.</p>
+  <EmailForm id="hero-email" />
+</section>
+
+<style>
+  .subnav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0; border-bottom: 1px solid #dddcd6; }
+  .name { text-decoration: none; }
+  .name i { width: 12px; height: 12px; border-radius: 3px; background: var(--color-stoplight); }
+  .pages { display: flex; border: 1px solid var(--color-tar); border-radius: var(--radius-md); overflow: hidden; }
+  .pages a { padding: 7px 18px; font-family: var(--font-mono); font-size: 14px; line-height: 20px; text-transform: uppercase; text-decoration: none; transition: background-color .15s; }
+  .pages a + a { border-left: 1px solid var(--color-tar); }
+  .pages a:hover { background: var(--color-paper-dim); }
+  .pages a.is-active { background: var(--color-stoplight); font-weight: 700; }
+
+  .hero { padding: 96px 0 120px; }
+  h1 { font-size: var(--text-display); line-height: 1.02; letter-spacing: -1.5px; max-width: 900px; }
+  h1 .hl { margin: 0 -2px; padding: 0 6px; font-weight: inherit; }
+  .tagline { margin: 27px 0 44px; font-size: var(--text-body); line-height: 1.3; max-width: 36ch; }
+  @media (max-width: 900px) { .hero { padding: 48px 0 72px; } .tagline { margin: 18px 0 28px; font-size: 17px; } .subnav { padding: 16px 0; } }
+</style>
