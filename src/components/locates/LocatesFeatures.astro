@@ -1,0 +1,265 @@
+---
+/* Locates features: the product story's layout without the scroll pin. Pick a feature on the left and its UI plays
+   in the gray panel on the right. Heading, subhead, tab names and the AI Narratives copy and narrative are from the
+   current withclad.com/locates/overview page. Automated Tracking and Bulk Submit reuse the homepage's Locates
+   feature copy. Schedule Tickets has no copy yet, and its UI is Claude's guess at the feature. Every address,
+   ticket number and date in the panels is Claude's sample data. */
+const feats = [
+  { id: "narratives", title: "AI Narratives", desc: "Draw on a map, and let AI write a correctly formatted narrative." },
+  { id: "tracking", title: "Automated Tracking", desc: "Visualize ticket status and keep tickets updated from a single dashboard" },
+  { id: "bulk", title: "Bulk Submit", desc: "Use AI to create and submit 811 tickets in bulk" },
+  { id: "schedule", title: "Schedule Tickets", desc: "[Description pending]" },
+];
+const narrative = "From the intersection of Delray Road and Seibles Road, locate 476 feet southeast along Delray Road. Locate 20 feet on either side of the path.";
+const tracking = [  // address, ticket, status before, status after, expires
+  ["1420 Maple Run Rd", "2609-2211-04", "Submitted", "Cleared", "Oct 12"],
+  ["Hwy 9 & Mill Rd", "2609-2208-02", "Expires Fri", "Renewed", "Oct 24"],
+  ["71 Riverside Dr", "2609-2207-11", "Pending", "Cleared", "Oct 3"],
+  ["388 Cedar Loop", "2609-2210-17", "Submitted", "Cleared", "Oct 9"],
+];
+const bulk = [  // address, work
+  ["1420 Maple Run Rd", "Directional boring · 1.25” conduit"],
+  ["388 Cedar Loop", "Hand dig · handhole set"],
+  ["902 Main St", "Trench · fiber drop"],
+  ["14 Harbor Way", "Directional boring · 2” conduit"],
+];
+const schedule = [  // address, sends, work starts
+  ["71 Riverside Dr", "Mon, Sep 21", "Thu, Sep 24"],
+  ["Hwy 9 & Mill Rd", "Wed, Sep 23", "Mon, Sep 28"],
+  ["902 Main St", "Fri, Sep 25", "Wed, Sep 30"],
+];
+const pill = (t: string) => (["Cleared", "Renewed"].includes(t) ? "ok" : t.startsWith("Expires") || t === "Pending" ? "warn" : "info");
+---
+<section class="container feats-sec" id="features">
+  <div class="intro">
+    <h2 class="t-title">Call in locates without the admin headache</h2>
+    <p>Clad Locates uses AI and a streamlined process to make it 10x faster to call in a locate request. Tracking responses is automatic, so you always know when you are safe to dig.</p>
+  </div>
+
+  <div class="grid">
+    <ul class="feats" role="tablist" aria-label="Locates features">
+      {feats.map((f, i) => (
+        <li class:list={{ "is-active": i === 0 }}>
+          <button type="button" role="tab" id={`lf-tab-${f.id}`} aria-controls={`lf-${f.id}`} aria-selected={i === 0 ? "true" : "false"} data-view={f.id}>
+            <b>{f.title}</b><span>{f.desc}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <div class="stage">
+      <!-- AI Narratives: a locate area draws along the road, then the narrative writes itself -->
+      <div class="view is-active" id="lf-narratives" role="tabpanel" aria-labelledby="lf-tab-narratives">
+        <div class="card narr">
+          <svg class="map" viewBox="70 0 300 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect width="400" height="320" fill="#ecebe6" />
+            <g fill="#e2e1db">
+              <rect x="20" y="170" width="70" height="56" rx="3" transform="rotate(-51 55 198)" />
+              <rect x="250" y="40" width="80" height="54" rx="3" transform="rotate(27 290 67)" />
+              <rect x="70" y="40" width="60" height="44" rx="3" transform="rotate(27 100 62)" />
+              <rect x="250" y="250" width="90" height="50" rx="3" transform="rotate(27 295 275)" />
+            </g>
+            <line x1="60" y1="320" x2="330" y2="-20" stroke="#fff" stroke-width="20" />
+            <line x1="-20" y1="30" x2="420" y2="258" stroke="#fff" stroke-width="20" />
+            <text class="rd" transform="translate(112 254) rotate(-51.5)">SEIBLES RD</text>
+            <text class="rd" transform="translate(96 95) rotate(27.4)">DELRAY RD</text>
+            <path class="buffer" d="M200 144 L333 213" pathLength="1" />
+            <path class="center" d="M200 144 L333 213" pathLength="1" />
+            <circle class="dot" cx="200" cy="144" r="4.5" />
+            <g class="len"><rect x="262" y="200" width="58" height="20" rx="4" /><text x="291" y="214">476 ft</text></g>
+          </svg>
+          <div class="drafts">
+            <div class="dhd"><b>New locates</b><span>3 locates drawn</span></div>
+            <div class="draft">
+              <em>DRAFT-19</em>
+              <div class="kv"><span>Narrative</span><p class="words">{narrative.split(" ").map((w, i) => <span style={`--w:${i}`}>{w} </span>)}</p></div>
+            </div>
+            <div class="draft"><em>DRAFT-15</em><div class="kv"><span>Narrative</span><p class="skel"><i></i><i></i><i></i></p></div></div>
+            <div class="draft"><em>DRAFT-8</em><div class="kv"><span>Narrative</span><p class="skel"><i></i><i></i></p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automated Tracking: each ticket's status updates on its own -->
+      <div class="view" id="lf-tracking" role="tabpanel" aria-labelledby="lf-tab-tracking" hidden>
+        <div class="card table">
+          <div class="chd"><b>Locate tickets</b><em class="chip">Intrepid</em></div>
+          <div class="th"><span>Ticket</span><span>Status</span><span>Expires</span></div>
+          {tracking.map(([ad, tk, a, b, ex], j) => (
+            <div class="tr" style={`--j:${j}`}>
+              <span class="tk"><b>{ad}</b><small>{tk}</small></span>
+              <span class="st"><em class={`spill ${pill(a)} a`}>{a}</em><em class={`spill ${pill(b)} b`}>{b}</em></span>
+              <span class="ex">{ex}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Bulk Submit: a batch of AI-drafted tickets goes to 811 in one click -->
+      <div class="view" id="lf-bulk" role="tabpanel" aria-labelledby="lf-tab-bulk" hidden>
+        <div class="card table bulk">
+          <div class="chd"><b>Drafted tickets</b><span>{bulk.length} ready</span></div>
+          {bulk.map(([ad, work], j) => (
+            <div class="tr" style={`--j:${j}`}>
+              <i class="check" aria-hidden="true"></i>
+              <span class="tk"><b>{ad}</b><small>{work}</small></span>
+              <span class="st"><em class="spill neutral a">Draft</em><em class="spill info b">Submitted</em></span>
+            </div>
+          ))}
+          <div class="foot"><span class="btn2">Submit {bulk.length} tickets to 811</span></div>
+        </div>
+      </div>
+
+      <!-- Schedule Tickets: tickets go out on a set date ahead of the work -->
+      <div class="view" id="lf-schedule" role="tabpanel" aria-labelledby="lf-tab-schedule" hidden>
+        <div class="card table sched">
+          <div class="chd"><b>Scheduled tickets</b><span>Sent automatically</span></div>
+          <div class="th"><span>Ticket</span><span>Sends</span><span>Work starts</span></div>
+          {schedule.map(([ad, sends, starts], j) => (
+            <div class="tr" style={`--j:${j}`}>
+              <span class="tk"><b>{ad}</b><small>Intrepid</small></span>
+              <span class="when"><i class="clock" aria-hidden="true"></i>{sends}</span>
+              <span class="ex">{starts}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feats-sec { padding: 120px 0; border-top: 1px solid #dddcd6; }
+  .intro { max-width: 760px; }
+  .intro p { margin-top: 20px; font-size: var(--text-body); line-height: 1.4; letter-spacing: -0.2px; }
+  .grid { display: grid; grid-template-columns: minmax(0, .74fr) minmax(0, 1.26fr); gap: clamp(32px, 4.5vw, 64px); align-items: center; margin-top: 64px; }
+
+  /* feature list: same treatment as the homepage story (30% until active, product color rule) */
+  .feats { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+  .feats li { opacity: .3; transition: opacity .35s ease; }
+  .feats li.is-active, .feats li:hover { opacity: 1; }
+  .feats button { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 16px 0 16px 20px; text-align: left; border-left: 2px solid rgb(37 34 12 / .18); transition: border-color .35s ease; }
+  .feats li.is-active button { border-left-color: var(--color-stoplight); }
+  .feats b { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; }
+  .feats span { font-size: 14px; line-height: 1.45; letter-spacing: -0.1px; max-width: 40ch; }
+
+  /* stage: the homepage story panel (16:10 plus 25px top and bottom), UIs sized in em off its width */
+  .stage { position: relative; aspect-ratio: 16 / 10; box-sizing: content-box; padding-block: 25px; border-radius: 20px;
+    background: #f4f4f2; box-shadow: inset 0 0 0 1px #e8e8e4;
+    container-type: inline-size; font-size: clamp(7px, 1.62cqw, 13px); color: #1f1f1f; letter-spacing: 0; line-height: 1.3; }
+  .view { position: absolute; inset: 0; display: grid; place-items: center; }
+  .view[hidden] { display: none; }
+  .view.is-active { animation: view-in .45s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes view-in { from { opacity: 0; transform: translateY(1.2em) scale(.98); } }
+
+  .card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgb(0 0 0 / .12), 0 0 2px rgb(0 0 0 / .08), 0 2px 6px rgb(0 0 0 / .1), 0 18px 40px -24px rgb(37 34 12 / .35); }
+  .chd { display: flex; align-items: center; gap: .8em; padding: 1.1em 1.3em; border-bottom: 1px solid #efefed; }
+  .chd b { font-size: 1.2em; font-weight: 600; letter-spacing: -.01em; }
+  .chd > span { color: #8a8a86; }
+  .chd .chip { margin-left: auto; font-style: normal; font-size: .9em; border: 1px solid #e3e3e0; border-radius: 999px; padding: .3em .9em; }
+  .spill { display: inline-flex; align-items: center; gap: .45em; border-radius: 999px; padding: .22em .75em .22em .6em; font-size: .88em; font-style: normal; border: 1px solid var(--c); color: var(--c); background: #fff; white-space: nowrap; }
+  .spill::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: var(--c); }
+  .spill.ok { --c: #2f9e5b; } .spill.warn { --c: #d9822b; } .spill.info { --c: #4750ff; } .spill.neutral { --c: #8a8a86; }
+  .btn2 { display: inline-flex; align-items: center; height: 2.8em; padding: 0 1.3em; border-radius: .55em; background: #111; color: #fff; white-space: nowrap; }
+
+  /* AI Narratives */
+  .narr { width: 90%; height: 84%; display: grid; grid-template-columns: 1.25fr 1fr; }
+  .map { width: 100%; height: 100%; }
+  .map .rd { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; fill: #9a9992; }
+  .map .buffer { fill: none; stroke: rgb(255 204 0 / .5); stroke-width: 40; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .map .center { fill: none; stroke: #25220c; stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .map .dot { fill: #25220c; }
+  .map .len rect { fill: #25220c; } .map .len text { font-family: var(--font-mono); font-size: 10px; fill: #fff; text-anchor: middle; }
+  .map .len { opacity: 0; }
+  .drafts { border-left: 1px solid #efefed; display: flex; flex-direction: column; min-width: 0; }
+  .dhd { display: flex; flex-direction: column; gap: .2em; padding: 1.1em 1.2em; border-bottom: 1px solid #efefed; }
+  .dhd b { font-size: 1.2em; font-weight: 600; } .dhd span { color: #8a8a86; font-size: .9em; }
+  .draft { padding: 1em 1.2em; border-bottom: 1px solid #f1f1ef; }
+  .draft:last-child { border-bottom: 0; }
+  .draft em { font-style: normal; font-weight: 700; font-size: .9em; letter-spacing: .02em; }
+  .kv { display: grid; grid-template-columns: 5.6em 1fr; gap: .8em; margin-top: .6em; }
+  .kv > span { color: #8a8a86; font-size: .9em; }
+  .kv p { margin: 0; font-size: .92em; line-height: 1.45; }
+  .words span { opacity: 0; }
+  .skel { display: flex; flex-direction: column; gap: .5em; padding-top: .3em; }
+  .skel i { display: block; height: .55em; border-radius: 99px; background: #efefec; }
+  .skel i:last-child { width: 55%; }
+
+  /* tables (tracking, bulk, schedule) */
+  .table { width: 80%; }
+  .th, .tr { display: grid; grid-template-columns: 1.5fr 8em 5em; gap: .9em; align-items: center; padding: .85em 1.3em; }
+  .th { padding-block: .7em; color: #8a8a86; font-size: .85em; background: #fafaf8; }
+  .tr { border-bottom: 1px solid #f1f1ef; }
+  .tr:last-child { border-bottom: 0; }
+  .tk { display: flex; flex-direction: column; min-width: 0; }
+  .tk b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tk small { color: #9a9a96; font-size: .82em; font-variant-numeric: tabular-nums; }
+  .ex { color: #6f6f6b; text-align: right; }
+  .st { position: relative; height: 1.9em; }
+  .st .spill { position: absolute; left: 0; top: 0; }
+  .st .b { opacity: 0; }
+  .bulk .tr { grid-template-columns: 1.2em 1fr 7em; }
+  .check { width: 1.2em; height: 1.2em; border-radius: .3em; background: #111; position: relative; }
+  .check::after { content: ""; position: absolute; left: .4em; top: .18em; width: .3em; height: .6em; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .bulk .foot { display: flex; justify-content: flex-end; padding: 1em 1.3em; border-top: 1px solid #efefed; background: #fafaf8; }
+  .sched .th, .sched .tr { grid-template-columns: 1.3fr 1fr 6em; }
+  .when { display: inline-flex; align-items: center; gap: .5em; white-space: nowrap; }
+  .clock { width: 1.1em; height: 1.1em; border-radius: 50%; border: 1.5px solid #111; position: relative; }
+  .clock::after { content: ""; position: absolute; left: 50%; top: 18%; width: 1.5px; height: 35%; background: #111; transform-origin: bottom; }
+
+  /* motion: each UI plays once when its feature is picked */
+  .is-active .buffer { animation: draw .9s .35s cubic-bezier(.65,0,.35,1) forwards; }
+  .is-active .center { animation: draw .9s .35s cubic-bezier(.65,0,.35,1) forwards; }
+  .is-active .len { animation: fade .3s 1.2s forwards; }
+  .is-active .words span { animation: fade .2s forwards; animation-delay: calc(1.4s + var(--w) * 45ms); }
+  .is-active .st .a { animation: fade .25s reverse forwards; animation-delay: calc(.7s + var(--j) * .45s); }
+  .is-active .st .b { animation: pop .3s forwards; animation-delay: calc(.75s + var(--j) * .45s); }
+  .is-active .tr { animation: row-in .4s backwards; animation-delay: calc(.15s + var(--j) * .08s); }
+  .is-active.view .bulk .st .a { animation-delay: calc(1.1s + var(--j) * .22s); }
+  .is-active.view .bulk .st .b { animation-delay: calc(1.15s + var(--j) * .22s); }
+  .is-active .bulk .btn2 { animation: press .3s .8s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+  @keyframes row-in { from { opacity: 0; transform: translateY(.6em); } }
+  @keyframes press { 50% { transform: scale(.94); } }
+  @media (prefers-reduced-motion: reduce) {
+    .view.is-active, .view.is-active * { animation: none !important; }
+    .buffer, .center { stroke-dashoffset: 0; } .len, .words span, .st .b { opacity: 1; } .st .a { opacity: 0; }
+  }
+
+  @media (max-width: 900px) {
+    .feats-sec { padding: 72px 0; }
+    .intro p { font-size: 17px; }
+    .grid { grid-template-columns: 1fr; gap: 24px; margin-top: 36px; }
+    .feats button { padding: 10px 0 10px 14px; }
+    .feats li:not(.is-active) span { display: none; }
+    .stage { border-radius: 14px; }
+    .narr, .table { width: 94%; }
+  }
+</style>
+
+<script>
+  const sec = document.querySelector<HTMLElement>(".feats-sec");
+  if (sec) {
+    const tabs = Array.from(sec.querySelectorAll<HTMLButtonElement>(".feats button"));
+    tabs.forEach((tab) => tab.addEventListener("click", () => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.closest("li")?.classList.toggle("is-active", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        const view = document.getElementById(`lf-${t.dataset.view}`);
+        if (view) { view.hidden = !on; view.classList.toggle("is-active", on); }
+      });
+    }));
+    // play the first UI when the section scrolls into view, not on page load
+    const first = sec.querySelector<HTMLElement>(".view.is-active");
+    if (first && "IntersectionObserver" in window) {
+      first.classList.remove("is-active");
+      const io = new IntersectionObserver((es) => {
+        if (es.some((e) => e.isIntersecting)) { sec.querySelector(".view:not([hidden])")?.classList.add("is-active"); io.disconnect(); }
+      }, { threshold: 0.5 });
+      io.observe(sec.querySelector(".stage")!);
+    }
+  }
+</script>

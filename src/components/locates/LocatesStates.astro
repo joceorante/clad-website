@@ -1,0 +1,37 @@
+---
+/* Multi-state section. Copy is from the current withclad.com/locates/overview page. The supported states were read
+   off that page's map (and match the Texas and Tennessee changelog entry); confirm the list with Jason before launch.
+   Map paths come from us-atlas (Albers USA, 975x610) via reference/gen_us_map.mjs. */
+import states from "../../data/us-states.json";
+const SUPPORTED = ["Alabama", "Arizona", "Florida", "Georgia", "North Carolina", "South Carolina", "Tennessee", "Texas", "Wisconsin"];
+---
+<section class="container states">
+  <div class="intro">
+    <span class="t-label">Multi-state contractors</span>
+    <h2 class="t-title">One dashboard for all 50 states</h2>
+    <p>Connect with any 811 system and have a single dashboard to track your locates across regions. Supported states highlighted below.</p>
+  </div>
+  <figure class="map">
+    <svg viewBox="0 0 975 610" role="img" aria-labelledby="states-cap">
+      {states.map((s) => (
+        <path d={s.d} class:list={{ on: SUPPORTED.includes(s.name) }}><title>{s.name}</title></path>
+      ))}
+    </svg>
+    <figcaption id="states-cap" class="mono"><i aria-hidden="true"></i>Supported today: {SUPPORTED.join(", ")}</figcaption>
+  </figure>
+</section>
+
+<style>
+  .states { padding: 120px 0; border-top: 1px solid #dddcd6; }
+  .intro { display: flex; flex-direction: column; gap: 14px; max-width: 760px; }
+  .intro p { margin-top: 6px; font-size: var(--text-body); line-height: 1.4; letter-spacing: -0.2px; }
+  .map { margin: 56px 0 0; }
+  svg { width: min(100%, 920px); height: auto; margin-inline: auto; }
+  path { fill: var(--color-paper); stroke: var(--color-tar); stroke-width: .6; stroke-linejoin: round; transition: fill .15s; }
+  path:hover { fill: var(--color-paper-dim); }
+  path.on { fill: var(--color-stoplight); }
+  path.on:hover { fill: #f2bf00; }
+  figcaption { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 32px; text-align: center; font-size: 13px; line-height: 1.5; text-wrap: balance; }
+  figcaption i { flex: none; width: 12px; height: 12px; border-radius: 3px; background: var(--color-stoplight); border: .6px solid var(--color-tar); }
+  @media (max-width: 900px) { .states { padding: 72px 0; } .intro p { font-size: 17px; } .map { margin-top: 32px; } figcaption { align-items: flex-start; text-align: left; justify-content: flex-start; } figcaption i { margin-top: 4px; } }
+</style>

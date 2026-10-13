@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import LocatesHero from "../components/locates/LocatesHero.astro";
+import LocatesFeatures from "../components/locates/LocatesFeatures.astro";
+import LocatesStates from "../components/locates/LocatesStates.astro";
+import LocatesCta from "../components/locates/LocatesCta.astro";
+import Footer from "../components/Footer.astro";
+---
+<Base title="Clad Locates" description="An AI-powered 811 ticket management system, purpose-built for excavators.">
+  <Header />
+  <main>
+    <LocatesHero />
+    <LocatesFeatures />
+    <LocatesStates />
+    <LocatesCta />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  main > :global(.cta) { margin-bottom: 98px; }
+  @media (max-width: 900px) { main > :global(.cta) { margin-bottom: 64px; } }
+</style>

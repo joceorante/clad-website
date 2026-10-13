@@ -274,7 +274,7 @@ TICKETS_HTML = (
 
 locates = {
     "id": "locates", "name": "Locates", "accent": "stoplight", "title": "Automate your 811 tickets",
-    "sub": "AI 811 ticket management to submit and track your locate requests", "ctas": [("Learn more", "#locates", ""), ("Try it out", "#try-locates", " btn--solid")],  # Try it out: destination TBD
+    "sub": "AI 811 ticket management to submit and track your locate requests", "ctas": [("Learn more", "/locates", ""), ("Try it out", "#try-locates", " btn--solid")],  # Try it out: destination TBD
     "feats": [
         ("AI ticket submission", "Use AI to create and submit 811 tickets in bulk"),
         ("Automated tracking and renewals", "Visualize ticket status and keep tickets updated from a single dashboard"),
