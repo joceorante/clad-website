@@ -2,7 +2,7 @@ import { SCENES } from "./story.config.js";
 
 // Scroll-scrubbed keyframe engine. Each scene is a tall section with a sticky frame; progress p (0..1)
 // is how far the section has scrolled. Every actor's pose is interpolated from its keyframes, and the
-// feature list highlights whichever step p is in. Clicking a feature scrolls to its step.
+// feature list highlights whichever step p is in. Clicking a feature scrolls to where its step has finished.
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -53,7 +53,7 @@ function mount(cfg) {
     render(reduce ? (p < 0.5 ? 0 : 1) : p);
   }
   feats.forEach((li, i) => li.querySelector("button")?.addEventListener("click", () => {
-    const top = window.scrollY + sec.getBoundingClientRect().top + (cfg.steps[i] + 0.06) * total();
+    const top = window.scrollY + sec.getBoundingClientRect().top + cfg.rest[i] * total();
     window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
   }));
   // scroll events are already delivered once per frame, so render directly

@@ -12,8 +12,8 @@
   /* label and title typography come from .t-label / .t-title in global.css */
   .story .head .label i { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
   .story .head .sub { font-size: 18px; line-height: 1.4; letter-spacing: -0.2px; max-width: 34ch; }
-  .story .more { align-self: flex-start; font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--color-tar); }
-  .story .more:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .story .ctas { display: flex; gap: 12px; margin-top: 6px; }  /* same .btn pair as the header's Log in / Get demo, at its compact size */
+  .story .ctas .btn { padding: 7px 18px; line-height: 26px; }
 
   /* stacked features: dim by default, the current step at full strength */
   .story .feats { display: flex; flex-direction: column; margin: 18px 0 0; padding: 0; list-style: none; }
@@ -181,7 +181,8 @@
     .story .scene { height: 360vh; }
     .story .pin { top: 64px; height: calc(100vh - 64px); grid-template-columns: 1fr; align-content: center; gap: 18px; }
     .story .head { gap: 8px; }
-    .story .head .sub, .story .more { display: none; }
+    .story .head .sub { display: none; }
+    .story .ctas .btn { padding: 7px 16px; }
     .story .feats { margin-top: 6px; }
     .story .feats button { padding: 6px 0 6px 14px; }
     .story .feats b { font-size: 15px; }
