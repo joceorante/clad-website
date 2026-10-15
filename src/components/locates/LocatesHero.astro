@@ -1,17 +1,39 @@
 ---
-/* Locates product page hero. Copy is Jason's (2026-10-14). */
+/* Locates product page hero: copy and signup on the left, a product detail on the right in the homepage hero's
+   dark grid panel (Jocelyn's layout, 2026-10-14). Copy is Jason's. The image is a placeholder crop of the homepage
+   screenshot until there is a Locates-specific shot. */
 import EmailForm from "../EmailForm.astro";
 ---
 <section class="container hero">
-  <h1>Submit, track, and update your <span class="hl hl--stoplight">811 tickets</span></h1>
-  <p class="tagline">The AI-powered 811 ticket management system for contractors</p>
-  <EmailForm id="hero-email" button="Try now" />
+  <div class="copy">
+    <h1>Submit, track, and<br /> update your <span class="hl hl--stoplight">811 tickets</span></h1>
+    <p class="tagline">The AI-powered 811 ticket management system for contractors</p>
+    <EmailForm id="hero-email" button="Try now" />
+  </div>
+  <div class="demo">
+    <img src="/assets/hero-screenshot.png" alt="Clad's map view: a satellite map of New Build Zone 1.4 with drawing tools and a marked handhole, UG-104-01" width="1948" height="1230" loading="eager" />
+  </div>
 </section>
 
 <style>
-  .hero { padding: 72px 0 120px; }
-  h1 { font-size: var(--text-display); line-height: 1.02; letter-spacing: -1.5px; max-width: 900px; }
-  h1 .hl { margin: 0 -2px; padding: 0 6px; font-weight: inherit; }
-  .tagline { margin: 27px 0 44px; font-size: var(--text-body); line-height: 1.3; max-width: 36ch; }
-  @media (max-width: 900px) { .hero { padding: 40px 0 72px; } .tagline { margin: 18px 0 28px; font-size: 17px; } }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: clamp(32px, 4.5vw, 64px); align-items: center; padding: 72px 0 120px; }
+  /* sized off the copy column so "update your 811 tickets" (about 10.75em) always fits on the second line */
+  .copy { container-type: inline-size; }
+  h1 { font-size: clamp(30px, 9cqi, 56px); line-height: 1.04; letter-spacing: -1.5px; }
+  h1 .hl { margin: 0 -2px; padding: 0 6px; font-weight: inherit; white-space: nowrap; }
+  .tagline { margin: 24px 0 40px; font-size: var(--text-body); line-height: 1.3; max-width: 34ch; }
+  .copy :global(.email) { width: min(100%, 440px); }
+
+  /* the homepage hero's tar panel and grid; a grid line runs down the screenshot's left edge */
+  .demo { --inset: 52px; position: relative; aspect-ratio: 13 / 10; overflow: hidden; border-radius: var(--radius-lg);
+    border: 1px solid var(--color-tar);
+    background: var(--color-tar) url("/assets/grid.svg") calc(var(--inset) - 1107.66px) -1100px / 2214px 2211px no-repeat; }
+  .demo img { position: absolute; left: var(--inset); top: 18%; width: 210%; max-width: none; height: auto;
+    border-radius: var(--radius-md) 0 0 0; box-shadow: 0 24px 60px -20px rgb(0 0 0 / .5); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 0 72px; }
+    .tagline { margin: 18px 0 28px; font-size: 17px; }
+    .demo { --inset: 28px; }
+  }
 </style>
