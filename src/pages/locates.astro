@@ -1,24 +1,35 @@
 ---
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
+import LocatesSubnav from "../components/locates/LocatesSubnav.astro";
 import LocatesHero from "../components/locates/LocatesHero.astro";
+import Testimonial from "../components/Testimonial.astro";
+import LocatesWhy from "../components/locates/LocatesWhy.astro";
 import LocatesFeatures from "../components/locates/LocatesFeatures.astro";
 import LocatesStates from "../components/locates/LocatesStates.astro";
-import LocatesCta from "../components/locates/LocatesCta.astro";
+import Faq from "../components/Faq.astro";
 import Footer from "../components/Footer.astro";
+
+// Jason's quote; attribution pending. FAQ questions are Claude's placeholders until Jason fills them in.
+const quote = "Every single person that we have that uses it, it’s their favorite thing about Clad. They just love it.";
+const faqs = [
+  { q: "Which states does Clad Locates support?", a: "" },
+  { q: "Do I need to change how my team submits tickets today?", a: "" },
+  { q: "How do I know when a site is ready to dig?", a: "" },
+  { q: "Can I see my subcontractors’ tickets?", a: "" },
+  { q: "How much does Clad Locates cost?", a: "" },
+];
 ---
-<Base title="Clad Locates" description="An AI-powered 811 ticket management system, purpose-built for excavators.">
+<Base title="Clad Locates" description="The AI-powered 811 ticket management system for contractors.">
   <Header />
   <main>
+    <LocatesSubnav active="overview" />
     <LocatesHero />
+    <Testimonial quote={quote} name="[Name, Title]" company="[Company]" />
+    <LocatesWhy />
     <LocatesFeatures />
     <LocatesStates />
-    <LocatesCta />
+    <Faq faqs={faqs} />
   </main>
   <Footer />
 </Base>
-
-<style>
-  main > :global(.cta) { margin-bottom: 98px; }
-  @media (max-width: 900px) { main > :global(.cta) { margin-bottom: 64px; } }
-</style>

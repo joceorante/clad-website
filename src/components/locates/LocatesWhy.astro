@@ -1,0 +1,35 @@
+---
+/* Why Clad: four benefits. Copy is Jason's (2026-10-14). */
+const reasons = [
+  { title: "Submit and manage tickets in >50% less time", body: "Contractors that use Clad Locates report submitting tickets in as little as 15 seconds. At the same time, they avoid the need to create and maintain a manual ticket tracking spreadsheet." },
+  { title: "Avoid down days", body: "Reduce the risk of a ‘lost day’ by making sure you don’t send a crew out to a site that isn’t ready to dig." },
+  { title: "Improved documentation", body: "Clad Locates saves all tickets, so if you ever get a damage claim, pulling documentation of submitted locates is simple." },
+  { title: "Reduce the risk of damages", body: "Give your field easy access to 811 ticket responses so they can dig safely." },
+];
+---
+<section class="container why">
+  <div class="intro">
+    <span class="t-label">Why Clad</span>
+    <h2 class="t-title">Fast, organized, &amp; high quality tickets</h2>
+  </div>
+  <ol class="reasons">
+    {reasons.map((r, i) => (
+      <li>
+        <span class="mono n">{String(i + 1).padStart(2, "0")}</span>
+        <h3>{r.title}</h3>
+        <p>{r.body}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .why { padding: 120px 0; }
+  .intro { display: flex; flex-direction: column; gap: 14px; }
+  .reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 4.5vw, 64px); margin: 56px 0 0; padding: 0; list-style: none; }
+  .reasons li { display: grid; grid-template-columns: 44px 1fr; column-gap: 12px; align-content: start; padding: 28px 0 36px; border-top: 1px solid #dddcd6; }
+  .n { grid-row: 1 / 3; padding-top: 4px; font-size: 13px; color: #8a8a86; }
+  h3 { font-size: var(--text-body); line-height: 1.3; font-weight: 600; letter-spacing: -0.2px; }
+  p { margin-top: 10px; font-size: 16px; line-height: 1.5; letter-spacing: -0.1px; max-width: 46ch; color: #3b3a32; }
+  @media (max-width: 900px) { .why { padding: 72px 0; } .reasons { grid-template-columns: 1fr; margin-top: 32px; } .reasons li { padding: 22px 0 26px; } }
+</style>

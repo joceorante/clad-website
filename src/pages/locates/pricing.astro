@@ -1,0 +1,15 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import LocatesSubnav from "../../components/locates/LocatesSubnav.astro";
+import LocatesPricing from "../../components/locates/LocatesPricing.astro";
+import Footer from "../../components/Footer.astro";
+---
+<Base title="Clad Locates pricing" description="Start for free and scale as your ticket volume grows.">
+  <Header />
+  <main>
+    <LocatesSubnav active="pricing" />
+    <LocatesPricing />
+  </main>
+  <Footer />
+</Base>

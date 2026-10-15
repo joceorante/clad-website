@@ -1,19 +1,17 @@
 ---
-/* Locates features: the product story's layout without the scroll pin. Pick a feature on the left and its UI plays
-   in the gray panel on the right. Heading, subhead, tab names and the AI Narratives copy and narrative are from the
-   current withclad.com/locates/overview page; Automated Tracking and Bulk Submit copy is Jocelyn's (2026-10-13).
-   Schedule Tickets has no copy yet. The Tracking, Bulk Submit and Schedule panels follow Jocelyn's product
-   screenshots (2026-10-13), restyled in the site's card system; their names and IDs (LOCATE-1, DRAFT-19, 4861 Delray,
-   FiberLight, PG&E, Pawnee County, Private Water Co.) come from those screenshots, and dates are sample data. */
-const feats = [
-  { id: "narratives", title: "AI Narratives", desc: "Draw on a map, and let AI write a correctly formatted narrative." },
-  { id: "tracking", title: "Automated Tracking", desc: "Monitor responses as they come in without the thousands of noisy emails." },
-  { id: "bulk", title: "Bulk Submit", desc: "Submit 5 tickets at once. Or 50." },
-  { id: "schedule", title: "Schedule Tickets", desc: "[Description pending]" },
+/* How Clad Locates works: the product story's layout without the scroll pin. Pick a step on the left and its UI plays
+   in the gray panel on the right. Title and step copy are Jason's (2026-10-14). The Submit and Track panels follow
+   Jocelyn's product screenshots (2026-10-13), restyled in the site's card system; their names and IDs (LOCATE-1,
+   DRAFT-19, 4861 Delray, FiberLight, PG&E, Pawnee County, Private Water Co.) come from those screenshots. The Manage
+   panel, the project names and every date are Claude's sample data. */
+const steps = [
+  { id: "submit", title: "Submit", desc: "Use AI and bulk upload tools to quickly create high quality tickets" },
+  { id: "track", title: "Track", desc: "Access a dashboard of your 811 tickets that is updated automatically, with no setup required" },
+  { id: "manage", title: "Manage", desc: "Submit no response tickets, renew expiring 811 tickets, and organize tickets by project" },
 ];
 const narrative = "From the intersection of Delray Road and Seibles Road, locate 476 feet southeast along Delray Road. Locate 20 feet on either side of the path.";
 
-// Automated Tracking: ring = response progress (full = all clear, part = waiting on some utilities)
+// Track: ring = response progress (full = all clear, part = waiting on some utilities)
 const tracking = [  // ring, name (null = skeleton), status, scheduled for
   ["ok", "LOCATE-1", "Submitted", "Jul 23"],
   ["", "LOCATE-8", null, null],
@@ -24,93 +22,39 @@ const tracking = [  // ring, name (null = skeleton), status, scheduled for
 ] as const;
 const responses = [["FiberLight", "ok"], ["PG&E", "ok"], ["Pawnee County", "warn"], ["Private Water Co.", "warn"]];
 
-// Schedule Tickets: July 2026 calendar (starts on a Wednesday), created on the 1st, scheduled for the 8th
-const first = new Date(2026, 6, 1).getDay();
-const days = Array.from({ length: 35 }, (_, i) => {
-  const d = new Date(2026, 6, 1 - first + i);
-  return { n: d.getDate(), out: d.getMonth() !== 6 };
-});
+// Manage: one project open; an expiring ticket renews and a no-response ticket goes out
+const manage = [  // id, address (null = skeleton), status before, status after, expires before, after
+  ["LOCATE-1", "4861 Delray", ["Cleared", "ok"], null, "Oct 22", null],
+  ["LOCATE-8", null, ["Expires Fri", "warn"], ["Renewed", "ok"], "Oct 16", "Oct 30"],
+  ["LOCATE-13", null, ["No response", "warn"], ["No response ticket sent", "info"], "Oct 24", null],
+] as const;
 
 const icon = {
   pin: '<svg viewBox="0 0 16 16"><path d="M8 14.5s4.8-4.4 4.8-8.3a4.8 4.8 0 0 0-9.6 0c0 3.9 4.8 8.3 4.8 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>',
   doc: '<svg viewBox="0 0 16 16"><path d="M4 1.5h5l3 3v10H4z"/><path d="M9 1.5v3h3M6 8.5h4M6 11h4"/></svg>',
   info: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.3v4M8 5v.1"/></svg>',
-  cal: '<svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>',
+  folder: '<svg viewBox="0 0 16 16"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3l1.5 1.6H13c.7 0 1.2.5 1.2 1.2v6.5c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>',
+  caret: '<svg class="caret" viewBox="0 0 16 16"><path d="M4.5 6.5 8 10l3.5-3.5"/></svg>',
 };
 ---
-<section class="container feats-sec" id="features">
-  <div class="intro">
-    <h2 class="t-title">Call in locates without the admin headache</h2>
-    <p>Clad Locates uses AI and a streamlined process to make it 10x faster to call in a locate request. Tracking responses is automatic, so you always know when you are safe to dig.</p>
-  </div>
-
+<section class="container feats-sec" id="how-it-works">
   <div class="grid">
-    <ul class="feats" role="tablist" aria-label="Locates features">
-      {feats.map((f, i) => (
-        <li class:list={{ "is-active": i === 0 }}>
-          <button type="button" role="tab" id={`lf-tab-${f.id}`} aria-controls={`lf-${f.id}`} aria-selected={i === 0 ? "true" : "false"} data-view={f.id}>
-            <b>{f.title}</b><span>{f.desc}</span>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <div class="head">
+      <h2 class="t-title">How Clad Locates works</h2>
+      <ul class="feats" role="tablist" aria-label="How Clad Locates works">
+        {steps.map((f, i) => (
+          <li class:list={{ "is-active": i === 0 }}>
+            <button type="button" role="tab" id={`lf-tab-${f.id}`} aria-controls={`lf-${f.id}`} aria-selected={i === 0 ? "true" : "false"} data-view={f.id}>
+              <b>{f.title}</b><span>{f.desc}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
 
     <div class="stage">
-      <!-- AI Narratives: a locate area draws along the road, then the narrative writes itself -->
-      <div class="view is-active" id="lf-narratives" role="tabpanel" aria-labelledby="lf-tab-narratives">
-        <div class="card narr">
-          <svg class="map" viewBox="70 0 300 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect width="400" height="320" fill="#ecebe6" />
-            <g fill="#e2e1db">
-              <rect x="20" y="170" width="70" height="56" rx="3" transform="rotate(-51 55 198)" />
-              <rect x="250" y="40" width="80" height="54" rx="3" transform="rotate(27 290 67)" />
-              <rect x="70" y="40" width="60" height="44" rx="3" transform="rotate(27 100 62)" />
-              <rect x="250" y="250" width="90" height="50" rx="3" transform="rotate(27 295 275)" />
-            </g>
-            <line x1="60" y1="320" x2="330" y2="-20" stroke="#fff" stroke-width="20" />
-            <line x1="-20" y1="30" x2="420" y2="258" stroke="#fff" stroke-width="20" />
-            <text class="rd" transform="translate(112 254) rotate(-51.5)">SEIBLES RD</text>
-            <text class="rd" transform="translate(96 95) rotate(27.4)">DELRAY RD</text>
-            <path class="buffer" d="M200 144 L333 213" pathLength="1" />
-            <path class="center" d="M200 144 L333 213" pathLength="1" />
-            <circle class="dot" cx="200" cy="144" r="4.5" />
-            <g class="len"><rect x="262" y="200" width="58" height="20" rx="4" /><text x="291" y="214">476 ft</text></g>
-          </svg>
-          <div class="drafts">
-            <div class="dhd"><b>New locates</b><span>3 locates drawn</span></div>
-            <div class="draft">
-              <em>DRAFT-19</em>
-              <div class="kv"><span>Narrative</span><p class="words">{narrative.split(" ").map((w, i) => <span style={`--w:${i}`}>{w} </span>)}</p></div>
-            </div>
-            <div class="draft"><em>DRAFT-15</em><div class="kv"><span>Narrative</span><p class="skel"><i></i><i></i><i></i></p></div></div>
-            <div class="draft"><em>DRAFT-8</em><div class="kv"><span>Narrative</span><p class="skel"><i></i><i></i></p></div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Automated Tracking: utility responses tick in under a ticket, no inbox needed -->
-      <div class="view" id="lf-tracking" role="tabpanel" aria-labelledby="lf-tab-tracking" hidden>
-        <div class="card trk">
-          <div class="chd"><b>Locates</b><span class="btn2 ghost">Filter</span><span class="btn2 ghost push">Renew tickets</span></div>
-          <div class="th"><span></span><span>Name</span><span>Status</span><span>Scheduled for</span></div>
-          <div class="rows">
-            {tracking.map(([ring, name, st, when], j) => (
-              <div class="tr" style={`--j:${j}`}>
-                <i class={`ring ${ring}`} aria-hidden="true"></i>
-                {name ? <b class="id">{name}</b> : <i class="sk" style="--sw:55%"></i>}
-                {st ? <span>{st}</span> : <i class="sk" style="--sw:60%"></i>}
-                {when ? <span>{when}</span> : <i class="sk" style="--sw:60%"></i>}
-              </div>
-            ))}
-            <ul class="pop resp">
-              {responses.map(([who, s], k) => <li style={`--k:${k}`}><i class={`ri ${s}`} aria-hidden="true"></i>{who}</li>)}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bulk Submit: every drafted locate in one list, each one checked against its map, submitted together -->
-      <div class="view" id="lf-bulk" role="tabpanel" aria-labelledby="lf-tab-bulk" hidden>
+      <!-- Submit: drafted locates in one list; the selected one's narrative writes itself and its area draws on the map -->
+      <div class="view is-active" id="lf-submit" role="tabpanel" aria-labelledby="lf-tab-submit">
         <div class="card blk">
           <div class="list">
             <div class="phd"><div><b>Locates</b><span>3 locates found</span></div><span class="btn2 submit">Submit all</span></div>
@@ -119,7 +63,7 @@ const icon = {
               <div class="dc sel" style="--j:1">
                 <em class="chip">DRAFT-19</em>
                 <div class="ln"><Fragment set:html={icon.pin} /><span>4861 Delray</span></div>
-                <div class="ln"><Fragment set:html={icon.doc} /><span class="clamp">{narrative}</span></div>
+                <div class="ln"><Fragment set:html={icon.doc} /><span class="clamp words">{narrative.split(" ").map((w, i) => <span style={`--w:${i}`}>{w} </span>)}</span></div>
               </div>
               <div class="dc" style="--j:2"><em class="chip">DRAFT-15</em><div class="ln"><Fragment set:html={icon.pin} /><span class="skl"><i style="--sw:50%"></i></span></div><div class="ln"><Fragment set:html={icon.doc} /><span class="skl"><i style="--sw:90%"></i><i style="--sw:35%"></i></span></div></div>
               <div class="dc" style="--j:3"><em class="chip">DRAFT-8</em><div class="ln"><Fragment set:html={icon.pin} /><span class="skl"><i style="--sw:50%"></i></span></div><div class="ln"><Fragment set:html={icon.doc} /><span class="skl"><i style="--sw:90%"></i><i style="--sw:35%"></i></span></div></div>
@@ -139,7 +83,7 @@ const icon = {
                 </g>
                 <line x1="-10" y1="14" x2="410" y2="256" stroke="#fff" stroke-width="16" />
                 <line x1="138" y1="94" x2="186" y2="-10" stroke="#fff" stroke-width="12" />
-                <path class="buffer b2" d="M150 101 L296 185" pathLength="1" />
+                <path class="buffer" d="M150 101 L296 185" pathLength="1" />
                 <path class="center" d="M150 101 L296 185" pathLength="1" />
                 <text class="rd" transform="translate(196 132) rotate(30)">SEIBLES RD</text>
               </svg>
@@ -148,27 +92,43 @@ const icon = {
         </div>
       </div>
 
-      <!-- Schedule Tickets: pick the date a drafted ticket goes out -->
-      <div class="view" id="lf-schedule" role="tabpanel" aria-labelledby="lf-tab-schedule" hidden>
-        <div class="card sch">
-          <div class="th"><i class="cb" aria-hidden="true"></i><span>Locate ID</span><span>Address</span><span>Status</span><span>Scheduled date</span><span>Created</span></div>
+      <!-- Track: utility responses tick in under a ticket, no inbox needed -->
+      <div class="view" id="lf-track" role="tabpanel" aria-labelledby="lf-tab-track" hidden>
+        <div class="card trk">
+          <div class="chd"><b>Locates</b><span class="btn2 ghost">Filter</span><span class="btn2 ghost push">Renew tickets</span></div>
+          <div class="th"><span></span><span>Name</span><span>Status</span><span>Scheduled for</span></div>
           <div class="rows">
-            <div class="tr on" style="--j:0">
-              <i class="cb tick" aria-hidden="true"></i><em class="chip">DRAFT-19</em><span>4861 Delray</span><em class="spill neutral">Draft</em>
-              <span class="date"><Fragment set:html={icon.cal} /><span class="dv"><span class="a">Pick a date</span><span class="b">Jul 8, 2026</span></span></span>
-              <span class="muted">Jul 1, 2026</span>
-            </div>
-            {["DRAFT-15", "DRAFT-8"].map((id, j) => (
-              <div class="tr" style={`--j:${j + 1}`}>
-                <i class="cb" aria-hidden="true"></i><em class="chip">{id}</em><i class="sk" style="--sw:70%"></i><em class="spill neutral">Draft</em><i class="sk" style="--sw:75%"></i><i class="sk" style="--sw:80%"></i>
+            {tracking.map(([ring, name, st, when], j) => (
+              <div class="tr" style={`--j:${j}`}>
+                <i class={`ring ${ring}`} aria-hidden="true"></i>
+                {name ? <b class="id">{name}</b> : <i class="sk" style="--sw:55%"></i>}
+                {st ? <span>{st}</span> : <i class="sk" style="--sw:60%"></i>}
+                {when ? <span>{when}</span> : <i class="sk" style="--sw:60%"></i>}
               </div>
             ))}
-            <div class="pop cal">
-              <div class="mh"><i class="nav">‹</i><b>July 2026</b><i class="nav">›</i></div>
-              <div class="wk">{["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => <span>{d}</span>)}</div>
-              <div class="days">{days.map((d) => <span class:list={{ out: d.out, today: !d.out && d.n === 1, pick: !d.out && d.n === 8 }}>{d.n}</span>)}</div>
-            </div>
+            <ul class="pop resp">
+              {responses.map(([who, s], k) => <li style={`--k:${k}`}><i class={`ri ${s}`} aria-hidden="true"></i>{who}</li>)}
+            </ul>
           </div>
+        </div>
+      </div>
+
+      <!-- Manage: tickets grouped by project; an expiring ticket renews and a no-response ticket goes out -->
+      <div class="view" id="lf-manage" role="tabpanel" aria-labelledby="lf-tab-manage" hidden>
+        <div class="card mng">
+          <div class="chd"><b>Locates</b><span class="btn2 ghost">Filter</span><span class="btn2 push renew">Renew tickets</span></div>
+          <div class="th"><span>Locate ID</span><span>Address</span><span>Status</span><span class="r">Expires</span></div>
+          <div class="proj" style="--j:0"><Fragment set:html={icon.caret} /><Fragment set:html={icon.folder} /><b>Suffolk, VA · Zone 1.4</b><span>3 tickets</span></div>
+          {manage.map(([id, ad, a, b, ea, eb], j) => (
+            <div class={`tr m${j}`} style={`--j:${j + 1}`}>
+              <em class="chip">{id}</em>
+              {ad ? <span>{ad}</span> : <i class="sk" style="--sw:70%"></i>}
+              <span class="st"><em class={`spill ${a[1]} a`}>{a[0]}</em>{b && <em class={`spill ${b[1]} b`}>{b[0]}</em>}</span>
+              <span class="st ex"><span class="a">{ea}</span>{eb && <span class="b">{eb}</span>}</span>
+            </div>
+          ))}
+          <div class="proj closed" style="--j:4"><Fragment set:html={icon.caret} /><Fragment set:html={icon.folder} /><b>Suffolk, VA · Zone 1.5</b><span>6 tickets</span></div>
+          <div class="proj closed" style="--j:5"><Fragment set:html={icon.caret} /><Fragment set:html={icon.folder} /><b>Chesapeake, VA · Zone 2.1</b><span>4 tickets</span></div>
         </div>
       </div>
     </div>
@@ -177,11 +137,11 @@ const icon = {
 
 <style>
   .feats-sec { padding: 120px 0; border-top: 1px solid #dddcd6; }
-  .intro { max-width: 760px; }
-  .intro p { margin-top: 20px; font-size: var(--text-body); line-height: 1.4; letter-spacing: -0.2px; }
-  .grid { display: grid; grid-template-columns: minmax(0, .74fr) minmax(0, 1.26fr); gap: clamp(32px, 4.5vw, 64px); align-items: center; margin-top: 64px; }
+  .grid { display: grid; grid-template-columns: minmax(0, .74fr) minmax(0, 1.26fr); gap: clamp(32px, 4.5vw, 64px); align-items: center; }
+  /* title stacked over the steps, left of the stage, like the homepage story scenes */
+  .head { display: flex; flex-direction: column; gap: 32px; }
 
-  /* feature list: same treatment as the homepage story (30% until active, product color rule) */
+  /* step list: same treatment as the homepage story (30% until active, product color rule) */
   .feats { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
   .feats li { opacity: .3; transition: opacity .35s ease; }
   .feats li.is-active, .feats li:hover { opacity: 1; }
@@ -207,48 +167,48 @@ const icon = {
   .btn2.ghost { background: #fff; color: #1f1f1f; border: 1px solid #e3e3e0; }
   .btn2.push { margin-left: auto; }
   .chip { display: inline-flex; align-items: center; justify-self: start; align-self: start; height: 2em; padding: 0 .8em; border: 1px solid #e3e3e0; border-radius: 999px; font-style: normal; font-size: .9em; font-weight: 500; white-space: nowrap; background: #fff; }
-  .spill { display: inline-flex; align-items: center; justify-self: start; gap: .45em; border-radius: 999px; padding: .22em .75em .22em .6em; font-size: .88em; font-style: normal; border: 1px solid var(--c); color: var(--c); background: #fff; white-space: nowrap; }
+  .tr .chip { align-self: center; }
+  .spill { display: inline-flex; align-items: center; gap: .45em; border-radius: 999px; padding: .22em .75em .22em .6em; font-size: .88em; font-style: normal; border: 1px solid var(--c); color: var(--c); background: #fff; white-space: nowrap; }
   .spill::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: var(--c); }
-  .spill.neutral { --c: #8a8a86; }
+  .spill.ok { --c: #2f9e5b; } .spill.warn { --c: #d9822b; } .spill.info { --c: #4750ff; }
   .sk { display: block; height: .7em; width: var(--sw, 70%); border-radius: 99px; background: #efefec; }
   .th, .tr { display: grid; align-items: center; gap: .9em; padding: .85em 1.3em; }
   .th { padding-block: .7em; color: #8a8a86; font-size: .85em; background: #fafaf8; border-bottom: 1px solid #efefed; }
+  .th .r { text-align: right; }
   .tr { border-bottom: 1px solid #f1f1ef; }
   .rows { position: relative; }
   .pop { position: absolute; z-index: 2; margin: 0; background: #fff; border-radius: .8em; box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 10px 28px -8px rgb(37 34 12 / .3); opacity: 0; transform-origin: top left; }
   /* icons arrive via set:html, so they need :global to pick these up */
-  .ln :global(svg), .date :global(svg) { flex: none; width: 1.15em; height: 1.15em; color: #6f6f6b; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+  .card :global(svg:not(.map)) { flex: none; width: 1.15em; height: 1.15em; color: #6f6f6b; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* AI Narratives */
-  .narr { width: 90%; height: 84%; display: grid; grid-template-columns: 1.25fr 1fr; }
-  .map { width: 100%; height: 100%; }
-  .map .rd { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; fill: #9a9992; }
-  .map .buffer { fill: none; stroke: rgb(255 204 0 / .5); stroke-width: 40; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
-  .map .buffer.b2 { stroke-width: 30; }
-  .map .center { fill: none; stroke: #25220c; stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
-  .map .dot { fill: #25220c; }
-  .map .len rect { fill: #25220c; } .map .len text { font-family: var(--font-mono); font-size: 10px; fill: #fff; text-anchor: middle; }
-  .map .len { opacity: 0; }
-  .drafts { border-left: 1px solid #efefed; display: flex; flex-direction: column; min-width: 0; }
-  .dhd { display: flex; flex-direction: column; gap: .2em; padding: 1.1em 1.2em; border-bottom: 1px solid #efefed; }
-  .dhd b { font-size: 1.2em; font-weight: 600; } .dhd span { color: #8a8a86; font-size: .9em; }
-  .draft { padding: 1em 1.2em; border-bottom: 1px solid #f1f1ef; }
-  .draft:last-child { border-bottom: 0; }
-  .draft em { font-style: normal; font-weight: 700; font-size: .9em; letter-spacing: .02em; }
-  .kv { display: grid; grid-template-columns: 5.6em 1fr; gap: .8em; margin-top: .6em; }
-  .kv > span { color: #8a8a86; font-size: .9em; }
-  .kv p { margin: 0; font-size: .92em; line-height: 1.45; }
+  /* Submit: drafted locates on the left, the selected one's map on the right */
+  .blk { width: 92%; height: 86%; display: grid; grid-template-columns: 1fr 1.2fr; }
+  .phd { display: flex; align-items: center; justify-content: space-between; gap: .8em; padding: 1em 1.2em; border-bottom: 1px solid #efefed; }
+  .phd > div { display: flex; flex-direction: column; gap: .15em; }
+  .phd b { font-size: 1.2em; font-weight: 600; } .phd > div span { color: #8a8a86; font-size: .9em; }
+  .list { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #efefed; }
+  .cards { display: flex; flex-direction: column; gap: .6em; padding: .8em; background: #fafaf8; flex: 1; overflow: hidden; }
+  .dc { display: flex; flex-direction: column; gap: .5em; padding: .8em .9em; background: #fff; border-radius: .7em; box-shadow: 0 0 0 1px #e8e8e4; }
+  .ln { display: flex; align-items: flex-start; gap: .55em; font-size: .92em; min-width: 0; }
+  .ln > span { min-width: 0; }
+  .clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .words span { opacity: 0; }
-  .skel { display: flex; flex-direction: column; gap: .5em; padding-top: .3em; }
-  .skel i { display: block; height: .55em; border-radius: 99px; background: #efefec; }
-  .skel i:last-child { width: 55%; }
+  .skl { flex: 1; display: flex; flex-direction: column; gap: .45em; padding-top: .25em; }
+  .skl i { display: block; height: .6em; width: var(--sw); border-radius: 99px; background: #efefec; }
+  .detail { display: flex; flex-direction: column; min-width: 0; }
+  .edit { flex: 1; display: flex; flex-direction: column; gap: .15em; margin: .9em; padding: 1em; border-radius: .7em; box-shadow: 0 0 0 1px #e8e8e4; min-height: 0; }
+  .edit b { font-size: 1.15em; font-weight: 600; } .edit > span { color: #8a8a86; font-size: .9em; margin-bottom: .7em; }
+  .map { flex: 1; min-height: 0; width: 100%; border-radius: .4em; }
+  .map .rd { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; fill: #9a9992; }
+  .map .buffer { fill: none; stroke: rgb(255 204 0 / .5); stroke-width: 30; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .map .center { fill: none; stroke: #25220c; stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
 
-  /* Automated Tracking: ring per ticket, utility responses in a popover under LOCATE-13 */
+  /* Track: ring per ticket, utility responses in a popover under LOCATE-13 */
   .trk { width: 84%; }
   .trk .th, .trk .tr { grid-template-columns: 1.5em 1.5fr 1fr 1fr; }
   .trk .tr { padding-block: 1em; }
-  .trk .rows { min-height: 21em; }
   .trk .tr:last-of-type { border-bottom: 0; }
+  .trk .rows { min-height: 21em; }
   .trk .id { font-weight: 500; letter-spacing: .01em; }
   .ring { position: relative; width: 1.4em; height: 1.4em; border-radius: 50%; border: 1.5px solid #d6d6d2; }
   .ring::after { content: ""; position: absolute; inset: 2.5px; border-radius: 50%; }
@@ -261,72 +221,39 @@ const icon = {
   .ri.ok::after { content: ""; position: absolute; left: .5em; top: .28em; width: .3em; height: .6em; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
   .ri.warn::after { content: "!"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: .85em; }
 
-  /* Bulk Submit: drafted locates on the left, the selected one's map on the right */
-  .blk { width: 92%; height: 86%; display: grid; grid-template-columns: 1fr 1.2fr; }
-  .phd { display: flex; align-items: center; justify-content: space-between; gap: .8em; padding: 1em 1.2em; border-bottom: 1px solid #efefed; }
-  .phd > div { display: flex; flex-direction: column; gap: .15em; }
-  .phd b { font-size: 1.2em; font-weight: 600; } .phd > div span { color: #8a8a86; font-size: .9em; }
-  .list { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #efefed; }
-  .cards { display: flex; flex-direction: column; gap: .6em; padding: .8em; background: #fafaf8; flex: 1; overflow: hidden; }
-  .dc { display: flex; flex-direction: column; gap: .5em; padding: .8em .9em; background: #fff; border-radius: .7em; box-shadow: 0 0 0 1px #e8e8e4; }
-  .dc.sel { box-shadow: 0 0 0 1px #e8e8e4; }
-  .ln { display: flex; align-items: flex-start; gap: .55em; font-size: .92em; min-width: 0; }
-  .ln > span { min-width: 0; }
-  .clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .skl { flex: 1; display: flex; flex-direction: column; gap: .45em; padding-top: .25em; }
-  .skl i { display: block; height: .6em; width: var(--sw); border-radius: 99px; background: #efefec; }
-  .detail { display: flex; flex-direction: column; min-width: 0; }
-  .edit { flex: 1; display: flex; flex-direction: column; gap: .15em; margin: .9em; padding: 1em; border-radius: .7em; box-shadow: 0 0 0 1px #e8e8e4; min-height: 0; }
-  .edit b { font-size: 1.15em; font-weight: 600; } .edit > span { color: #8a8a86; font-size: .9em; margin-bottom: .7em; }
-  .edit .map { flex: 1; min-height: 0; border-radius: .4em; }
+  /* Manage: tickets grouped by project folder, statuses flip in place */
+  .mng { width: 88%; }
+  .mng .th, .mng .tr { grid-template-columns: 6.4em 1fr 13em 4.4em; padding-left: 3.4em; }
+  .proj { display: flex; align-items: center; gap: .55em; padding: .8em 1.3em; border-bottom: 1px solid #f1f1ef; background: #fcfcfa; }
+  .proj b { font-weight: 600; } .proj span { color: #8a8a86; font-size: .9em; }
+  .proj.closed :global(.caret) { transform: rotate(-90deg); }
+  .proj.closed:last-child { border-bottom: 0; }
+  .st { position: relative; height: 1.9em; }
+  .st > * { position: absolute; left: 0; top: 50%; translate: 0 -50%; }
+  .st .b { opacity: 0; }
+  .st.ex > * { left: auto; right: 0; color: #6f6f6b; }
 
-  /* Schedule Tickets: drafted tickets with a date picker on the first one */
-  .sch { width: 92%; }
-  .sch .th, .sch .tr { grid-template-columns: 1.2em 6.4em 1fr 4.6em 9.6em 6.4em; }
-  .sch .rows { min-height: 19.5em; }
-  .sch .tr:nth-child(3) { border-bottom: 0; }
-  .sch .tr.on { background: #fafaf8; }
-  .cb { position: relative; width: 1.2em; height: 1.2em; border-radius: .3em; border: 1.5px solid #cfcfcb; background: #fff; }
-  .cb.tick::after { content: ""; position: absolute; left: .32em; top: .1em; width: .3em; height: .6em; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; }
-  .date { display: inline-flex; align-items: center; gap: .5em; height: 2.3em; padding: 0 .75em; border-radius: .5em; background: #fff; box-shadow: 0 0 0 1px #e3e3e0; white-space: nowrap; }
-  .dv { display: inline-grid; } .dv > span { grid-area: 1 / 1; } .dv .a { color: #8a8a86; } .dv .b { opacity: 0; }
-  .muted { color: #8a8a86; white-space: nowrap; }
-  .cal { right: 6.6em; top: 3.6em; width: 17.5em; padding: .9em; transform-origin: top center; }
-  .mh { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6em; }
-  .mh b { font-weight: 600; }
-  .nav { display: grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: .45em; box-shadow: 0 0 0 1px #e3e3e0; font-style: normal; }
-  .wk, .days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-  .wk span { color: #8a8a86; font-size: .85em; padding: .3em 0; }
-  .days span { display: grid; place-items: center; height: 2.05em; border-radius: .45em; font-size: .92em; font-variant-numeric: tabular-nums; }
-  .days .out { color: #b5b5b0; }
-  .days .today { background: #f1f1ef; }
-
-  /* motion: each UI plays once when its feature is picked */
-  .is-active .buffer, .is-active .center { animation: draw .9s .35s cubic-bezier(.65,0,.35,1) forwards; }
-  .is-active .len { animation: fade .3s 1.2s forwards; }
-  .is-active .words span { animation: fade .2s forwards; animation-delay: calc(1.4s + var(--w) * 45ms); }
-  .is-active .tr, .is-active .dc { animation: row-in .4s backwards; animation-delay: calc(.15s + var(--j) * .08s); }
+  /* motion: each UI plays once when its step is picked */
+  .is-active .buffer, .is-active .center { animation: draw .9s 1.1s cubic-bezier(.65,0,.35,1) forwards; }
+  .is-active .words span { animation: fade .2s forwards; animation-delay: calc(.9s + var(--w) * 30ms); }
+  .is-active .tr, .is-active .dc, .is-active .proj { animation: row-in .4s backwards; animation-delay: calc(.15s + var(--j) * .08s); }
+  .is-active .dc.sel { animation: row-in .4s backwards .23s, select .3s .7s forwards; }
+  .is-active .submit { animation: press .3s 2.3s; }
   .is-active .ring.part::after { animation: fade .4s .7s backwards; }
   .is-active .resp { animation: pop .3s .9s forwards; }
   .is-active .resp li { animation: row-in .3s backwards; animation-delay: calc(1.15s + var(--k) * .3s); }
   .is-active .ri { animation: pop .25s backwards; animation-delay: calc(1.2s + var(--k) * .3s); }
-  .is-active .dc.sel { animation: row-in .4s backwards .23s, select .3s .9s forwards; }
-  .is-active .blk .buffer, .is-active .blk .center { animation-delay: 1.1s; }
-  .is-active .submit { animation: press .3s 2.3s; }
-  .is-active .cb.tick { animation: check .2s .6s forwards; }
-  .is-active .cb.tick::after { animation: fade .2s .6s forwards; }
-  .is-active .cal { animation: pop .3s .9s forwards; }
-  .is-active .days .pick { animation: pick .25s 1.5s forwards; }
-  .is-active .dv .a { animation: fade .2s 1.8s reverse forwards; }
-  .is-active .dv .b { animation: fade .2s 1.85s forwards; }
+  .is-active .renew { animation: press .3s .8s; }
+  .is-active .m1 .st .a { animation: fade .2s 1.05s reverse forwards; }
+  .is-active .m1 .st .b { animation: fade .3s 1.1s forwards; }
+  .is-active .m2 .st:not(.ex) .a { animation: fade .2s 1.75s reverse forwards; }
+  .is-active .m2 .st:not(.ex) .b { animation: fade .3s 1.8s forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pop { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
   @keyframes row-in { from { opacity: 0; transform: translateY(.6em); } }
   @keyframes press { 50% { transform: scale(.94); } }
   @keyframes select { to { box-shadow: 0 0 0 1.5px #111; } }
-  @keyframes check { to { background: #111; border-color: #111; } }
-  @keyframes pick { to { background: #111; color: #fff; } }
   /* reduced motion: jump straight to each UI's finished state */
   @media (prefers-reduced-motion: reduce) {
     .view.is-active, .view.is-active * { animation-duration: 1ms !important; animation-delay: 0s !important; }
@@ -334,12 +261,12 @@ const icon = {
 
   @media (max-width: 900px) {
     .feats-sec { padding: 72px 0; }
-    .intro p { font-size: 17px; }
-    .grid { grid-template-columns: 1fr; gap: 24px; margin-top: 36px; }
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+    .head { gap: 20px; }
     .feats button { padding: 10px 0 10px 14px; }
     .feats li:not(.is-active) span { display: none; }
     .stage { border-radius: 14px; }
-    .narr, .trk, .blk, .sch { width: 95%; }
+    .trk, .blk, .mng { width: 95%; }
   }
 </style>
 

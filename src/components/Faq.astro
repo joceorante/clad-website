@@ -1,11 +1,14 @@
 ---
-const faqs = [
+type Faq = { q: string; a: string; open?: boolean };
+interface Props { faqs?: Faq[]; }
+const defaults: Faq[] = [
   { q: "What is Clad?", a: "Construction management software, purpose-built for building infrastructure. We help contractors and asset owners track their work and automate their back office - from locates, to billing, to reporting, and everything in between.", open: true },
   { q: "Who is Clad for?", a: "" },
   { q: "How does Clad help improve our billing workflows?", a: "" },
   { q: "I only want to use one part of Clad. Do I need to buy everything?", a: "" },
   { q: "How fast can we get started?", a: "" },
 ];
+const { faqs = defaults } = Astro.props;
 ---
 <section class="paper" id="faq">
   <div class="container inner">

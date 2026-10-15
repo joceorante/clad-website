@@ -1,10 +1,18 @@
+---
+interface Props { quote?: string; name?: string; company?: string; }
+const {
+  quote = "Clad accelerated our billing process 10x faster than the way we used to",
+  name = "Bob the Builder, COO",
+  company = "BTB & company",
+} = Astro.props;
+---
 <section class="paper">
   <div class="container inner">
     <blockquote>
-      <p class="quote">“Clad accelerated our billing process 10x faster than the way we used to”</p>
+      <p class="quote">“{quote}”</p>
       <footer>
-        <p class="name">Bob the Builder, COO</p>
-        <p class="mono company">BTB &amp; company</p>
+        <p class="name">{name}</p>
+        <p class="mono company">{company}</p>
       </footer>
     </blockquote>
   </div>
