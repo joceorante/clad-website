@@ -1,0 +1,24 @@
+---
+/* Locates sub-nav, shared by the Overview and Pricing pages. */
+interface Props { active: "overview" | "pricing"; }
+const { active } = Astro.props;
+const pages = [["Overview", "/locates", "overview"], ["Pricing", "/locates/pricing", "pricing"]];
+---
+<div class="container subnav">
+  <a class="t-label name" href="/locates"><i aria-hidden="true"></i>Locates</a>
+  <nav class="pages" aria-label="Locates">
+    {pages.map(([label, href, id]) => <a href={href} class:list={{ "is-active": id === active }} aria-current={id === active ? "page" : undefined}>{label}</a>)}
+  </nav>
+</div>
+
+<style>
+  .subnav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 48px; }
+  .name { text-decoration: none; }
+  .name i { width: 12px; height: 12px; border-radius: 3px; background: var(--color-stoplight); }
+  .pages { display: flex; border: 1px solid var(--color-tar); border-radius: var(--radius-md); overflow: hidden; }
+  .pages a { padding: 7px 18px; font-family: var(--font-mono); font-size: 14px; line-height: 20px; text-transform: uppercase; text-decoration: none; transition: background-color .15s; }
+  .pages a + a { border-left: 1px solid var(--color-tar); }
+  .pages a:hover { background: var(--color-paper-dim); }
+  .pages a.is-active { background: var(--color-stoplight); font-weight: 700; }
+  @media (max-width: 900px) { .subnav { padding-top: 28px; } }
+</style>
